@@ -1,2 +1,7 @@
-# H3VR-Supply-Raid
-Supply Raid gamemode for H3VR
+# H3VR.EmptyBepInEx
+Template BepInEx plugin for H3VR. 
+
+Includes
+- Autobuilding Thunderstore package
+- Stripped publicized H3VR assembly
+- MMHook H3VR assembly
