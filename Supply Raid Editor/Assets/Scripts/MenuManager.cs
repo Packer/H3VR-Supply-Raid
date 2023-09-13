@@ -13,6 +13,8 @@ namespace Supply_Raid_Editor
     {
         public static MenuManager instance;
 
+        public Text versionText;
+
         [Header("Tabs")]
         public GameObject menuTabBtn;
         public GameObject characterTabBtn;
@@ -92,6 +94,8 @@ namespace Supply_Raid_Editor
         // Start is called before the first frame update
         void Start()
         {
+            versionText.text = "v" + Application.version;
+
             OpenMenuPanel();
             GenerateItemTables();
         }
