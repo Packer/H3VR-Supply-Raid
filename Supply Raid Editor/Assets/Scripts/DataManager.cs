@@ -19,9 +19,11 @@ namespace Supply_Raid_Editor
 
         [Header("Faction")]
         [SerializeField] string factionPath;
+        public SR_SosigFaction faction = null;
 
         [Header("Item Categories")]
         [SerializeField] string categoryPath;
+        public SR_ItemCategory itemCategory = null;
 
         [Header("Mod Folder")]
         [SerializeField] string modPath;
@@ -60,7 +62,6 @@ namespace Supply_Raid_Editor
 
         public Sprite LoadSprite(string path)
         {
-            Log("Loading External Image at " + path);
             Texture2D tex = null;
 
             byte[] fileData;
@@ -81,6 +82,7 @@ namespace Supply_Raid_Editor
             }
             Sprite NewSprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0), 100.0f);
 
+            Log("Loaded External Image at " + path);
             return NewSprite;
         }
 
@@ -114,7 +116,7 @@ namespace Supply_Raid_Editor
             switch (loadType)
             {
                 case JSONTypeEnum.Faction:
-                    paths = StandaloneFileBrowser.OpenFilePanel("SR_Faction", modPath, "json", false);
+                    paths = StandaloneFileBrowser.OpenFilePanel("Load Faction", modPath, "json", false);
                     if (paths.Length > 0 && !paths[0].Contains("SR_Faction"))
                     {
                         LogError("Not a valid Faction, check the file name  - " + paths[0]);
@@ -123,7 +125,7 @@ namespace Supply_Raid_Editor
                     break;
 
                 case JSONTypeEnum.ItemCategory:
-                    paths = StandaloneFileBrowser.OpenFilePanel("SR_IC", modPath, "json", false);
+                    paths = StandaloneFileBrowser.OpenFilePanel("Load Item Category", modPath, "json", false);
                     if (paths.Length > 0 && !paths[0].Contains("SR_IC"))
                     {
                         LogError("Not a valid Item Category, check the file name  - " + paths[0]);
@@ -133,7 +135,7 @@ namespace Supply_Raid_Editor
 
                 case JSONTypeEnum.Character:
                 default:
-                    paths = StandaloneFileBrowser.OpenFilePanel("SR_Character", modPath, "json", false);
+                    paths = StandaloneFileBrowser.OpenFilePanel("Load Character", modPath, "json", false);
                     if (paths.Length > 0 && !paths[0].Contains("SR_Character"))
                     {
                         LogError("Not a valid Character Preset, check the file name  - " + paths[0]);
@@ -163,7 +165,7 @@ namespace Supply_Raid_Editor
                 StartCoroutine(OutputRoutine(new Uri(paths[0]).AbsoluteUri, loadType));
             }
             else
-                Log("json loading canceled");
+                Log("JSON loading canceled");
         }
 
         private IEnumerator OutputRoutine(string url, JSONTypeEnum loadType)
@@ -188,7 +190,15 @@ namespace Supply_Raid_Editor
                     //DataManager.instance.LoadFaction(url);
                     break;
                 case JSONTypeEnum.ItemCategory:
-                    //DataManager.instance.LoadItemCategory(url);
+                    LoadItemCategory(loader.text);
+                    yield return null;
+                    MenuManager.instance.itemLoaded = true;
+                    MenuManager.instance.OpenItemCategoryPanel();
+                    MenuManager.instance.RefreshItemCategory();
+
+                    url = url.Remove(url.Length - 4) + "png";
+                    url = url.Remove(0, 8);
+                    MenuManager.instance.itemThumbnail.sprite = LoadSprite(url);
                     break;
                 default:
                     break;
@@ -232,123 +242,44 @@ namespace Supply_Raid_Editor
             }
         }
 
-            /*
-            public static List<SR_ItemCategory> LoadItemCategories()
-            {
-                List<string> directories = GetItemCategoriesDirectory();
-
-                if (directories.Count == 0)
-                {
-                    Debug.LogError("No Item Categories were found!");
-                    return null;
-                }
-
-                List<SR_ItemCategory> items = new List<SR_ItemCategory>();
-
-                //Load up each of our categories
-                for (int i = 0; i < directories.Count; i++)
-                {
-                    SR_ItemCategory category;
-
-                    //Load each Category via the Directory
-                    using (StreamReader streamReader = new StreamReader(directories[i]))
-                    {
-                        string json = streamReader.ReadToEnd();
-
-                        try
-                        {
-                            category = JsonUtility.FromJson<SR_ItemCategory>(json);
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.Log(ex.Message);
-                            return null;
-                        }
-
-                        //Add to our item category pool
-                        items.Add(category);
-                        string newDirectory = directories[i];
-                        newDirectory = newDirectory.Remove(newDirectory.Length - 4) + "png";
-                        category.SetupThumbnailPath(newDirectory);
-
-                        Debug.Log("Supply Raid: Loaded Item Category " + category.name);
-                    }
-                }
-                return items;
-            }
-
-            public static List<SR_SosigFaction> LoadFactions()
-            {
-                List<string> directories = GetFactionDirectory();
-
-                if (directories.Count == 0)
-                {
-                    Debug.LogError("No Factions were found!");
-                    return null;
-                }
-
-                List<SR_SosigFaction> factions = new List<SR_SosigFaction>();
-
-                //Load up each of our categories
-                for (int i = 0; i < directories.Count; i++)
-                {
-                    SR_SosigFaction faction;
-
-                    //Load each Category via the Directory
-                    using (StreamReader streamReader = new StreamReader(directories[i]))
-                    {
-                        string json = streamReader.ReadToEnd();
-
-                        try
-                        {
-                            faction = JsonUtility.FromJson<SR_SosigFaction>(json);
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.Log(ex.Message);
-                            return null;
-                        }
-
-                        //Add to our item category pool
-                        factions.Add(faction);
-                        string newDirectory = directories[i];
-                        newDirectory = newDirectory.Remove(newDirectory.Length - 4) + "png";
-                        faction.SetupThumbnailPath(newDirectory);
-
-                        Debug.Log("Supply Raid: Loaded Faction " + faction.name);
-                    }
-                }
-                return factions;
-            }
-            */
-            public SR_CharacterPreset LoadCharacter(string json)
+        public SR_CharacterPreset LoadCharacter(string json)
         {
-            //Log("Loading Character from " + path);
-            // Load each Category via the Directory
-            //using (StreamReader streamReader = new StreamReader(path))
-            //{
-                //string json = streamReader.ReadToEnd();
+            try
+            {
+                character = JsonUtility.FromJson<SR_CharacterPreset>(json);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex.Message);
+                return null;
+            }
 
-                try
-                {
-                    character = JsonUtility.FromJson<SR_CharacterPreset>(json);
-                }
-                catch (Exception ex)
-                {
-                    DataManager.Log(ex.Message);
-                    return null;
-                }
-
-            //Add to our item category pool
-            //string newDirectory = path;
-            //newDirectory = newDirectory.Remove(newDirectory.Length - 4) + "png";
             if (character != null)
             {
                 Log("Loaded Character " + character.name);
             }
-            //}
 
             return character;
+        }
+
+        public SR_ItemCategory LoadItemCategory(string json)
+        {
+            try
+            {
+                itemCategory = JsonUtility.FromJson<SR_ItemCategory>(json);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex.Message);
+                return null;
+            }
+
+            if (itemCategory != null)
+            {
+                Log("Loaded Item Category " + itemCategory.name);
+            }
+
+            return itemCategory;
         }
 
         public List<SR_CharacterPreset> LoadCharacters()
@@ -357,7 +288,7 @@ namespace Supply_Raid_Editor
 
             if (directories.Count == 0)
             {
-                DataManager.LogError("No Characters were found!");
+                LogError("No Characters were found!");
                 return null;
             }
 

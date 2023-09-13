@@ -22,6 +22,24 @@ namespace Supply_Raid_Editor
         }
 
 
+        public void CreateNewSubObjectID()
+        {
+            MenuManager.instance.CreateNewSubObjectID();
+        }
+        public void CreateNewObjectID()
+        {
+            MenuManager.instance.CreateNewObjectID();
+        }
+
+        public void RemoveFromObjectID()
+        {
+            MenuManager.instance.DeleteObjectID(this);
+        }
+        public void RemoveFromSubObjectID()
+        {
+            MenuManager.instance.DeleteSubtractObjectID(this);
+        }
+
         public void CreateNewStartGear()
         {
             MenuManager.instance.CreateNewStartGear();
