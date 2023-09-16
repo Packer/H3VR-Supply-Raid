@@ -1,0 +1,11 @@
+{
+    "name": "Supply Raid",
+    "version_number": "0.1.0",
+    "dependencies": [
+        "nrgill28-Atlas-1.0.0",
+        "VIP-H3MP-1.8.0",
+        "nrgill28-HookGenPatcher_H3VR-1.2.3"
+    ],
+    "description": "Supply Raid Gamemode",
+    "website_url": ""
+}
