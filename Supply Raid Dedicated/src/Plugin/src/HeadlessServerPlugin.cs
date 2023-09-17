@@ -36,6 +36,7 @@ namespace H3VRMod
         private bool autoReload = true;
         private bool launched = false;
         private int lookedAtID = 0;
+        private bool cameraActive = true;
 
         public class HeadlessConfig
         {
@@ -88,7 +89,7 @@ namespace H3VRMod
             }
             else
             {
-                Debug.Log("HEADLESS SERVER: No Scene found in config, idling in main menu");
+                Log("HEADLESS SERVER: No Scene found in config, idling in main menu");
             }
 
             //Move Host out of the way
@@ -99,15 +100,12 @@ namespace H3VRMod
 
             if (!config.logEnabled)
             {
-                Debug.Log("HEADLESS SERVER: Logging disabled!");
+                Log("HEADLESS SERVER: Logging disabled!");
                 Debug.logger.logEnabled = config.logEnabled;
             }
         }
         IEnumerator HardReset()
         {
-            if (config.logEnabled == false)
-                Debug.logger.logEnabled = true;
-
             GotoMainMenu();
             yield return new WaitForSeconds(5);
             CloseServer();
@@ -122,10 +120,17 @@ namespace H3VRMod
             //Hotkeys
             ServerInput();
 
+            //Only compute when camera is active
+            if (cameraActive)
+            {
+                MovePlayer();
+                MousePointer();
+            }
+
             if (!launched)
                 return;
 
-            if (GM.CurrentPlayerBody.GetPlayerIFF() != -3)
+            if (GM.CurrentPlayerBody != null && GM.CurrentPlayerBody.GetPlayerIFF() != -3)
             {
                 //Spectator Mode
                 GM.CurrentPlayerBody.SetPlayerIFF(-3);
@@ -134,20 +139,15 @@ namespace H3VRMod
                 GM.CurrentPlayerBody.SetHealthThreshold(500000f);
             }
 
-            //Only compute when camera is active
-            if (playerCamera != null && playerCamera.enabled == true)
-            {
-                MovePlayer();
-                MousePointer();
-            }
-
             //Auto Cleanup
             if (autoCleanup && Time.time >= cleanUpTime)
                 AutoCleanup();
 
             //Scene Reload
             if (autoReload && Time.time >= sceneReloadTime)
+            {
                 ReloadScene();
+            }
         }
 
 
@@ -155,9 +155,6 @@ namespace H3VRMod
         {
             if (Input.GetKey(KeyCode.RightAlt))
             {
-                if (config.logEnabled == false)
-                    Debug.logger.logEnabled = true;
-
                 //HELP
                 if (Input.GetKeyDown(KeyCode.H))
                     HelpCommands();
@@ -169,6 +166,10 @@ namespace H3VRMod
                 //Load Config
                 if (Input.GetKeyDown(KeyCode.O))
                     LoadConfig();
+
+                //Print Scene Name
+                if (Input.GetKeyDown(KeyCode.B))
+                    PrintSceneName();
 
                 //Toggle Cameras
                 if (Input.GetKeyDown(KeyCode.P))
@@ -198,48 +199,50 @@ namespace H3VRMod
                 if (Input.GetKeyDown(KeyCode.L))
                     ToggleConsole();
 
+                //Toggle Auto Cleanup
+                if (Input.GetKeyDown(KeyCode.C))
+                    ToggleAutoCleanup();
+
+                //Toggle Auto Reload
+                if (Input.GetKeyDown(KeyCode.V))
+                    ToggleAutoSceneReload();
+
+
+
                 //View Next Player
                 if (Input.GetKeyDown(KeyCode.G))
                     LookAtNextPlayer();
-
-                if (config.logEnabled == false)
-                Debug.logger.logEnabled = false;
             }
 
         }
 
         void HelpCommands()
         {
-            if (config.logEnabled == false)
-                Debug.logger.logEnabled = true;
-
-            Debug.Log("---(Unofficial) H3MP Headless Server Hotkeys---");
-            Debug.Log("Right Alt + H - Show Commands in Console");
-            Debug.Log("Right Alt + L - Toggle Logging in Console");
-            Debug.Log("------------------------------");
-            Debug.Log("Right Alt + O - Reload Config");
-            Debug.Log("Right Alt + X - Toggle Server On/Off");
-            Debug.Log("Right Alt + R - Automatic Hard Reset");
-            Debug.Log("Right Alt + T - Load Main Menu");
-            Debug.Log("Right Alt + Y - Load/Reload Scene");
-            Debug.Log("Right Alt + P - Toggle Cameras");           
-            Debug.Log("------------------------------");
-            Debug.Log("Right Alt + A - Clean up All");
-            Debug.Log("Right Alt + S - Clean up Mags");
-            Debug.Log("------------------------------");
-            Debug.Log("Right Alt + C - Toggle Auto Cleanup");
-            Debug.Log("Right Alt + V - Toggle Scene Reload");
-            Debug.Log("------------------------------");
-            Debug.Log("Right Alt + G        - View next player");
-            Debug.Log("------------------------------");
-            Debug.Log("WASD                 - Move Camera");
-            Debug.Log("Mouse Left / Right   - Turn Camera");
-            Debug.Log("Mouse Left Click     - Click Button/Object");
-            Debug.Log("Mouse Scroll         - Speed camera up/down");
-
-            if (config.logEnabled == false)
-                Debug.logger.logEnabled = false;
-
+            Log("-----------HEADLESS SERVER HOTKEYS------------");
+            Log("Right Alt + H - Show Commands in Console");
+            Log("Right Alt + L - Toggle Logging in Console");
+            Log("----------------------------------------------");
+            Log("Right Alt + O - Reload Config");
+            Log("Right Alt + X - Toggle Server On/Off");
+            Log("Right Alt + R - Automatic Hard Reset");
+            Log("Right Alt + T - Load Main Menu");
+            Log("Right Alt + Y - Load/Reload Scene");
+            Log("Right Alt + B - Print Current Scene Name ");
+            Log("Right Alt + P - Toggle Cameras");
+            Log("----------------------------------------------");
+            Log("Right Alt + A - Clean up All");
+            Log("Right Alt + S - Clean up Mags");
+            Log("----------------------------------------------");
+            Log("Right Alt + C - Toggle Auto Cleanup");
+            Log("Right Alt + V - Toggle Scene Reload");
+            Log("----------------------------------------------");
+            Log("Right Alt + G - View next player");
+            Log("----------------------------------------------");
+            Log("WASD                 - Move Camera");
+            Log("Mouse Left / Right   - Turn Camera");
+            Log("Mouse Left Click     - Click Button/Object");
+            Log("Mouse Scroll         - Speed camera up/down");
+            Log("----------------------------------------------");
         }
 
         /*
@@ -252,6 +255,9 @@ namespace H3VRMod
 
         void LookAtNextPlayer()
         {
+            if (Mod.managerObject == null || GameManager.players == null || GameManager.players.Count <= 1)
+                return;
+
             int[] playerArray = new int[GameManager.players.Count];
 
             int i = 0;
@@ -283,10 +289,30 @@ namespace H3VRMod
 
         }
 
+        void PrintSceneName()
+        {
+            Log(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        }
+
+        void ToggleAutoCleanup()
+        {
+            autoCleanup = !autoCleanup;
+            cleanUpTime = Time.time + config.autoCleanupTime;
+            Log("HEADLESS SERVER: Auto Cleanup Enabled: " + autoCleanup);
+        }
+
+        void ToggleAutoSceneReload()
+        {
+            autoReload = !autoReload;
+            sceneReloadTime = Time.time + config.autoSceneReloadTime;
+            Log("HEADLESS SERVER: Auto Scene Reload Enabled: " + autoReload);
+        }
+
+
         void ToggleConsole()
         {
             config.logEnabled = !config.logEnabled;
-            Debug.Log("HEADLESS SERVER: Console set to " + config.logEnabled);
+            Log("HEADLESS SERVER: Console set to " + config.logEnabled);
         }
 
         void ToggleServer()
@@ -299,9 +325,6 @@ namespace H3VRMod
 
         void GotoMainMenu()
         {
-            //Reenable log
-            Debug.logger.logEnabled = true;
-
             SM.PlayGlobalUISound((SM.GlobalUISound)1, GM.CurrentPlayerRoot.position);
             SteamVR_LoadLevel.Begin("MainMenu3", false, 0.5f, 0f, 0f, 0f, 1f);
         }
@@ -310,7 +333,7 @@ namespace H3VRMod
         {
             if (config.sceneName != "")
             {
-                Debug.Log("HEADLESS SERVER: Loading Scene");
+                Log("HEADLESS SERVER: Loading Scene");
                 SM.PlayGlobalUISound((SM.GlobalUISound)3, GM.CurrentPlayerRoot.position);
 
                 CustomSceneInfo? info = AtlasPlugin.GetCustomScene(config.sceneName);
@@ -321,22 +344,23 @@ namespace H3VRMod
             }
             else
             {
-                Debug.Log("HEADLESS SERVER: - No scene defined in config");
+                Log("HEADLESS SERVER: - No scene defined in config");
                 SM.PlayGlobalUISound((SM.GlobalUISound)3, GM.CurrentPlayerRoot.position);
             }
         }
+
 
         void ReloadScene()
         {
             if (config.autoSceneReloadTime <= 0 || config.sceneName == "")
                 return;
 
-            SM.PlayGlobalUISound((SM.GlobalUISound)1, GM.CurrentPlayerRoot.position);
+            SM.PlayGlobalUISound(0, GM.CurrentPlayerRoot.position);
 
             sceneReloadTime = Time.time + config.autoSceneReloadTime;
 
-            Debug.Log("HEADLESS SERVER: Reloading scene " + config.sceneName);
-
+            Log("HEADLESS SERVER: Automatic Scene Reload: " + config.sceneName + " | Next reload in (Secs)" + config.autoSceneReloadTime);
+            
             LoadScene();
         }
 
@@ -357,7 +381,7 @@ namespace H3VRMod
             Mod.OnHostClicked();
 
             serverActive = true;
-            Debug.Log("HEADLESS SERVER: Server Started");
+            Log("HEADLESS SERVER: Server Started");
         }
 
         void CloseServer()
@@ -372,7 +396,7 @@ namespace H3VRMod
             Server.Close();
 
             serverActive = false;
-            Debug.Log("HEADLESS SERVER: Server Closed");
+            Log("HEADLESS SERVER: Server Closed");
         }
 
         void AutoCleanup()
@@ -384,7 +408,8 @@ namespace H3VRMod
 
             CleanUpScene_AllMags();
             CleanUpScene_All();
-            Debug.LogError("HEADLESS SERVER: Automatic Server Cleanup, next clean up in (Secs)" + config.autoCleanupTime);
+            SM.PlayGlobalUISound((SM.GlobalUISound)0, GM.CurrentPlayerRoot.position);
+            Log("HEADLESS SERVER: Automatic Server Cleanup, next clean up in (Secs)" + config.autoCleanupTime);
         }
 
 
@@ -409,11 +434,11 @@ namespace H3VRMod
                     try
                     {
                         config = JsonUtility.FromJson<HeadlessConfig>(json);
-                        Debug.Log("HEADLESS SERVER: Loaded Config");
+                        Log("HEADLESS SERVER: Loaded Config");
                     }
                     catch (Exception ex)
                     {
-                        Debug.Log(ex.Message);
+                        Log(ex.Message);
                     }
                 }
             }
@@ -427,65 +452,94 @@ namespace H3VRMod
             autoCleanup = config.autoCleanupTime > 0 ? true : false;
             autoReload = config.autoSceneReloadTime > 0 ? true : false;
 
-
-            Debug.Log("HEADLESS SERVER: Cleanup Timer:" + cleanUpTime + " | Scene Reload Time: " + sceneReloadTime);
+            Log("HEADLESS SERVER CONFIG: " +
+                "\nAuto Start:" + config.autoStart +
+                "\nLog Enabled:" + config.logEnabled +
+                "\nScene Name:" + config.sceneName +
+                "\nCleanup Timer:" + cleanUpTime + 
+                "\nScene Reload Time: " + sceneReloadTime);
         }
 
         void MousePointer()
         {
             if (Input.GetMouseButtonDown(0))
             {
+
+                if (Camera.main == null)
+                    return;
+
                 // Create a ray from the camera to the mouse position
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
                 // Create a RaycastHit variable to store information about the hit
                 RaycastHit hit;
 
+                //LayerMask mask = LayerMask.NameToLayer("UI");
+
                 // Perform the raycast
                 if (Physics.Raycast(ray, out hit))
                 {
                     // Check if the raycast hit a GameObject with a collider
-                    if (hit.collider != null)
+                    if (hit.collider != null && hit.collider.gameObject != null)
                     {
-                        // You can now access information about the hit object, e.g., hit.transform
-                        // Do something with the hit object here
-                        Debug.Log("Hit object: " + hit.transform.name);
-
+                        //Pointable Buttons -----------
                         FVRPointableButton btn = hit.collider.gameObject.GetComponent<FVRPointableButton>();
-                        Button btnUI = btn.GetComponent<Button>();
 
-                        if (btnUI == null)
+                        //UI elements -----------------
+                        bool useUI = true;
+                        Button btnUI = hit.collider.gameObject.GetComponent<Button>();
+                        if (btnUI != null)
+                            useUI = false;  //Probably works without this
+
+
+                        //Check parent for Pointable
+                        if (hit.collider.transform.parent != null && hit.collider.transform.parent.gameObject != null)
                         {
-                            if (hit.collider.transform.parent != null)
-                                btnUI = hit.collider.transform.parent.gameObject.GetComponent<Button>();
-
-                        }
-
-                        if (btn == null)
-                        {
-                            if(hit.collider.transform.parent != null)
+                            if (btn == null)
                                 btn = hit.collider.transform.parent.gameObject.GetComponent<FVRPointableButton>();
+
+                            if (btnUI == null)
+                                btnUI = hit.collider.transform.parent.gameObject.GetComponent<Button>();
                         }
 
-                        if (btn == null)
+
+                        //Check Children
+                        if (hit.collider.transform.childCount > 0)
                         {
-                            if (hit.collider != null && hit.collider.transform != null)
+                            if (btn == null)
                             {
-                                for (int i = 0; i < hit.collider.transform.childCount; i++)
+                                if (hit.collider != null && hit.collider.transform != null)
                                 {
-                                    btn = hit.collider.transform.GetChild(i).GetComponent<FVRPointableButton>();
-                                    if (btn != null)
-                                        break;
+                                    for (int i = 0; i < hit.collider.transform.childCount; i++)
+                                    {
+                                        Transform child = hit.collider.transform.GetChild(i);
+                                        btn = child.GetComponent<FVRPointableButton>();
+                                        if (btn != null)
+                                            break;
+                                    }
+                                }
+                            }
+
+                            if (btnUI == null)
+                            {
+                                if (hit.collider != null && hit.collider.transform != null)
+                                {
+                                    for (int i = 0; i < hit.collider.transform.childCount; i++)
+                                    {
+                                        Transform child = hit.collider.transform.GetChild(i);
+                                        btnUI = child.GetComponent<Button>();
+                                        if (btnUI != null)
+                                            break;
+                                    }
                                 }
                             }
                         }
 
-                        if (btn != null)
-                        {
+                        //Invoke
+                        if (btn != null && btn.Button != null && btn.Button.onClick != null)
                             btn.Button.onClick.Invoke();
-                        }
 
-                        if(btnUI != null)
+                        if(btnUI != null && useUI && btnUI.onClick != null)
                             btnUI.onClick.Invoke();
                     }
                 }
@@ -494,6 +548,9 @@ namespace H3VRMod
 
         void MovePlayer()
         {
+            if (GM.CurrentMovementManager == null || GM.CurrentPlayerBody == null)
+                return;
+
             speed = Mathf.Clamp(speed + Input.mouseScrollDelta.y, 0.01f, 100f);
 
             GM.CurrentMovementManager.Mode = FVRMovementManager.MovementMode.Teleport;
@@ -648,16 +705,18 @@ namespace H3VRMod
                 if(i == 0)
                     playerCamera = cameras[i];
 
-                //Debug.Log("Setting camera " + i);
+                //Log("Setting camera " + i);
                 cameras[i].enabled = cameraSet;
             }
 
-            Debug.Log("HEADLESS SERVER: Cameras set to " + set);
+            cameraActive = set;
+
+            Log("HEADLESS SERVER: Cameras set to " + set);
         }
 
         public void CleanUpScene_AllMags()
         {
-            Debug.Log("HEADLESS SERVER: Cleaning all Magazines");
+            Log("HEADLESS SERVER: Cleaning all Magazines");
             SM.PlayGlobalUISound(SM.GlobalUISound.Beep, transform.position);
 
             FVRFireArmMagazine[] magazines = FindObjectsOfType<FVRFireArmMagazine>();
@@ -694,9 +753,19 @@ namespace H3VRMod
             }
         }
 
+        void Log(string log)
+        {
+            Debug.logger.logEnabled = true;
+
+            Debug.Log(log);
+
+            if (config.logEnabled == false)
+                Debug.logger.logEnabled = false;
+        }
+
         public void CleanUpScene_All()
         {
-            Debug.Log("HEADLESS SERVER: Cleaning all Spawnables");
+            Log("HEADLESS SERVER: Cleaning all Spawnables");
 
             SM.PlayGlobalUISound(SM.GlobalUISound.Beep, transform.position);
             VaultSystem.ClearExistingSaveableObjects(true);
