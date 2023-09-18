@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eb555920dd7b8044976315b59a6ad4e, type: 3}
+  m_Name: Character_BasicBarry
+  m_EditorClassIdentifier: 
+  name: Character Name
+  description: Basic Setup for Mr Barry
+  category: Packer
+  thumbnailPath: icon.png
+  points: 3
+  pointsPerLevel: 1
+  factionName: 
+  startGearCategories:
+  - 
+  purchaseCategories:
+  - name: Pistols
+    itemCategoryName: 
+    index: -1
+    cost: 2
+  - name: SMG
+    itemCategoryName: 
+    index: -1
+    cost: 3
+  - name: Assault Rifles
+    itemCategoryName: 
+    index: -1
+    cost: 4
+  - name: Battle Rifles
+    itemCategoryName: 
+    index: -1
+    cost: 5
+  - name: Sniper
+    itemCategoryName: 
+    index: -1
+    cost: 3
+  - name: Anti Material Sniper
+    itemCategoryName: 
+    index: -1
+    cost: 9
+  - name: Melee
+    itemCategoryName: 
+    index: -1
+    cost: 1
+  - name: Shields
+    itemCategoryName: 
+    index: -1
+    cost: 1
+  - name: Grenades
+    itemCategoryName: 
+    index: -1
+    cost: 1
+  - name: Health
+    itemCategoryName: 
+    index: -1
+    cost: 1
+  - name: Range Finder
+    itemCategoryName: 
+    index: -1
+    cost: 1
+  - name: Grapple Hook
+    itemCategoryName: 
+    index: -1
+    cost: 1
+  - name: Silencers
+    itemCategoryName: 
+    index: -1
+    cost: 2
+  - name: All Firearms
+    itemCategoryName: 
+    index: -1
+    cost: 12
+  - name: LMG
+    itemCategoryName: 
+    index: -1
+    cost: 7
+  - name: MMG
+    itemCategoryName: 
+    index: -1
+    cost: 8
+  - name: Shotguns
+    itemCategoryName: 
+    index: -1
+    cost: 3
+  - name: RPG
+    itemCategoryName: 
+    index: -1
+    cost: 7
+  - name: Backpack
+    itemCategoryName: 
+    index: -1
+    cost: 2

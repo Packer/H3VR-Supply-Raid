@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6856d843bc8b464489dad3a264495ea3, type: 3}
+  m_Name: Faction_MetalGear
+  m_EditorClassIdentifier: 
+  title: Foxhound
+  description: METAL GRILL SAUSAGE
+  thumbnail: {fileID: 21300000, guid: 98f3f8486fc31a64a8a0a66f8751f027, type: 3}
+  category: Mod
+  teamID: 1
+  levels:
+  - name: 1
+    enemiesTotal: 6
+    guardCount: 0
+    guardPool: 
+    sniperCount: 0
+    sniperPool: 
+    minPatrolSize: 2
+    patrolPool: 14050000
+    squadTeamRandomized: 1
+    squadCount: 1
+    squadSizeMin: 0
+    squadSizeMax: 0
+    squadBehaviour: 1
+    squadPool: 
+  - name: 2
+    enemiesTotal: 7
+    guardCount: 0
+    guardPool: 16050000
+    sniperCount: 0
+    sniperPool: 
+    minPatrolSize: 2
+    patrolPool: 1805000019050000
+    squadTeamRandomized: 1
+    squadCount: 1
+    squadSizeMin: 0
+    squadSizeMax: 0
+    squadBehaviour: 0
+    squadPool: 
+  - name: 3
+    enemiesTotal: 8
+    guardCount: 0
+    guardPool: 16050000
+    sniperCount: 0
+    sniperPool: 
+    minPatrolSize: 2
+    patrolPool: 1805000019050000
+    squadTeamRandomized: 1
+    squadCount: 1
+    squadSizeMin: 0
+    squadSizeMax: 0
+    squadBehaviour: 0
+    squadPool: 
+  - name: 4
+    enemiesTotal: 8
+    guardCount: 0
+    guardPool: 16050000
+    sniperCount: 0
+    sniperPool: 1d050000
+    minPatrolSize: 2
+    patrolPool: 1605000017050000
+    squadTeamRandomized: 1
+    squadCount: 1
+    squadSizeMin: 0
+    squadSizeMax: 0
+    squadBehaviour: 0
+    squadPool: 
+  - name: 5
+    enemiesTotal: 12
+    guardCount: 0
+    guardPool: 16050000
+    sniperCount: 0
+    sniperPool: 1d050000
+    minPatrolSize: 2
+    patrolPool: 1605000017050000
+    squadTeamRandomized: 1
+    squadCount: 1
+    squadSizeMin: 0
+    squadSizeMax: 0
+    squadBehaviour: 0
+    squadPool: 
+  - name: 6
+    enemiesTotal: 24
+    guardCount: 0
+    guardPool: 16050000
+    sniperCount: 0
+    sniperPool: 1d050000
+    minPatrolSize: 2
+    patrolPool: 1605000017050000
+    squadTeamRandomized: 1
+    squadCount: 1
+    squadSizeMin: 0
+    squadSizeMax: 0
+    squadBehaviour: 0
+    squadPool: 
+  endless: []

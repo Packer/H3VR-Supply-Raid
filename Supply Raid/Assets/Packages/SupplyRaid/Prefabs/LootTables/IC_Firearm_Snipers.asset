@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a385d23a0333544ebfd1f3f5b95b71e, type: 3}
+  m_Name: IC_Firearm_Snipers
+  m_EditorClassIdentifier: Assembly-CSharp:SupplyRaid:SR_ItemCategory
+  name: Snipers
+  thumbnail: {fileID: 21300000, guid: 6b75ae24a61ea0f469937398a40a76d0, type: 3}
+  minCapacity: -1
+  objectID: []
+  type: 0
+  eras: 0700000006000000
+  sizes: 030000000400000005000000
+  actions: 0200000006000000
+  modes: 
+  excludeModes: 0300000001000000
+  feedoptions: 
+  mounts: 01000000
+  roundPowers: 0400000005000000
+  features: 02000000
+  meleeStyles: 
+  meleeHandedness: 
+  powerupTypes: 
+  thrownTypes: 
+  subtractionID: []
