@@ -6,14 +6,14 @@ using System.Linq;
 
 namespace SupplyRaid
 {
-	public class SR_AmmoSpawner : MonoBehaviour
+    public class SR_AmmoSpawner : MonoBehaviour
     {
         public Transform Spawnpoint_Round;
         public Transform ScanningVolume;
         public LayerMask ScanningLM;
 
-        public bool[] purchased =  new bool[28];    //Ammo Enum Length
-        public GameObject[] ammoTypeButtons =  new GameObject[28];    //Ammo Enum Length
+        public bool[] purchased = new bool[28];    //Ammo Enum Length
+        public GameObject[] ammoTypeButtons = new GameObject[28];    //Ammo Enum Length
 
         public AmmoEnum selectedAmmoType = AmmoEnum.Standard;
         public FireArmRoundClass roundClass = FireArmRoundClass.FMJ;
@@ -84,7 +84,7 @@ namespace SupplyRaid
                         {
                             //Spawn the Ammo
                             FVRObject roundSelfPrefab = AM.GetRoundSelfPrefab(ammoList[x].roundType, ammoList[x].roundClasses[y].roundClass);
-                            if(roundSelfPrefab != null)
+                            if (roundSelfPrefab != null)
                                 Instantiate(roundSelfPrefab.GetGameObject(), Spawnpoint_Round.position + Vector3.up * x * 0.1f, Spawnpoint_Round.rotation);
                         }
                     }
@@ -333,7 +333,7 @@ namespace SupplyRaid
             //Rounds
             for (int i = 0; i < m_roundTypes.Count; i++)
             {
-                if(!allRoundTypes.Contains(m_roundTypes[i]))
+                if (!allRoundTypes.Contains(m_roundTypes[i]))
                     allRoundTypes.Add(m_roundTypes[i]);
             }
 
@@ -350,7 +350,7 @@ namespace SupplyRaid
                 if (!allRoundTypes.Contains(m_detectedClips[j].RoundType))
                     allRoundTypes.Add(m_detectedClips[j].RoundType);
             }
-            
+
             //SpeedLoaders
             for (int k = 0; k < m_detectedSLs.Count; k++)
             {
@@ -422,7 +422,7 @@ namespace SupplyRaid
             Debug.Log("Update Display Btns");
             for (int i = 0; i < ammoTypeButtons.Length; i++)
             {
-                if(ammoTypeButtons[i] != null)
+                if (ammoTypeButtons[i] != null)
                     ammoTypeButtons[i].SetActive(false);
             }
 

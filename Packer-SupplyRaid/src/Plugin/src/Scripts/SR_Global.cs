@@ -373,8 +373,8 @@ namespace SupplyRaid
                 case FireArmRoundClass.Subsonic_AP:
                     return AmmoEnum.Subsonic_AP;
 
-                case FireArmRoundClass.Subsonic_JHP:
-                    return AmmoEnum.Subsonic_JHP;
+                //case FireArmRoundClass.Subsonic_JHP:
+                //    return AmmoEnum.Subsonic_JHP;
 
                 //----SHELLS---------------------------
 
@@ -415,12 +415,12 @@ namespace SupplyRaid
                 case FireArmRoundClass.M430A1:
                 case FireArmRoundClass.RLV_HEF:
                 case FireArmRoundClass.RLV_HEFJ:
-                case FireArmRoundClass.a35x32_HE:
-                case FireArmRoundClass.a35x32_HEDP:
-                case FireArmRoundClass.a35x32_INCEN:
-                case FireArmRoundClass.a84mm_HE441B:
-                case FireArmRoundClass.a84mm_HEAT751:
-                case FireArmRoundClass.a84mm_HEDP502:
+                //case FireArmRoundClass.a35x32_HE:
+                //case FireArmRoundClass.a35x32_HEDP:
+                //case FireArmRoundClass.a35x32_INCEN:
+                //case FireArmRoundClass.a84mm_HE441B:
+                //case FireArmRoundClass.a84mm_HEAT751:
+                //case FireArmRoundClass.a84mm_HEDP502:
                     return AmmoEnum.GrenadeHE;
 
                 case FireArmRoundClass.M576_MPAPERS:
@@ -432,18 +432,18 @@ namespace SupplyRaid
                 case FireArmRoundClass.RLV_SMK:
                 case FireArmRoundClass.RLV_SF1:
                 case FireArmRoundClass.RLV_TPM:
-                case FireArmRoundClass.a35x32_SMOKE:
-                case FireArmRoundClass.a84mm_SMOKE469C:
+                //case FireArmRoundClass.a35x32_SMOKE:
+                //case FireArmRoundClass.a84mm_SMOKE469C:
                     return AmmoEnum.GrenadeSmoke;
 
                 //----Generic---------------------------
 
                 case FireArmRoundClass.DSM_Volt:
                 case FireArmRoundClass.DSM_Mag:
-                case FireArmRoundClass.a65_APDS:
-                case FireArmRoundClass.a65_Frangible:
-                case FireArmRoundClass.a65_HET:
-                case FireArmRoundClass.a65_HP:
+                //case FireArmRoundClass.a65_APDS:
+                //case FireArmRoundClass.a65_Frangible:
+                //case FireArmRoundClass.a65_HET:
+                //case FireArmRoundClass.a65_HP:
                 case FireArmRoundClass.MF13g_Buck:
                 case FireArmRoundClass.MF13g_Slugger:
                 case FireArmRoundClass.MF13g_Blooper:
@@ -508,7 +508,7 @@ namespace SupplyRaid
                 case FireArmRoundClass.MFFlareDangerClose:
                 case FireArmRoundClass.MFFlareSunburn:
                 case FireArmRoundClass.MFFlareConflagration:
-                case FireArmRoundClass.a84mm_ILLUM545C:
+                //case FireArmRoundClass.a84mm_ILLUM545C:
                     return AmmoEnum.Flare;
 
                 case FireArmRoundClass.KS23_Flash:

@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net35</TargetFramework>
         <LangVersion>9</LangVersion>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     
@@ -15,8 +15,17 @@
     </ItemGroup>
     
     <ItemGroup>
+      <Reference Include="Atlas">
+        <HintPath>..\..\..\Supply Raid Dedicated\src\libs\Atlas.dll</HintPath>
+      </Reference>
+      <Reference Include="H3MP">
+        <HintPath>..\..\..\Supply Raid Dedicated\src\libs\H3MP.dll</HintPath>
+      </Reference>
       <Reference Include="MMHOOK_Assembly-CSharp">
         <HintPath>..\libs\MMHOOK_Assembly-CSharp.dll</HintPath>
+      </Reference>
+      <Reference Include="Sodalite">
+        <HintPath>..\libs\Sodalite.dll</HintPath>
       </Reference>
     </ItemGroup>
 
