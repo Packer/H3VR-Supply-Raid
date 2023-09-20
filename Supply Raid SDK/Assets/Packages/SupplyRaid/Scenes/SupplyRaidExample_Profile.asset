@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PackageName: SupplyRaidExample
   Author: Packer
-  Version: 0.1.0
+  Version: 0.1.1
   Icon: {fileID: 2800000, guid: faa5af54481d5a74085e3764f0b080ba, type: 3}
   ReadMe: {fileID: 102900000, guid: 3634afcb0e997034ab39e6154341f430, type: 3}
   WebsiteURL: 
@@ -30,4 +30,4 @@ MonoBehaviour:
   BuildItems:
   - {fileID: 11400000, guid: 9dae6755624a75e408bb6549abaa74b8, type: 2}
   BuildAction: 1
-  OutputProfile: C:/Users/glenn/AppData/Roaming/r2modmanPlus-local/H3VR/profiles/MeatKit-Development
+  OutputProfile: C:/Users/glenn/AppData/Roaming/r2modmanPlus-local/H3VR/profiles/SR-SDK-Test

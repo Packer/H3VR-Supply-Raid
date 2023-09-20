@@ -164,6 +164,7 @@ namespace SupplyRaid
             return table;
         }
 
+        [System.Serializable]
         public class ObjectGroup
         {
             public string name;

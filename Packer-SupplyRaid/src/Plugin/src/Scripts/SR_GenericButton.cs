@@ -20,9 +20,15 @@ namespace SupplyRaid
         public void SelectCharacter()
         {
             if (SR_Manager.instance.characters.Count > 0)
+            {
                 SR_Manager.instance.character = SR_Manager.instance.characters[index];
+                SR_Manager.PlayConfirmSFX();
+            }
             else
+            {
+                SR_Manager.PlayErrorSFX();
                 return;
+            }
 
             SR_Menu.instance.UpdateCharacter();
 
@@ -36,16 +42,19 @@ namespace SupplyRaid
         public void SelectCharacterCategory()
         {
             go.GetComponent<SR_Menu>().OpenCharacterCategory(index);
+            SR_Manager.PlayConfirmSFX();
         }
 
         public void SelectFactionCategory()
         {
             go.GetComponent<SR_Menu>().OpenFactionCategory(index);
+            SR_Manager.PlayConfirmSFX();
         }
 
         public void SelectFaction()
         {
             SR_Manager.instance.faction = SR_Manager.instance.factions[index];
+            SR_Manager.PlayConfirmSFX();
             SR_Menu.instance.UpdateFaction();
         }
 
@@ -80,19 +89,19 @@ namespace SupplyRaid
 
         public void TryBuyAmmo()
         {
-            SR_AmmoSpawner spawner = go.GetComponent<SR_AmmoSpawner>();
-
-            if (spawner == null)
+            if (SR_AmmoSpawner.instance == null)
                 return;
 
             //Try Buy
-            if (spawner.purchased[index] == false)
+            if (SR_AmmoSpawner.instance.purchased[index] == false)
             {
                 if (SR_Manager.EnoughPoints(SR_Manager.instance.character.ammoUpgradeCost[index]))
                 {
                     if (SR_Manager.SpendPoints(SR_Manager.instance.character.ammoUpgradeCost[index]))
                     {
-                        spawner.purchased[index] = true;
+                        SR_AmmoSpawner.instance.purchased[index] = true;
+                        text.text = ""; //Blank Cost because we own it
+
                         SR_Manager.PlayPointsGainSFX();
                     }
                 }
@@ -104,11 +113,12 @@ namespace SupplyRaid
             }
 
             //Set Ammo Type
-            if(spawner.purchased[index])
+            if(SR_AmmoSpawner.instance.purchased[index])
             {
                 SR_Manager.PlayConfirmSFX();
                 //SetAmmoType
-                bool set = spawner.SetAmmoType((AmmoEnum)index);
+                Debug.Log("Setting Via Button");
+                SR_AmmoSpawner.instance.SetAmmoType((AmmoEnum)index);
             }
         }
 

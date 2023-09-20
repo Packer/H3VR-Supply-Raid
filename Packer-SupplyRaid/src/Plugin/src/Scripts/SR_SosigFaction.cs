@@ -71,7 +71,9 @@ namespace SupplyRaid
         [Header("Defenders")]
 
         [Tooltip("The total sosig count for this entire level")]
-        public int enemiesTotal = 5;    //Per Player
+        public int enemiesTotal = 5;    //max overall enemies
+        public bool infiniteEnemies = false;    //If true, enemies will spawn up to onscreen or Total (Whatever is lowest)
+        public float enemySpawnTimer = 1;   //How often enemies spawn through the rabbit hole system
 
         [Space]
         [Header("Guards")]

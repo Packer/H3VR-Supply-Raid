@@ -7,6 +7,8 @@ namespace SupplyRaid
 
     public class SR_ModTable : MonoBehaviour
     {
+        public static SR_ModTable instance;
+
         [Header("Scanning")]
         private Collider[] colbuffer;
         private float m_scanTick = 1f;
@@ -23,7 +25,6 @@ namespace SupplyRaid
         [System.Serializable]
         public class TableButton
         {
-            public int cost = 1;
             public SR_GenericButton button;
             [HideInInspector]public LootTable attachmentTable;
         }
@@ -40,8 +41,18 @@ namespace SupplyRaid
 
         private void Start()
         {
+            instance = this;
             colbuffer = new Collider[50];
         }
+
+        public void Setup()
+        {
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                buttons[i].button.text.text = SR_Manager.instance.character.attachmentsCost[i].ToString();
+            }
+        }
+
         private void Update()
         {
             m_scanTick -= Time.deltaTime;
@@ -99,7 +110,7 @@ namespace SupplyRaid
         public void BuyAttachment(int i)
         {
             //Price check TODO SET THIS UP
-            if (!SR_Manager.EnoughPoints(buttons[i].cost))
+            if (!SR_Manager.EnoughPoints(SR_Manager.instance.character.attachmentsCost[i]))
             {
                 SR_Manager.PlayFailSFX();
                 return;
@@ -107,7 +118,7 @@ namespace SupplyRaid
 
             if (SR_Global.SpawnLoot(buttons[i].attachmentTable, null, spawnPoints))
             {
-                SR_Manager.SpendPoints(buttons[i].cost);
+                SR_Manager.SpendPoints(SR_Manager.instance.character.attachmentsCost[i]);
                 SR_Manager.PlayConfirmSFX();
                 return;
             }
@@ -117,14 +128,13 @@ namespace SupplyRaid
 
         void UpdateButtons()
         {
-
             //Table Generation
             List<FVRObject.OTagAttachmentFeature> desiredFeature = new List<FVRObject.OTagAttachmentFeature>();
 
             for (int i = 0; i < buttons.Length; i++)
             {
                 //Ignore None and Decorations
-                if (i == 0 || i == 9)
+                if (i == 0 || SR_Manager.instance.character.attachmentsCost[i] < 0)
                     continue;
 
                 desiredFeature.Clear();
@@ -142,7 +152,7 @@ namespace SupplyRaid
                 {
                     buttons[i].button.gameObject.SetActive(true);
                     buttons[i].button.index = i;
-                    buttons[i].button.text.text = buttons[i].cost.ToString();
+                    buttons[i].button.text.text = SR_Manager.instance.character.attachmentsCost[i].ToString();
                 }
                 else
                     buttons[i].button.gameObject.SetActive(false);

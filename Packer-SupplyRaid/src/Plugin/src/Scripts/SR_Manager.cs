@@ -356,6 +356,12 @@ namespace SupplyRaid
             //Show Game Panels
             SetGamePanels(true);
 
+            //Setup Ammo Type Prices
+            SR_AmmoSpawner.instance.Setup();
+
+            //Setup Attachment Prices
+            SR_ModTable.instance.Setup();
+
             //Set Starting Supply ID as Host
             SetupSupplyPoints();
 
@@ -565,7 +571,7 @@ namespace SupplyRaid
             CapturesTotal++;
 
             //Game Complete?
-            if (optionCaptures != -1 && CapturesTotal >= optionCaptures)
+            if (optionCaptures > 0 && CapturesTotal >= optionCaptures)
             {
                 stats.ObjectiveComplete = true;
                 CompleteGame();
@@ -641,12 +647,32 @@ namespace SupplyRaid
         /// <param name="state"></param>
         void SetGamePanels(bool state)
         {
-            buyMenu.gameObject.SetActive(state);
-            ammoStation.gameObject.SetActive(state);
-            recycler.gameObject.SetActive(state);
-            duplicator.gameObject.SetActive(state);
+            if (character.disableBuyMenu)
+                buyMenu.gameObject.SetActive(false);
+            else
+                buyMenu.gameObject.SetActive(state);
+
+            if (character.disableAmmoTable)
+                ammoStation.gameObject.SetActive(false);
+            else
+                ammoStation.gameObject.SetActive(state);
+
+            if(character.disableRecycler)
+                recycler.gameObject.SetActive(false);
+            else
+                recycler.gameObject.SetActive(state);
+
+            if (character.disableDuplicator)
+                duplicator.gameObject.SetActive(false);
+            else
+                duplicator.gameObject.SetActive(state);
+
+            if (character.disableModtable)
+                attachmentStation.gameObject.SetActive(false);
+            else
+                attachmentStation.gameObject.SetActive(state);
+
             spawnMenu.gameObject.SetActive(state);
-            attachmentStation.gameObject.SetActive(state);
             srMenu.gameObject.SetActive(!state);
         }
 
@@ -747,24 +773,24 @@ namespace SupplyRaid
                 //Clear All Sosigs
                 ClearSosigs();
 
-                Debug.Log("Supply Raid: Post Clear + Points");
+                //Debug.Log("Supply Raid: Post Clear + Points");
             }
 
             //Cap at max character level
             if (!inEndless && CurrentLevel + 1 < faction.levels.Length)
             {
-                Debug.Log("Supply Raid: level Increase");
+                //Debug.Log("Supply Raid: level Increase");
                 CurrentLevel++;
             }
             else if (!inEndless && faction.endless.Length <= 0)
             {
                 //Endless not setup - Reuse last level
                 CurrentLevel = faction.levels.Length - 1;
-                Debug.Log("Supply Raid: No Endless");
+                //Debug.Log("Supply Raid: No Endless");
             }
             else
             {
-                Debug.Log("Supply Raid: Endless");
+                //Debug.Log("Supply Raid: Endless");
                 //ENDLESS
                 if (!inEndless) //Not in endless yet
                 {
@@ -785,7 +811,7 @@ namespace SupplyRaid
                 GivePlayerLevelPoints();
             }
 
-            Debug.Log("Supply Raid: Post Current level Change");
+            //Debug.Log("Supply Raid: Post Current level Change");
 
             //Set player Supply to old attack position, unless forced static
             if (!forceStaticPlayerSupplyPoint)
@@ -813,22 +839,15 @@ namespace SupplyRaid
                     attackSupplyID = supplyOrder[supplyOrderIndex];
                 }
 
-                Debug.Log("Supply Raid: Post Supply Setup");
+                //Debug.Log("Supply Raid: Post Supply Setup");
 
                 //Update Capture Zone
                 captureZone.MoveCaptureZone(AttackSupplyPoint().captureZone.position, AttackSupplyPoint().captureZone.localScale);
 
-                if (inEndless)
-                {
-                    SetupSquadSosigs(faction.endless[CurrentLevel]);
-                    StartCoroutine(SetupDefenderSosigs(faction.endless[CurrentLevel]));
-                }
-                else
-                {
-                    SetupSquadSosigs(faction.levels[CurrentLevel]);
-                    StartCoroutine(SetupDefenderSosigs(faction.levels[CurrentLevel]));
-                }
-                Debug.Log("Supply Raid: Post Sosig Setup");
+                SetupSquadSosigs(GetCurrentLevel());
+                StartCoroutine(SetupDefenderSosigs(GetCurrentLevel()));
+
+                //Debug.Log("Supply Raid: Post Sosig Setup");
             }
 
 
@@ -845,7 +864,7 @@ namespace SupplyRaid
                 SR_Networking.instance.LevelUpdate_Send(gameCompleted);
                 SR_Networking.instance.UpdateStats_Send();
             }
-            Debug.Log("Supply Raid: End of SetLevel");
+            Debug.Log("Supply Raid: End of Set Level");
         }
 
         //----------------------------------------------------------------------
@@ -1178,23 +1197,31 @@ namespace SupplyRaid
 
         void UpdateRabbithole()
         {
+            bool infiniteEnemies = faction.levels[CurrentLevel].infiniteEnemies;
+
             //No more spawning enemies
-            if (remainEnemies <= 0 || isClient)
+            if (!infiniteEnemies && remainEnemies <= 0 || isClient)
                 return;
 
             //Do once a second check
             if ((rabbitHoleTimer -= Time.deltaTime) <= 0)
             {
                 //Check once a second
-                rabbitHoleTimer = 1;
+                rabbitHoleTimer = faction.levels[CurrentLevel].enemySpawnTimer;
+
+                int maxEnemies = optionMaxEnemies;  //Max On Screen Enemies
+
+                //Infinite Enemies limitations
+                if (infiniteEnemies && faction.levels[CurrentLevel].enemiesTotal < optionMaxEnemies)
+                    maxEnemies = faction.levels[CurrentLevel].enemiesTotal; //Max Extra Enemies in infinite mode
+
                 //If a enemy slot has freed up
-                if (currentEnemies < optionMaxEnemies)
+                if (currentEnemies < maxEnemies)
                 {
-                    remainEnemies--;
-                    if (inEndless)
-                        SpawnRabbitholeSosig(faction.endless[CurrentLevel]);
-                    else
-                        SpawnRabbitholeSosig(faction.levels[CurrentLevel]);
+                    if(!infiniteEnemies)
+                        remainEnemies--;
+
+                    SpawnRabbitholeSosig(GetCurrentLevel());
                 }
             }
         }
@@ -1528,12 +1555,44 @@ namespace SupplyRaid
                 FVRObject.OTagAttachmentFeature.Reflex,
             };
 
+
+            List<FVRObject.OTagSet> set = new List<FVRObject.OTagSet>
+            {
+                FVRObject.OTagSet.Real,
+                FVRObject.OTagSet.TNH,
+            };
+
             lt_RequiredAttachments.Initialize(type, eras, null, null, null, null, null, mounts, null, features, null, null, null, null, -1, -1);
+
+            //Tag Set Removal
+            for (int num = lt_RequiredAttachments.Loot.Count - 1; num >= 0; num--)
+            {
+                FVRObject fVRObject = lt_RequiredAttachments.Loot[num];
+                if (set != null && !set.Contains(fVRObject.TagSet))
+                {
+                    lt_RequiredAttachments.Loot.RemoveAt(num);
+                    continue;
+                }
+            }
         }
 
         //----------------------------------------------------------------------
         // Static
         //----------------------------------------------------------------------
+
+        public static SR_CharacterPreset GetCharacter()
+        {
+            return instance.character;
+        }
+
+        public static FactionLevel GetCurrentLevel()
+        {
+            if (instance.inEndless)
+                return instance.faction.endless[instance.CurrentLevel];
+            else
+                return instance.faction.levels[instance.CurrentLevel];
+
+        }
 
         public static int AddSupplyPoint(SR_SupplyPoint sp)
         {
@@ -1619,8 +1678,6 @@ namespace SupplyRaid
 
             return null;
         }
-
-
 
         //----------------------------------------------------------------------
         // Networking

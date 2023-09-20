@@ -97,7 +97,7 @@ namespace SupplyRaid
                     }
                     else
                     {
-                        Debug.Log("NO WEAPON FOUND");
+                        Debug.Log("Supply Raid - NO WEAPON FOUND");
                         return false;
                     }
                 }
@@ -156,7 +156,7 @@ namespace SupplyRaid
                 int mainSpawn = 1;
 
                 //If single fire disposible weapon, create several.
-                if (!mainObject.UsesRoundTypeFlag
+                if (!SR_Manager.instance.optionSpawnLocking && !mainObject.UsesRoundTypeFlag
                     && mainObject.TagFirearmFeedOption.Contains(FVRObject.OTagFirearmFeedOption.None)
                     && mainObject.TagFirearmFiringModes.Contains(FVRObject.OTagFirearmFiringMode.SingleFire))
                 {
@@ -181,8 +181,11 @@ namespace SupplyRaid
                     //ammoCount = mainObject.MagazineCapacity > mainObject.MaxCapacityRelated ? mainObject.MagazineCapacity * 2: mainObject.MaxCapacityRelated * 2;
                 }
 
-                if (ammoCount < 12)
+                if (SR_Manager.instance.optionSpawnLocking)
+                    ammoCount = 3;
+                else if (ammoCount < 12)
                     ammoCount = 12;
+
 
                 //Ammo
                 if (ammoObject != null && ammoObject.GetGameObject() != null)
@@ -320,12 +323,10 @@ namespace SupplyRaid
             {
 
                 //----ROUNDS--------------------------------
-
                 case FireArmRoundClass.FMJ:
                 case FireArmRoundClass.Ball:
                 case FireArmRoundClass.Spitzer:
                 case FireArmRoundClass.DSM_Swarm:
-                case FireArmRoundClass.Cannonball:
                 case FireArmRoundClass.NERMAL:
                 case FireArmRoundClass.MIRV:
                 case FireArmRoundClass.a20FMJ:
@@ -480,6 +481,7 @@ namespace SupplyRaid
                     return AmmoEnum.Special;
 
                 case FireArmRoundClass.Freedomfetti:
+                case FireArmRoundClass.Cannonball:
                 case FireArmRoundClass.X1776_FreedomParty:
                     return AmmoEnum.Firework;
 
@@ -525,5 +527,44 @@ namespace SupplyRaid
                     return AmmoEnum.None;
             }
         }
+    }
+    /// <summary>
+    /// The Ammo Table Ammo Type Array Position
+    /// </summary>
+    public enum AmmoEnum
+    {
+        None = -1,
+        //----Rounds
+        Standard = 0,   //FMJ / Default on Single Ammo types
+        HollowPoint = 1,
+        AP = 2,
+        API = 3,
+        Incendiary = 4,
+        Tracer = 5,
+        Subsonic_FMJ = 6,
+        Subsonic_AP = 7,
+        Subsonic_JHP = 8,
+        PlusP_FMJ = 9,
+        PlusP_JHP = 10,
+        PlusP_API = 11,
+        //----Shells
+        Buckshot = 12,
+        Slug = 13,
+        TripleHit = 14,
+        Flechette = 15,
+        ShellHE = 16,
+        //----Grenade Launchers
+        GrenadeHE = 17,
+        GrenadeSmoke = 18,
+        GrenadeBuckshot = 19,
+        //----Misc
+        Practice = 20,
+        Flare = 21,
+        Flash = 22,
+        Explosive = 23,
+        Firework = 24,
+        DragonsBreathe = 25,
+        Random = 26,
+        Special = 27,
     }
 }

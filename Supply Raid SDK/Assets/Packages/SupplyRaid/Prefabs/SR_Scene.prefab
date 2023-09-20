@@ -83,7 +83,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1003829860664210
 GameObject:
   m_ObjectHideFlags: 1
@@ -530,7 +530,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1049456293387324
 GameObject:
   m_ObjectHideFlags: 1
@@ -551,7 +551,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1050967950488588
 GameObject:
   m_ObjectHideFlags: 1
@@ -673,7 +673,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1065786215903580
 GameObject:
   m_ObjectHideFlags: 1
@@ -772,6 +772,23 @@ GameObject:
   m_Name: Attach0
   m_TagString: Untagged
   m_Icon: {fileID: -6431860639581277017, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1086754873277164
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 224425440169234634}
+  - component: {fileID: 222553458399090558}
+  - component: {fileID: 114539161601066072}
+  m_Layer: 0
+  m_Name: Selection
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -1365,7 +1382,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1177097035037126
 GameObject:
   m_ObjectHideFlags: 1
@@ -1790,7 +1807,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1232529382040636
 GameObject:
   m_ObjectHideFlags: 1
@@ -1886,7 +1903,7 @@ GameObject:
   - component: {fileID: 222269408739135982}
   - component: {fileID: 114313025313926158}
   m_Layer: 0
-  m_Name: Icon
+  m_Name: MagazineTickIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2071,7 +2088,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1284147083608276
 GameObject:
   m_ObjectHideFlags: 1
@@ -2294,7 +2311,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1298477604069458
 GameObject:
   m_ObjectHideFlags: 1
@@ -2424,7 +2441,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1317759103540774
 GameObject:
   m_ObjectHideFlags: 1
@@ -3131,7 +3148,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1411848942372908
 GameObject:
   m_ObjectHideFlags: 1
@@ -4407,7 +4424,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1593876074378502
 GameObject:
   m_ObjectHideFlags: 1
@@ -4447,7 +4464,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1598149810071268
 GameObject:
   m_ObjectHideFlags: 1
@@ -4628,7 +4645,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1620231646575132
 GameObject:
   m_ObjectHideFlags: 1
@@ -4649,7 +4666,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1621687485514444
 GameObject:
   m_ObjectHideFlags: 1
@@ -4670,7 +4687,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1624324306951562
 GameObject:
   m_ObjectHideFlags: 1
@@ -4975,7 +4992,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1673927881236910
 GameObject:
   m_ObjectHideFlags: 1
@@ -5016,7 +5033,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1677226599203966
 GameObject:
   m_ObjectHideFlags: 1
@@ -5156,7 +5173,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1696204695064394
 GameObject:
   m_ObjectHideFlags: 1
@@ -5526,7 +5543,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1740065257996916
 GameObject:
   m_ObjectHideFlags: 1
@@ -5614,7 +5631,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1751832181143620
 GameObject:
   m_ObjectHideFlags: 1
@@ -5771,7 +5788,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1761927436835768
 GameObject:
   m_ObjectHideFlags: 1
@@ -6006,7 +6023,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1795933122025600
 GameObject:
   m_ObjectHideFlags: 1
@@ -6224,7 +6241,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1830657303904314
 GameObject:
   m_ObjectHideFlags: 1
@@ -6245,7 +6262,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1832637915553526
 GameObject:
   m_ObjectHideFlags: 1
@@ -6314,7 +6331,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1847877587251734
 GameObject:
   m_ObjectHideFlags: 1
@@ -7145,7 +7162,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1957317993488728
 GameObject:
   m_ObjectHideFlags: 1
@@ -7332,7 +7349,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1974032251300686
 GameObject:
   m_ObjectHideFlags: 1
@@ -7475,7 +7492,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1998746997516656
 GameObject:
   m_ObjectHideFlags: 1
@@ -11131,113 +11148,97 @@ MonoBehaviour:
   - {fileID: 4292577416658930}
   - {fileID: 4592133470272722}
   buttons:
-  - cost: 1
-    button: {fileID: 114222641682397738}
+  - button: {fileID: 114222641682397738}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114912441050663900}
+  - button: {fileID: 114912441050663900}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114020853019638784}
+  - button: {fileID: 114020853019638784}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114106430401258982}
+  - button: {fileID: 114106430401258982}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114254192029237804}
+  - button: {fileID: 114254192029237804}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114596846645480732}
+  - button: {fileID: 114596846645480732}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114420208061797430}
+  - button: {fileID: 114420208061797430}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114838942572393274}
+  - button: {fileID: 114838942572393274}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114955427616808888}
+  - button: {fileID: 114955427616808888}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114350057514381970}
+  - button: {fileID: 114350057514381970}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114405330496841272}
+  - button: {fileID: 114405330496841272}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114433678821713108}
+  - button: {fileID: 114433678821713108}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114274493188032658}
+  - button: {fileID: 114274493188032658}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114744999129475506}
+  - button: {fileID: 114744999129475506}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114503903182642576}
+  - button: {fileID: 114503903182642576}
     attachmentTable:
       Loot: []
       MinCapacity: -1
       MaxCapacity: -1
       Eras: 
-  - cost: 1
-    button: {fileID: 114801424220402346}
+  - button: {fileID: 114801424220402346}
     attachmentTable:
       Loot: []
       MinCapacity: -1
@@ -11588,7 +11589,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114113252473137782}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -12403,7 +12404,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114273919961428240}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -13124,7 +13125,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114086070371526088}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -13764,7 +13765,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114224103652256386}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -15076,7 +15077,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 0.97059435, b: 0.8602941, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -15315,7 +15316,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114981831985080448}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -15822,7 +15823,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114973565941264028}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -16069,7 +16070,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114678408885899408}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -16534,7 +16535,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114148049402721060}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -16596,16 +16597,25 @@ MonoBehaviour:
     name: Character Name
     description: Put a brief explination of the character here
     category: Mod
+    factionName: 
     pointsLevel: 00000000
     newMagazineCost: 1
     upgradeMagazineCost: 2
     duplicateMagazineCost: 1
     recyclerPoints: 1
+    disableRearming: 0
+    disableSpeedLoaders: 0
+    disableClips: 0
+    disableRounds: 0
+    disableAmmoTable: 0
+    disableModtable: 0
+    disableBuyMenu: 0
+    disableDuplicator: 0
+    disableRecycler: 0
     ammoUpgradeCost: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
     attachmentsCost: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
     deathMode: 0
     deathCount: 0
-    factionName: 
     startGearCategories: []
     purchaseCategories: []
   faction:
@@ -17418,7 +17428,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114735387665296160}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -17470,7 +17480,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114754474697844582}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -17667,7 +17677,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114648762842715492}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -17946,7 +17956,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114025613766467566}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -18140,7 +18150,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114840304122834440}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -19341,7 +19351,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114172077792791466}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -19486,7 +19496,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114672811059353710}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -19745,7 +19755,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114646685823078964}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -20009,7 +20019,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114450032178713596}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -20117,7 +20127,12 @@ MonoBehaviour:
   ScanningLM:
     serializedVersion: 2
     m_Bits: 1024
+  selectionIcon: {fileID: 224425440169234634}
   purchased: 00000000000000000000000000000000000000000000000000000000
+  rearmButton: {fileID: 1883438468297156}
+  speedloaderButton: {fileID: 1483009839843858}
+  clipButton: {fileID: 1884575257566850}
+  roundButton: {fileID: 1023360762039422}
   ammoTypeButtons:
   - {fileID: 1314460623142604}
   - {fileID: 1621687485514444}
@@ -20469,7 +20484,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114162279479406988}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -21425,6 +21440,33 @@ MonoBehaviour:
   ColorName: 30
   m_scaleTick: 0
   nextScaleTick: 0
+--- !u!114 &114539161601066072
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1086754873277164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 21300000, guid: d84f2654bb4f3b343bac6bda92fdb998, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
 --- !u!114 &114540070284712582
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -22081,7 +22123,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114430816750538632}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -22583,7 +22625,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114740390815724514}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -24835,7 +24877,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114192471925235238}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -25808,7 +25850,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114697812470932908}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -26416,7 +26458,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114172063717279402}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -27598,7 +27640,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114292051815472502}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -27975,7 +28017,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114287460428829618}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -28395,7 +28437,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114833423956869538}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -29108,7 +29150,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114126873845077306}
+      - m_Target: {fileID: 114556262802313124}
         m_MethodName: TryBuyAmmo
         m_Mode: 1
         m_Arguments:
@@ -29914,7 +29956,7 @@ MonoBehaviour:
   magazineCostText: {fileID: 114654928142325862}
   duplicateBtn: {fileID: 114092055115919594}
   upgradeBtn: {fileID: 114593436528837862}
-  magazineBtn: {fileID: 114641035855247296}
+  magazineBtn: {fileID: 114313025313926158}
   statusImages:
   - {fileID: 21300000, guid: 4e9f65f6e33af4243915fdaa06eba06a, type: 3}
   - {fileID: 21300000, guid: 23321ecae9cf3a0489b00e427521c748, type: 3}
@@ -31357,6 +31399,12 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1125162282563590}
+--- !u!222 &222553458399090558
+CanvasRenderer:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1086754873277164}
 --- !u!222 &222557962747119574
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -32727,7 +32775,7 @@ RectTransform:
   m_Children:
   - {fileID: 224667466298963534}
   m_Father: {fileID: 224480843205256536}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -32797,10 +32845,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -218}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224025493746413572
 RectTransform:
@@ -33112,10 +33160,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 296, y: -54}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224066611885532968
 RectTransform:
@@ -33149,10 +33197,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -300}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224070969166836746
 RectTransform:
@@ -33337,7 +33385,7 @@ RectTransform:
   m_Children:
   - {fileID: 224670476137027210}
   m_Father: {fileID: 224480843205256536}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -33527,10 +33575,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 214, y: -136}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224120983112313574
 RectTransform:
@@ -33665,10 +33713,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -54}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224148788947975906
 RectTransform:
@@ -33756,10 +33804,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 378, y: -218}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224174290936997286
 RectTransform:
@@ -34017,7 +34065,7 @@ RectTransform:
   m_Children:
   - {fileID: 224173511590058302}
   m_Father: {fileID: 224480843205256536}
-  m_RootOrder: 4
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -34075,10 +34123,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 132, y: -218}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224241317914220622
 RectTransform:
@@ -34112,10 +34160,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 542, y: -136}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224243439493873286
 RectTransform:
@@ -34260,10 +34308,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 542, y: -54}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224267378985988256
 RectTransform:
@@ -34335,10 +34383,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 214, y: -218}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224283909950016936
 RectTransform:
@@ -34840,10 +34888,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 22
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 132, y: -300}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224347360844867566
 RectTransform:
@@ -35072,10 +35120,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 214, y: -54}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224372407277500300
 RectTransform:
@@ -35355,10 +35403,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 26
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 460, y: -300}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224425000874186600
 RectTransform:
@@ -35377,6 +35425,24 @@ RectTransform:
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!224 &224425440169234634
+RectTransform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1086754873277164}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 224480843205256536}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -246.00006, y: 171}
+  m_SizeDelta: {x: 96, y: 96}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224429679399002008
 RectTransform:
@@ -35573,10 +35639,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 296, y: -136}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224465200892561728
 RectTransform:
@@ -35644,10 +35710,11 @@ RectTransform:
   m_Children:
   - {fileID: 224333690251863014}
   - {fileID: 224687822904772518}
+  - {fileID: 224425440169234634}
   - {fileID: 224090946049088614}
   - {fileID: 224017705178580572}
-  - {fileID: 224232697358890462}
   - {fileID: 224384050347520404}
+  - {fileID: 224232697358890462}
   m_Father: {fileID: 4206685871004008}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
@@ -36347,10 +36414,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 25
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 378, y: -300}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224586609509739756
 RectTransform:
@@ -36870,10 +36937,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 460, y: -54}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224657104777449470
 RectTransform:
@@ -36889,10 +36956,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 378, y: -54}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224661259400331640
 RectTransform:
@@ -37353,10 +37420,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 296, y: -300}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224731135241502340
 RectTransform:
@@ -37639,10 +37706,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 132, y: -54}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224767741101473830
 RectTransform:
@@ -37882,10 +37949,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 27
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 542, y: -300}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224809028196693816
 RectTransform:
@@ -37962,10 +38029,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -136}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224818905837937542
 RectTransform:
@@ -37981,10 +38048,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 20
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 542, y: -218}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224819834144676226
 RectTransform:
@@ -38000,10 +38067,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 296, y: -218}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224821876354562670
 RectTransform:
@@ -38326,10 +38393,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 378, y: -136}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224856925531503702
 RectTransform:
@@ -38429,10 +38496,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 132, y: -136}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224873488039200298
 RectTransform:
@@ -38962,10 +39029,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 214, y: -300}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224947949978599006
 RectTransform:
@@ -39041,10 +39108,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 460, y: -136}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224950054609797840
 RectTransform:
@@ -39060,10 +39127,10 @@ RectTransform:
   m_Father: {fileID: 224687822904772518}
   m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 460, y: -218}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224950207165456024
 RectTransform:
