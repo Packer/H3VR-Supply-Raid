@@ -135,7 +135,7 @@ namespace SupplyRaid
             FVRFireArmMagazine component = gameObject.GetComponent<FVRFireArmMagazine>();
             if (component != null && component.RoundType != FireArmRoundType.aFlameThrowerFuel)
             {
-                component.ReloadMagWithTypeUpToPercentage(AM.GetRandomValidRoundClass(component.RoundType), Mathf.Clamp(Random.Range(0.3f, 1f), 0.1f, 1f));
+                component.ReloadMagWithTypeUpToPercentage(AM.GetDefaultRoundClass(component.RoundType), Mathf.Clamp(Random.Range(0.3f, 1f), 0.1f, 1f));
             }
         }
 

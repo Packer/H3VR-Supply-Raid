@@ -863,16 +863,16 @@ namespace SupplyRaid
             //Team
             switch (currentLevel.squadTeamRandomized)
             {
-                case TeamSquadEnum.Ally0:
-                case TeamSquadEnum.Team1:
-                case TeamSquadEnum.Team2:
-                case TeamSquadEnum.Team3:
+                case TeamEnum.Ally0:
+                case TeamEnum.Team1:
+                case TeamEnum.Team2:
+                case TeamEnum.Team3:
                     _spawnOptions.IFF = (int)currentLevel.squadTeamRandomized;
                     break;
-                case TeamSquadEnum.RandomTeam:
+                case TeamEnum.RandomTeam:
                     _spawnOptions.IFF = Random.Range(0, 4);
                     break;
-                case TeamSquadEnum.RandomEnemyTeam:
+                case TeamEnum.RandomEnemyTeam:
                     _spawnOptions.IFF = Random.Range(1, 4);
                     break;
                 default:
@@ -920,7 +920,7 @@ namespace SupplyRaid
                         spawnPoint = supplyPoints[Random.Range(0, supplyPoints.Count)];
 
                         //If not Player or Defender Supplypoint
-                        if (spawnPoint != AttackSupplyPoint() && _spawnOptions.IFF == (int)TeamSquadEnum.Ally0)
+                        if (spawnPoint != AttackSupplyPoint() && _spawnOptions.IFF == (int)TeamEnum.Ally0)
                         {
                             usedSP.Add(spawnPoint);
                             break;
@@ -983,8 +983,14 @@ namespace SupplyRaid
 
         private IEnumerator SetupDefenderSosigs(FactionLevel currentLevel)
         {
-            //Assign Team
-            _spawnOptions.IFF = (int)faction.teamID;
+            int teamID = (int)faction.teamID;
+            if (teamID == -1) //Random
+                teamID = Random.Range(0,4);
+            else if(teamID == -2) //Random Enemy
+                teamID = Random.Range(1, 4);
+
+            //Assign Team (Random)
+            _spawnOptions.IFF = teamID;
 
             //Enemy Level Count
             int enemyCount = currentLevel.enemiesTotal * optionPlayerCount;
@@ -1422,6 +1428,9 @@ namespace SupplyRaid
                     _spawnOptions,
                     position,
                     rotation);
+
+            //TODO not a hack job
+            sosig.m_isBlinded = false;
 
             return sosig;
         }

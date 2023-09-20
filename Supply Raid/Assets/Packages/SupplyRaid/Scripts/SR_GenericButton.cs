@@ -78,6 +78,40 @@ namespace SupplyRaid
             go.GetComponent<SR_ModTable>().BuyAttachment(index);
         }
 
+        public void TryBuyAmmo()
+        {
+            SR_AmmoSpawner spawner = go.GetComponent<SR_AmmoSpawner>();
+
+            if (spawner == null)
+                return;
+
+            //Try Buy
+            if (spawner.purchased[index] == false)
+            {
+                if (SR_Manager.EnoughPoints(SR_Manager.instance.character.ammoUpgradeCost[index]))
+                {
+                    if (SR_Manager.SpendPoints(SR_Manager.instance.character.ammoUpgradeCost[index]))
+                    {
+                        spawner.purchased[index] = true;
+                        SR_Manager.PlayPointsGainSFX();
+                    }
+                }
+                else
+                {
+                    SR_Manager.PlayFailSFX();
+                    return;
+                }
+            }
+
+            //Set Ammo Type
+            if(spawner.purchased[index])
+            {
+                SR_Manager.PlayConfirmSFX();
+                //SetAmmoType
+                bool set = spawner.SetAmmoType((AmmoEnum)index);
+            }
+        }
+
         public void DisableGameObjects()
         {
             for (int i = 0; i < disableGO.Length; i++)

@@ -3,7 +3,6 @@ using FistVR;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml.Linq;
 using UnityEngine;
 
 namespace SupplyRaid
@@ -34,6 +33,7 @@ namespace SupplyRaid
         {
             thumbnailPath = thumbPath;
         }
+
         public Sprite Thumbnail()
         {
             if (thumbnailPath == "")
@@ -103,7 +103,7 @@ namespace SupplyRaid
         //They can be assigned a team to help or hinder the player
 
         [Tooltip("The team the world patrol sosigs are on, 0 = Player, 1,2,3 = Enemies")]
-        public TeamSquadEnum squadTeamRandomized = TeamSquadEnum.Team1;
+        public TeamEnum squadTeamRandomized = TeamEnum.Team1;
         [Tooltip("The amount of squads that wil be spawned")]
         public int squadCount = 0;
         [Tooltip("The minimum sosigs in the squad")]
@@ -111,7 +111,7 @@ namespace SupplyRaid
         [Tooltip("The maximum sosigs in the squad")]
         public int squadSizeMax = 0;
         [Tooltip("Main Supply Point - Squads will move towards the next player capture supply point \n Random Supply Point - Squads will move to random supply points across the map")]
-        public SquadBehaviour squadBehaviour = SquadBehaviour.CaptureSupplyPoint;
+        public SquadBehaviour squadBehaviour = SquadBehaviour.RandomSupplyPoint;
         [Tooltip("The sosig ID pool for world patrols")]
         public SosigEnemyID[] squadPool;
 
@@ -140,23 +140,18 @@ namespace SupplyRaid
         RandomSupplyPoint = 1,
     }
 
-    [System.Serializable]
     public enum TeamEnum
     {
         Ally0 = 0,
         Team1 = 1,
         Team2 = 2,
         Team3 = 3,
-    }
-
-    public enum TeamSquadEnum
-    {
-        Ally0 = 0,
-        Team1 = 1,
-        Team2 = 2,
-        Team3 = 3,
-        RandomTeam,         //0-4
-        RandomEnemyTeam,    //Only enemy teams 1-2-3 etc
-
+        Team4 = 4,
+        Team5 = 5,
+        Team6 = 6,
+        Team7 = 7,
+        Team8 = 8,
+        RandomTeam = -1,         //0-4
+        RandomEnemyTeam = -2,    //Only enemy teams 1-2-3 etc
     }
 }

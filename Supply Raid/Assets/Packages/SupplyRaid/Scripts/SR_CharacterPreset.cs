@@ -27,6 +27,12 @@ namespace SupplyRaid
         [Tooltip("How many points the players get for recycling weapons")]
         public int recyclerPoints = 1;
 
+        [Tooltip("Cost of each ammo upgrade, 0 is normally free as its the standard - 28 Ammo Types")]
+        public int[] ammoUpgradeCost = new int[28];
+
+        [Tooltip("Cost of each attachment - 16 Attachment Types")]
+        public int[] attachmentsCost = new int[16];
+
         //JSON string refference
         public string factionName = "";
         public List<string> startGearCategories = new List<string>();
