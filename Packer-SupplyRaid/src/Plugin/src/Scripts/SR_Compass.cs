@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using H3MP;
-using H3MP.Scripts;
 using H3MP.Networking;
 using FistVR;
 
@@ -21,7 +19,7 @@ namespace SupplyRaid
         public Text pointsText;
         public float distance = .25f;
         public Slider healthBar;
-        public Text levelText;
+        //public Text levelText;
         public Text capturesText;
 
 
@@ -66,12 +64,14 @@ namespace SupplyRaid
             supplyPointDirection.LookAt(pos);
 
             pointsText.text = SR_Manager.instance.Points.ToString();
-            capturesText.text = SR_Manager.instance.CapturesTotal.ToString();
+            capturesText.text = (SR_Manager.instance.CurrentCaptures - SR_Manager.instance.optionStartLevel).ToString();
 
+            /*
             if(SR_Manager.instance.inEndless)
-                levelText.text = (SR_Manager.instance.CurrentLevel + SR_Manager.instance.faction.levels.Length).ToString();
+                levelText.text = (SR_Manager.instance.CurrentFactionLevel + SR_Manager.instance.faction.levels.Length).ToString();
             else
-                levelText.text = SR_Manager.instance.CurrentLevel.ToString();
+                levelText.text = SR_Manager.GetFactionLevel().ToString();
+            */
 
             NetworkUpdate();
         }

@@ -41,12 +41,13 @@ namespace SupplyRaid
             gameTime.text = FloatToTime(SR_Manager.instance.stats.GameTime);
             deaths.text = SR_Manager.instance.stats.Deaths.ToString();
 
+            /*
             if (SR_Manager.instance.inEndless)
-                level.text = (SR_Manager.instance.CurrentLevel + SR_Manager.instance.faction.levels.Length).ToString();
+                level.text = (SR_Manager.instance.CurrentFactionLevel + SR_Manager.instance.faction.levels.Length).ToString();
             else
-                level.text = SR_Manager.instance.CurrentLevel.ToString();
-
-            captures.text = SR_Manager.instance.CapturesTotal.ToString();
+                level.text = SR_Manager.instance.CurrentFactionLevel.ToString();
+            */
+            captures.text = (SR_Manager.instance.CurrentCaptures - SR_Manager.instance.optionStartLevel).ToString();
             kills.text = SR_Manager.instance.stats.Kills.ToString();
 
             if(score)

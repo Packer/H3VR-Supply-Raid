@@ -9,13 +9,16 @@ namespace SupplyRaid
 {
 
 	public class SR_SpawnMenu : MonoBehaviour
-	{
+    {
+        [SerializeField] Text respawnTimer;
+        [SerializeField] GameObject spawnButtons;
 
         //Inspector
         [Header("H3MP")]
         [SerializeField] GameObject h3mp;
         [SerializeField] GameObject playerPrefab;
         [SerializeField] Transform playerContent;
+
 
 
         //Internal

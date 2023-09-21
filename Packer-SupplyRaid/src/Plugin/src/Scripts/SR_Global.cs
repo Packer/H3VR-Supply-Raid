@@ -38,6 +38,51 @@ namespace SupplyRaid
         }
 
         /// <summary>
+        /// Tries to get a Random Sosig Enemy ID from the input pool, returns None if not valid or not found
+        /// </summary>
+        /// <param name="pool"></param>
+        /// <returns></returns>
+        public static SosigEnemyID GetRandomSosigIDFromPool(SosigEnemyID[] pool)
+        {
+            SosigEnemyID id = SosigEnemyID.None;
+
+            if (pool.Length == 0)
+                return id;
+
+            int count = 0;
+            while (true)
+            {
+                if (count >= pool.Length)
+                {
+                    Debug.LogError("Supply Raid - Faction level " + SR_Manager.GetFactionLevel().name + " has no valid SosigEnemyIDs, Not Spawning Sosigs");
+                    return id;
+                }
+
+                id = pool[Random.Range(0, pool.Length)];
+
+                if (ValidSosigEnemyID(id))
+                    break;
+                else
+                    count++;
+            }
+
+            return id;
+        }
+
+        public static bool ValidSosigEnemyID(SosigEnemyID id)
+        {
+            if (id == SosigEnemyID.None)
+                return false;
+
+            //(SosigEnemyID)System.Enum.Parse(typeof(SosigEnemyID), id);
+
+            if (IM.Instance.odicSosigObjsByID.ContainsKey(id))
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
         /// Attempts to spawn input gear, otherwise returns false
         /// </summary>
         /// <returns></returns>
@@ -64,6 +109,11 @@ namespace SupplyRaid
 
             bool spawnedObject = false;
 
+            int minCapacity = -1;
+            if (itemCategory != null)
+                minCapacity = itemCategory.minCapacity;
+
+
             //Loop through each group ID
             for (int z = 0; z < itemCount; z++)
             {
@@ -76,13 +126,13 @@ namespace SupplyRaid
                     //Try to find the weapon ID
                     if (!IM.OD.TryGetValue(idGroup[z], out mainObject))
                     {
-                        Debug.Log("Cannot find object with id: " + idGroup[z]);
+                        Debug.Log("Supply Raid - Cannot find object with id: " + idGroup[z]);
                         continue;
                     }
 
                     //Main Weapon
                     if (mainObject != null)
-                        ammoObject = GetLowestCapacityAmmoObject(mainObject, null, itemCategory.minCapacity);
+                        ammoObject = GetLowestCapacityAmmoObject(mainObject, null, minCapacity);
                     else
                         return false;
                 }
@@ -92,12 +142,14 @@ namespace SupplyRaid
                     mainObject = table.GetRandomObject();
                     if (mainObject != null)
                     {
-                        int minCapacity = itemCategory != null ? itemCategory.minCapacity : -1;
                         ammoObject = GetLowestCapacityAmmoObject(mainObject, table.Eras, minCapacity);
                     }
                     else
                     {
-                        Debug.Log("Supply Raid - NO WEAPON FOUND");
+                        if(itemCategory != null)
+                            Debug.Log("Supply Raid - NO OBJECT FOUND IN ITEM CATEGORY: " + itemCategory.name);
+                        else
+                            Debug.Log("Supply Raid - NO OBJECT FOUND ");
                         return false;
                     }
                 }

@@ -44,6 +44,10 @@ namespace SupplyRaid
         public bool disableDuplicator = false;
         public bool disableRecycler = false;
 
+        //Death
+        public int deathMode = 0;   //0 = Instant Respawn, 1 = count down Timer, 2 = respawn on next Capture, 3 = lives
+        public float deathCount = 0;   //lives, Timer etc
+
         [Tooltip("Cost of each ammo upgrade, 0 is normally free as its the standard - 28 Ammo Types - if set to -1 disable")]
         public int[] ammoUpgradeCost = new int[28];
 
@@ -51,9 +55,6 @@ namespace SupplyRaid
         [Tooltip("Cost of each attachment - 16 Attachment Types, if set to -1 disable")]
         public int[] attachmentsCost = new int[16];
 
-        //Death
-        public int deathMode = 0;   //0 = Instant Respawn, 1 = count down Timer, 2 = respawn on next Capture, 3 = lives
-        public int deathCount = 0;   //lives, Timer etc
 
         public List<string> startGearCategories = new List<string>();
         [Tooltip("(REQUIRED) What buy categories are available to this character")]

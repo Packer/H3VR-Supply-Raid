@@ -220,9 +220,12 @@ namespace SupplyRaid
                 return;
 
             Packet packet = new Packet(levelUpdate_ID);
-            packet.Write(SR_Manager.instance.CurrentLevel);
+
+            packet.Write(SR_Manager.instance.CurrentCaptures);
+
             packet.Write(SR_Manager.instance.attackSupplyID);
             packet.Write(SR_Manager.instance.playerSupplyID);
+
             packet.Write(SR_Manager.instance.inEndless);
             packet.Write(SR_Manager.instance.stats.ObjectiveComplete);
             packet.Write(gameComplete);
@@ -232,10 +235,8 @@ namespace SupplyRaid
         //Level Update Receive
         void LevelUpdate_Handler(int clientID, Packet packet)
         {
-            //If clientID == 0(HOST)
-            //If not 0 another client
+            int totalCaptures = packet.ReadInt();
 
-            int newLevel = packet.ReadInt();
             int supply = packet.ReadInt();
             int lastSupply = packet.ReadInt();
             bool endless = packet.ReadBool();
@@ -244,14 +245,17 @@ namespace SupplyRaid
 
             if (gameComplete)
             {
+                //Stats
+                //SR_Manager.instance.CurrentCharacterLevel = characterLevel;
+                //SR_Manager.instance.CurrentFactionLevel = factionLevel;
+                SR_Manager.instance.CurrentCaptures = totalCaptures;
+
                 SR_Manager.instance.gameCompleted = gameComplete;
                 SR_Manager.instance.stats.ObjectiveComplete = objective;
                 SR_Manager.instance.CompleteGame();
             }
             else
-                SR_Manager.instance.SetLevel_Client(newLevel, supply, lastSupply, endless);
-
-
+                SR_Manager.instance.SetLevel_Client(totalCaptures, supply, lastSupply, endless);
         }
 
         //GameOptions Send ----------------------------------------------
@@ -261,19 +265,20 @@ namespace SupplyRaid
                 return;
 
             Packet packet = new Packet(gameOptions_ID);
-                packet.Write(SR_Manager.instance.optionPlayerCount);
-                packet.Write(SR_Manager.instance.optionDifficulty);
-                packet.Write(SR_Manager.instance.optionFreeBuyMenu);
-                packet.Write(SR_Manager.instance.optionSpawnLocking);
-                packet.Write(SR_Manager.instance.optionStartLevel);
-                packet.Write(SR_Manager.instance.optionPlayerHealth);
-                packet.Write(SR_Manager.instance.optionItemSpawner);
-                packet.Write(SR_Manager.instance.optionCaptureZone);
-                packet.Write(SR_Manager.instance.optionCaptureOrder);
-                packet.Write(SR_Manager.instance.optionCaptures);
-                packet.Write(SR_Manager.instance.optionRespawn);
-                packet.Write(SR_Manager.instance.optionMaxEnemies);
-                //packet.Write(SR_Manager.instance.faction.name);
+            packet.Write(SR_Manager.instance.optionPlayerCount);
+            packet.Write(SR_Manager.instance.optionDifficulty);
+            packet.Write(SR_Manager.instance.optionFreeBuyMenu);
+            packet.Write(SR_Manager.instance.optionSpawnLocking);
+            packet.Write(SR_Manager.instance.optionStartLevel);
+            packet.Write(SR_Manager.instance.optionPlayerHealth);
+            packet.Write(SR_Manager.instance.optionItemSpawner);
+            packet.Write(SR_Manager.instance.optionCaptureZone);
+            packet.Write(SR_Manager.instance.optionCaptureOrder);
+            packet.Write(SR_Manager.instance.optionCaptures);
+            packet.Write(SR_Manager.instance.optionRespawn);
+            packet.Write(SR_Manager.instance.optionMaxEnemies);
+            packet.Write(SR_Manager.instance.optionMaxSquadEnemies);
+            
             ServerSend.SendTCPDataToAll(packet, true);
         }
 
@@ -292,10 +297,11 @@ namespace SupplyRaid
             int optionCaptures = packet.ReadInt();
             bool optionRespawn = packet.ReadBool();
             int optionMaxEnemies = packet.ReadInt();
+            int optionSquadMaxEnemies = packet.ReadInt();
             //string factionID = packet.ReadString();
 
             SR_Manager.instance.Network_GameOptions(optionPlayerCount, optionDifficulty, optionFreeBuyMenu, optionSpawnLocking, optionStartLevel,
-                optionPlayerHealth, optionItemSpawner, optionCaptureZone, optionOrder, optionCaptures, optionRespawn, optionMaxEnemies);
+                optionPlayerHealth, optionItemSpawner, optionCaptureZone, optionOrder, optionCaptures, optionRespawn, optionMaxEnemies, optionSquadMaxEnemies);
         }
 
         //Captured Send ----------------------------------------------
@@ -345,7 +351,7 @@ namespace SupplyRaid
 
             Packet packet = new Packet(updateStats_ID);
 
-            packet.Write(SR_Manager.instance.CapturesTotal);
+            packet.Write(SR_Manager.instance.CurrentCaptures);
             packet.Write(SR_Manager.instance.stats.GameTime);
             packet.Write(SR_Manager.instance.stats.Kills);
 
@@ -356,8 +362,8 @@ namespace SupplyRaid
         void UpdateStats_Handler(int clientID, Packet packet)
         {
             int captures = packet.ReadInt();
-            if(captures > SR_Manager.instance.CapturesTotal)
-                SR_Manager.instance.CapturesTotal = captures;
+            if(captures > SR_Manager.instance.CurrentCaptures)
+                SR_Manager.instance.CurrentCaptures = captures;
 
             float gameTime = packet.ReadFloat();
             if (gameTime > SR_Manager.instance.stats.GameTime)

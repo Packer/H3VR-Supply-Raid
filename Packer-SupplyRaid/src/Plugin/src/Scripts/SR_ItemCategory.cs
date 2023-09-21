@@ -80,6 +80,9 @@ namespace SupplyRaid
 
         public void ClearMissingObjectIDs()
         {
+            if (objectGroups == null || objectGroups.Count <= 0)
+                return;
+
             List<string> clearStrings = new List<string>();
 
             for (int x = 0; x < objectGroups.Count; x++)
@@ -89,7 +92,6 @@ namespace SupplyRaid
                     //Remove any non-loaded mod objects
                     if (!IM.OD.ContainsKey(objectGroups[x].objectID[y]))
                         clearStrings.Add(objectGroups[x].objectID[y]);
-
                 }
 
                 for (int i = 0; i < clearStrings.Count; i++)
@@ -129,15 +131,19 @@ namespace SupplyRaid
                 minCapacity,
                 maxCapacity);
 
+            //Debug.Log("Supply Raid - Loot Table " + name + " | Size: " + table.Loot.Count);
 
             //Tag Set Removal
-            for (int num = table.Loot.Count - 1; num >= 0; num--)
+            if (set != null && set.Count > 0)
             {
-                FVRObject fVRObject = table.Loot[num];
-                if (set != null && !set.Contains(fVRObject.TagSet))
+                for (int num = table.Loot.Count - 1; num >= 0; num--)
                 {
-                    table.Loot.RemoveAt(num);
-                    continue;
+                    FVRObject fVRObject = table.Loot[num];
+                    if (set != null && !set.Contains(fVRObject.TagSet))
+                    {
+                        table.Loot.RemoveAt(num);
+                        continue;
+                    }
                 }
             }
 
@@ -160,6 +166,8 @@ namespace SupplyRaid
                     table.Loot.RemoveAt(detractItems[i]);
                 }
             }
+
+            //Debug.Log("Supply Raid - Loot Table Post " + name + " | Size: " + table.Loot.Count);
 
             return table;
         }

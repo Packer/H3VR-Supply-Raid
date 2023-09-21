@@ -143,17 +143,22 @@ namespace SupplyRaid
 
         public static List<string> GetCharactersDirectory()
         {
-            return Directory.GetFiles(Paths.PluginPath, "SR_Character*.json", SearchOption.AllDirectories).ToList();
+            return Directory.GetFiles(Paths.PluginPath, "*.cpsr", SearchOption.AllDirectories).ToList();
         }
 
         public static List<string> GetFactionDirectory()
         {
-            return Directory.GetFiles(Paths.PluginPath, "SR_Faction*.json", SearchOption.AllDirectories).ToList();
+            return Directory.GetFiles(Paths.PluginPath, "*.sfsr", SearchOption.AllDirectories).ToList();
         }
 
         public static List<string> GetItemCategoriesDirectory()
         {
-            return Directory.GetFiles(Paths.PluginPath, "SR_IC*.json", SearchOption.AllDirectories).ToList();
+            return Directory.GetFiles(Paths.PluginPath, "*.icsr", SearchOption.AllDirectories).ToList();
+        }
+
+        public static List<string> GetCustomSosigDirectory()
+        {
+            return Directory.GetFiles(Paths.PluginPath, "*.cssr", SearchOption.AllDirectories).ToList();
         }
     }
 }

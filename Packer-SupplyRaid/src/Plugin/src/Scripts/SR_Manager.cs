@@ -12,22 +12,10 @@ namespace SupplyRaid
     {
         public static SR_Manager instance;
 
-        /// <summary>
-        /// The current character Level
-        /// </summary>
-        public int CurrentLevel
+        public int CurrentCaptures
         {
-            set { currentLevel = value; }
-            get { return currentLevel; }
-        }
-
-        /// <summary>
-        /// The total Captures count
-        /// </summary>
-        public int CapturesTotal
-        {
-            set { capturesTotal = value; }
-            get { return capturesTotal; }
+            set { currentCaptures = value; }
+            get { return currentCaptures; }
         }
 
         [Header("Default Settings")]
@@ -57,6 +45,8 @@ namespace SupplyRaid
         public bool optionRespawn = true;
         [Tooltip("How many allowed to be alive at a time")]
         public int optionMaxEnemies = 12;
+        [Tooltip("How many allowed to be alive at a time")]
+        public int optionMaxSquadEnemies = 8;
 
         [Header("Game Stats")]
         public Stats stats = new Stats();
@@ -78,8 +68,8 @@ namespace SupplyRaid
         public bool gameRunning = false;
         [HideInInspector]
         public float captureProtection = 0;
-        private int currentLevel = 0;
-        private int capturesTotal = 0;
+        public int endlessLevel = 0;
+        private int currentCaptures = 0;
         [HideInInspector]
         public bool gameCompleted = false;
         [HideInInspector]
@@ -255,6 +245,9 @@ namespace SupplyRaid
         {
             resultsMenu.gameObject.SetActive(false);
             SetupAttachmentLootTable();
+
+            //TODO set active to true for when we have instructions
+            SR_HelpMenu.instance.SetActive(false);
         }
 
         void OnDisable()
@@ -274,6 +267,7 @@ namespace SupplyRaid
 
                 stats.GameTime += Time.deltaTime;
                 UpdateRabbithole();
+                UpdateSquadSpawner();
             }
         }
 
@@ -335,19 +329,12 @@ namespace SupplyRaid
             //Starting Points
             else if (optionStartLevel > 0)
             {
-                int newPoints = 0;
-                int level = optionStartLevel;
-
-                if (optionStartLevel > character.pointsLevel.Length)
-                    level = character.pointsLevel.Length - 1;
-
-                for (int i = 0; i < level; i++)
-                    newPoints += character.pointsLevel[i];
-
-                Points = newPoints;
+                CatchupPoints(optionStartLevel);
             }
             else //Default level 0 Character Points
+            {
                 Points = character.pointsLevel[0];
+            }
 
             //Spawn Gear
             if (character.StartGearLength() > 0)
@@ -355,6 +342,7 @@ namespace SupplyRaid
 
             //Show Game Panels
             SetGamePanels(true);
+            SR_HelpMenu.instance.SetActive(false);
 
             //Setup Ammo Type Prices
             SR_AmmoSpawner.instance.Setup();
@@ -366,7 +354,7 @@ namespace SupplyRaid
             SetupSupplyPoints();
 
             //Set our next level
-            CurrentLevel = optionStartLevel;
+            CurrentCaptures = optionStartLevel;
             SetLevel_Server();
 
             gameRunning = true;
@@ -568,10 +556,12 @@ namespace SupplyRaid
                 return;
 
             //Increase Captures
-            CapturesTotal++;
+            CurrentCaptures++;
+            if (inEndless)
+                endlessLevel++;
 
             //Game Complete?
-            if (optionCaptures > 0 && CapturesTotal >= optionCaptures)
+            if (optionCaptures > 0 && CurrentCaptures - optionStartLevel >= optionCaptures)
             {
                 stats.ObjectiveComplete = true;
                 CompleteGame();
@@ -674,6 +664,7 @@ namespace SupplyRaid
 
             spawnMenu.gameObject.SetActive(state);
             srMenu.gameObject.SetActive(!state);
+
         }
 
         void DisableGamePanels()
@@ -691,25 +682,53 @@ namespace SupplyRaid
         // Level Setup
         //----------------------------------------------------------------------
 
-        public void SetLevel_Client(int newLevel, int attackSupply, int playerSupply, bool isEndless)
+        public static int GetPointLevel()
         {
-            //Assign Values
-            CurrentLevel = newLevel;
+            int level = instance.CurrentCaptures;
+
+            if (level >= instance.character.pointsLevel.Length)
+                level = instance.character.pointsLevel.Length - 1;
+
+            return instance.character.pointsLevel[level];
+        }
+
+        void CatchupPoints(int level)
+        {
+            int newPoints = 0;
+
+            if (level >= character.pointsLevel.Length)
+                level = character.pointsLevel.Length - 1;
+
+            for (int i = 0; i < level; i++)
+                newPoints += character.pointsLevel[i];
+
+            Points = newPoints;
+        }
+
+        public void SetLevel_Client(int totalCaptures, int attackSupply, int playerSupply, bool isEndless)
+        {
+            //New Player catchup
+            if (CurrentCaptures == 0 && totalCaptures >= 2)
+            {
+                CatchupPoints(totalCaptures);
+                PlayPointsGainSFX();
+                CurrentCaptures = totalCaptures;
+            }
+
+            //Captured the Point
+            if (totalCaptures != CurrentCaptures)
+            {
+                CurrentCaptures = totalCaptures;
+                GivePlayerLevelPoints();
+                PlayCompleteSFX();
+            }
+
             attackSupplyID = attackSupply;
             playerSupplyID = playerSupply;
             inEndless = isEndless;
 
-            PlayCompleteSFX();
-
             //Update Panels
             MovePanelsToLastSupply();
-
-            //AttackSupplyPoint().SetActiveSupplyPoint(true);
-            //LastSupplyPoint().SetActiveSupplyPoint(false);
-
-            //Apply Gameplay
-            GivePlayerLevelPoints();
-
 
             //Update Capture Zone
             if (AttackSupplyPoint() != null)
@@ -727,35 +746,11 @@ namespace SupplyRaid
         {
             if (character == null)
             {
-                Debug.LogError("Supply Raid: Character Missing for Client");
+                Debug.LogError("Supply Raid: CHARACTER IS MISSING");
                 Points += 1;
             }
 
-            //Points
-            if (inEndless)
-            {
-                Points += character.pointsLevel[CurrentLevel];
-
-
-                Points += (faction.levels.Length + CurrentLevel + character.pointsLevel[character.pointsLevel.Length - 1]);
-
-            }
-            else
-            {
-                int points = 0;
-
-                //Outside of the characters point range, use last points
-                if (CurrentLevel >= character.pointsLevel.Length)
-                {
-                    points = character.pointsLevel[character.pointsLevel.Length - 1];
-                }
-
-
-                Points += (CurrentLevel + character.pointsLevel[0]);
-            }
-
-
-            //Points += character.pointsLevel[CurrentLevel];
+            Points += GetPointLevel();
         }
 
         public void SetLevel_Server()
@@ -774,35 +769,6 @@ namespace SupplyRaid
                 ClearSosigs();
 
                 //Debug.Log("Supply Raid: Post Clear + Points");
-            }
-
-            //Cap at max character level
-            if (!inEndless && CurrentLevel + 1 < faction.levels.Length)
-            {
-                //Debug.Log("Supply Raid: level Increase");
-                CurrentLevel++;
-            }
-            else if (!inEndless && faction.endless.Length <= 0)
-            {
-                //Endless not setup - Reuse last level
-                CurrentLevel = faction.levels.Length - 1;
-                //Debug.Log("Supply Raid: No Endless");
-            }
-            else
-            {
-                //Debug.Log("Supply Raid: Endless");
-                //ENDLESS
-                if (!inEndless) //Not in endless yet
-                {
-                    inEndless = true;
-                    CurrentLevel = 0;
-                }
-                else //Increase Level on endless repeat
-                    CurrentLevel++;
-
-                //If we're outside endless, start it over
-                if (CurrentLevel >= faction.endless.Length)
-                    CurrentLevel = 0;
             }
 
             //Give player points
@@ -844,8 +810,8 @@ namespace SupplyRaid
                 //Update Capture Zone
                 captureZone.MoveCaptureZone(AttackSupplyPoint().captureZone.position, AttackSupplyPoint().captureZone.localScale);
 
-                SetupSquadSosigs(GetCurrentLevel());
-                StartCoroutine(SetupDefenderSosigs(GetCurrentLevel()));
+                SetupSquadSosigs(GetFactionLevel());
+                StartCoroutine(SetupDefenderSosigs(GetFactionLevel()));
 
                 //Debug.Log("Supply Raid: Post Sosig Setup");
             }
@@ -874,7 +840,7 @@ namespace SupplyRaid
         void SetupSquadSosigs(FactionLevel currentLevel)
         {
             //Are squads enabled for this level?
-            if (currentLevel.squadCount <= 0 || currentLevel.squadPool.Length <= 0)
+            if (currentLevel.squadCount <= 0 || currentLevel.squadPool.Count() <= 0)
                 return;
 
             //Team
@@ -1013,7 +979,7 @@ namespace SupplyRaid
             int enemyCount = currentLevel.enemiesTotal * optionPlayerCount;
 
             //Sniper Setup
-            if (currentLevel.sniperCount > 0 && currentLevel.sniperPool.Length > 0)
+            if (currentLevel.sniperCount > 0 && currentLevel.sniperPool.Count() > 0)
             {
                 List<Transform> usedSpots = new List<Transform>();
 
@@ -1050,7 +1016,7 @@ namespace SupplyRaid
             yield return new WaitForSeconds(1f);
 
             //Guard Setup
-            if (currentLevel.guardCount > 0 && currentLevel.guardPool.Length > 0)
+            if (currentLevel.guardCount > 0 && currentLevel.guardPool.Count() > 0)
             {
                 List<Transform> usedSpots = new List<Transform>();
 
@@ -1085,7 +1051,7 @@ namespace SupplyRaid
 
             yield return new WaitForSeconds(1f);
 
-            if (currentLevel.patrolPool.Length <= 0)
+            if (currentLevel.patrolPool.Count() <= 0)
                 yield break;
 
             //Patrol Setup
@@ -1197,7 +1163,10 @@ namespace SupplyRaid
 
         void UpdateRabbithole()
         {
-            bool infiniteEnemies = faction.levels[CurrentLevel].infiniteEnemies;
+            bool infiniteEnemies = GetFactionLevel().infiniteEnemies;
+
+            if (infiniteEnemies && optionCaptureZone == false)
+                infiniteEnemies = false;
 
             //No more spawning enemies
             if (!infiniteEnemies && remainEnemies <= 0 || isClient)
@@ -1207,13 +1176,13 @@ namespace SupplyRaid
             if ((rabbitHoleTimer -= Time.deltaTime) <= 0)
             {
                 //Check once a second
-                rabbitHoleTimer = faction.levels[CurrentLevel].enemySpawnTimer;
+                rabbitHoleTimer = GetFactionLevel().enemySpawnTimer;
 
                 int maxEnemies = optionMaxEnemies;  //Max On Screen Enemies
 
                 //Infinite Enemies limitations
-                if (infiniteEnemies && faction.levels[CurrentLevel].enemiesTotal < optionMaxEnemies)
-                    maxEnemies = faction.levels[CurrentLevel].enemiesTotal; //Max Extra Enemies in infinite mode
+                if (infiniteEnemies && GetFactionLevel().enemiesTotal < optionMaxEnemies)
+                    maxEnemies = GetFactionLevel().enemiesTotal; //Max Extra Enemies in infinite mode
 
                 //If a enemy slot has freed up
                 if (currentEnemies < maxEnemies)
@@ -1221,9 +1190,15 @@ namespace SupplyRaid
                     if(!infiniteEnemies)
                         remainEnemies--;
 
-                    SpawnRabbitholeSosig(GetCurrentLevel());
+                    SpawnRabbitholeSosig(GetFactionLevel());
                 }
             }
+        }
+
+        void UpdateSquadSpawner()
+        {
+            bool infiniteEnemies = GetFactionLevel().infiniteEnemies;
+
         }
 
         void SpawnRabbitholeSosig(FactionLevel currentLevel)
@@ -1429,18 +1404,18 @@ namespace SupplyRaid
             sosigs.Add(sosig);
         }
 
-        Sosig CreateSosig(SosigAPI.SpawnOptions spawnOptions, Vector3 position, Quaternion rotation, SosigEnemyID[] pool, string poolName)
+        Sosig CreateSosig(SosigAPI.SpawnOptions spawnOptions, Vector3 position, Quaternion rotation, SosigPool pool, string poolName)
         {
             Debug.Log("Supply Raid - Spawning Sosig at position: " + position);
 
             //Get Valid Sosig ID
-            if (pool.Length <= 0)
+            if (pool.Count() <= 0)
             {
                 Debug.LogError("Supply Raid - No squad enemy IDs assigned to faction level " + poolName);
                 return null;
             }
 
-            SosigEnemyID id = GetRandomSosigIDFromPool(pool);
+            SosigEnemyID id = SR_Global.GetRandomSosigIDFromPool(pool.sosigEnemyID);
             if (id == SosigEnemyID.None)
             {
                 Debug.LogError("Supply Raid - No valid squad enemy IDs in faction level " + poolName);
@@ -1460,48 +1435,6 @@ namespace SupplyRaid
             return sosig;
         }
 
-        /// <summary>
-        /// Tries to get a Random Sosig Enemy ID from the input pool, returns None if not valid or not found
-        /// </summary>
-        /// <param name="pool"></param>
-        /// <returns></returns>
-        SosigEnemyID GetRandomSosigIDFromPool(SosigEnemyID[] pool)
-        {
-            SosigEnemyID id = SosigEnemyID.None;
-
-            if (pool.Length == 0)
-                return id;
-
-            int count = 0;
-            while (true)
-            {
-                if (count >= pool.Length)
-                {
-                    Debug.LogError("Supply Raid - Faction level " + faction.levels[CurrentLevel].name + " has no valid SosigEnemyIDs, Not Spawning Sosigs");
-                    return id;
-                }
-
-                id = pool[Random.Range(0, pool.Length)];
-
-                if (ValidSosigEnemyID(id))
-                    break;
-                else
-                    count++;
-            }
-
-            return id;
-        }
-
-        bool ValidSosigEnemyID(SosigEnemyID id)
-        {
-            if(id == SosigEnemyID.None)
-                return false;
-
-            if (IM.Instance.odicSosigObjsByID.ContainsKey(id))
-                return true;
-
-            return false;
-        }
 
         void ClearSosigs()
         {
@@ -1585,13 +1518,34 @@ namespace SupplyRaid
             return instance.character;
         }
 
-        public static FactionLevel GetCurrentLevel()
+        public static FactionLevel GetFactionLevel()
         {
-            if (instance.inEndless)
-                return instance.faction.endless[instance.CurrentLevel];
-            else
-                return instance.faction.levels[instance.CurrentLevel];
+            int level = instance.CurrentCaptures;
 
+            if (!instance.inEndless)
+            {
+                //Captures outside of levels, must be endless
+                if (level >= instance.faction.levels.Length && instance.faction.endless.Length > 0)
+                {
+                    instance.inEndless = true;
+                    level = instance.endlessLevel = 0;
+                }
+                else if(level >= instance.faction.levels.Length) //No endless, just last level
+                    level = instance.faction.levels.Length - 1;
+            }
+            else
+            {
+                if (instance.endlessLevel >= instance.faction.endless.Length)
+                    instance.endlessLevel = 0;
+
+                //Set to what endless we're at
+                level = instance.endlessLevel;
+            }
+
+            if (instance.inEndless)
+                return instance.faction.endless[level];
+            else
+                return instance.faction.levels[level];
         }
 
         public static int AddSupplyPoint(SR_SupplyPoint sp)
@@ -1691,7 +1645,7 @@ namespace SupplyRaid
 
         public void Network_GameOptions(
             int playerCount, float difficulty, bool freeBuyMenu, bool spawnLocking, int startLevel, int playerHealth,
-            bool itemSpawner, bool captureZone, int order, int captures, bool respawn, int maxEnemies)
+            bool itemSpawner, bool captureZone, int order, int captures, bool respawn, int maxEnemies, int maxSquadEnemies)
         {
             optionPlayerCount = playerCount;
             optionDifficulty = difficulty;
@@ -1705,12 +1659,13 @@ namespace SupplyRaid
             optionCaptures = captures;
             optionRespawn = respawn;
             optionMaxEnemies = maxEnemies;
+            optionMaxSquadEnemies = maxSquadEnemies;
 
             //SR_Menu.instance.SetFactionByName(factionID);
             //instance.factionID = factionID;
 
             //DO visual update here
-            if(SR_Menu.instance != null)
+            if (SR_Menu.instance != null)
                 SR_Menu.instance.UpdateGameOptions();
         }
 
@@ -1801,7 +1756,7 @@ namespace SupplyRaid
             {
                 int score = 0;
                 score = Kills * 100;         //100 points per kill
-                score += instance.CapturesTotal * 2500;   //2500 points for captures (25 kills)
+                score += instance.CurrentCaptures * 2500;   //2500 points for captures (25 kills)
                 score = ObjectiveComplete ? score : score / 2;  //half points for losing
                 score -= Mathf.FloorToInt(gameTime);
                 score /= Deaths + 1;    //divid score by deaths

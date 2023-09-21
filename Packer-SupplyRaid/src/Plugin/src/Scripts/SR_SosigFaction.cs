@@ -63,6 +63,19 @@ namespace SupplyRaid
 
     }
 
+
+    [System.Serializable]
+    public class SosigPool
+    {
+        public SosigEnemyID[] sosigEnemyID;
+        public string[] customPool; //Arctic_Patrol etc
+
+        public int Count()
+        {
+            return sosigEnemyID.Length + customPool.Length;
+        }
+    }
+
     [System.Serializable]
     public class FactionLevel
     {
@@ -71,9 +84,10 @@ namespace SupplyRaid
         [Header("Defenders")]
 
         [Tooltip("The total sosig count for this entire level")]
-        public int enemiesTotal = 5;    //max overall enemies
-        public bool infiniteEnemies = false;    //If true, enemies will spawn up to onscreen or Total (Whatever is lowest)
-        public float enemySpawnTimer = 1;   //How often enemies spawn through the rabbit hole system
+        public int enemiesTotal = 5;                //max overall enemies
+        public bool infiniteEnemies = false;        //If true, enemies will spawn up to onscreen or Total (Whatever is lowest)
+        public bool infiniteSquadEnemies = false;   //If true, enemies will spawn up to onscreen or Total (Whatever is lowest)
+        public float enemySpawnTimer = 1;           //How often enemies spawn through the rabbit hole system
 
         [Space]
         [Header("Guards")]
@@ -81,7 +95,7 @@ namespace SupplyRaid
         [Tooltip("The minimum size for Gaurds Groups")]
         public int guardCount = 0;
         [Tooltip("The sosig ID pool for stationary gaurds")]
-        public SosigEnemyID[] guardPool;
+        public SosigPool guardPool;
 
         [Space]
         [Header("Sniper")]
@@ -89,7 +103,7 @@ namespace SupplyRaid
         [Tooltip("The minimum size for Gaurds Groups")]
         public int sniperCount = 0;
         [Tooltip("The sosig ID pool for stationary snipers")]
-        public SosigEnemyID[] sniperPool;
+        public SosigPool sniperPool;
 
         [Space]
         [Header("Patrol")]
@@ -97,7 +111,7 @@ namespace SupplyRaid
         [Tooltip("The minimum size for Patrol Groups")]
         public int minPatrolSize = 2;
         [Tooltip("The sosig ID pool for patrols")]
-        public SosigEnemyID[] patrolPool;
+        public SosigPool patrolPool;
 
         [Space, Space]
         [Header("Squad")]
@@ -115,25 +129,8 @@ namespace SupplyRaid
         [Tooltip("Main Supply Point - Squads will move towards the next player capture supply point \n Random Supply Point - Squads will move to random supply points across the map")]
         public SquadBehaviour squadBehaviour = SquadBehaviour.RandomSupplyPoint;
         [Tooltip("The sosig ID pool for world patrols")]
-        public SosigEnemyID[] squadPool;
-
-        public SosigEnemyID GetEnemyFromPool()
-        {
-            return patrolPool[Random.Range(0, patrolPool.Length)];
-        }
-        public SosigEnemyID GetGuardFromPool()
-        {
-            return guardPool[Random.Range(0, guardPool.Length)];
-        }
-
-        public SosigEnemyID GetSniperFromPool()
-        {
-            return sniperPool[Random.Range(0, sniperPool.Length)];
-        }
-        public SosigEnemyID GetSquadFromPool()
-        {
-            return squadPool[Random.Range(0, squadPool.Length)];
-        }
+        public SosigPool squadPool;
+        
     }
 
     public enum SquadBehaviour

@@ -24,6 +24,7 @@ namespace SupplyRaid
         public Text captureCount;
         public Text linearSupplyPoints;
         public Text maxEnemies;
+        public Text maxSquadEnemies;
 
         public GameObject linearOption;
         public GameObject lauchGameButton;
@@ -114,7 +115,6 @@ namespace SupplyRaid
             UpdateGameOptions();
         }
 
-
         public void ToggleRespawn()
         {
             SR_Manager.instance.optionRespawn = !SR_Manager.instance.optionRespawn;
@@ -156,7 +156,12 @@ namespace SupplyRaid
 
         public void ChangeMaxEnemies(int i)
         {
-            SR_Manager.instance.optionMaxEnemies = Mathf.Clamp(SR_Manager.instance.optionMaxEnemies + i, 8, int.MaxValue);
+            SR_Manager.instance.optionMaxEnemies = Mathf.Clamp(SR_Manager.instance.optionMaxEnemies + i, 6, int.MaxValue);
+            UpdateGameOptions();
+        }
+        public void ChangeMaxSquadEnemies(int i)
+        {
+            SR_Manager.instance.optionMaxSquadEnemies = Mathf.Clamp(SR_Manager.instance.optionMaxSquadEnemies + i, 0, int.MaxValue);
             UpdateGameOptions();
         }
 
@@ -303,7 +308,13 @@ namespace SupplyRaid
             if (maxEnemies != null)
             {
                 maxEnemies.text = SR_Manager.instance.optionMaxEnemies.ToString();
-                maxEnemies.color = Color.Lerp(Color.white, Color.red, Mathf.InverseLerp(12, 20, SR_Manager.instance.optionMaxEnemies));
+                maxEnemies.color = Color.Lerp(Color.white, Color.red, Mathf.InverseLerp(10, 18, SR_Manager.instance.optionMaxEnemies));
+            }
+
+            if (maxSquadEnemies != null)
+            {
+                maxSquadEnemies.text = SR_Manager.instance.optionMaxSquadEnemies.ToString();
+                maxSquadEnemies.color = Color.Lerp(Color.white, Color.red, Mathf.InverseLerp(8, 12, SR_Manager.instance.optionMaxSquadEnemies));
             }
 
             //Capture Order
