@@ -74,10 +74,25 @@ namespace SupplyRaid
                 //Disable Buttons here after setup
             }
 
-            rearmButton.SetActive(!SR_Manager.instance.character.disableRearming);
-            speedloaderButton.SetActive(!SR_Manager.instance.character.disableSpeedLoaders);
-            clipButton.SetActive(!SR_Manager.instance.character.disableClips);
-            roundButton.SetActive(!SR_Manager.instance.character.disableRounds);
+            if(SR_Manager.instance.character.modeRearming == 0)
+                rearmButton.SetActive(false);
+            else
+                rearmButton.SetActive(true);
+
+            if (SR_Manager.instance.character.modeSpeedLoaders == 0)
+                speedloaderButton.SetActive(false);
+            else
+                speedloaderButton.SetActive(true);
+
+            if (SR_Manager.instance.character.modeClips == 0)
+                clipButton.SetActive(false);
+            else
+                clipButton.SetActive(true);
+
+            if (SR_Manager.instance.character.modeRounds == 0)
+                roundButton.SetActive(false);
+            else
+                roundButton.SetActive(true);
         }
 
         public void SetAmmoType(AmmoEnum ammo)

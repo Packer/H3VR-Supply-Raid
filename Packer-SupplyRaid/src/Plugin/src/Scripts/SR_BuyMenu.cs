@@ -31,8 +31,8 @@ namespace SupplyRaid
                 SR_Manager.PointEvent += UpdatePoints;
                 SR_Manager.LaunchedEvent += StartGame;
                 //Debug.Log("Assigned EVENTS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                pointDisplay.text = SR_Manager.instance.Points.ToString();
             }
-            pointDisplay.text = SR_Manager.instance.Points.ToString();
 
         }
 

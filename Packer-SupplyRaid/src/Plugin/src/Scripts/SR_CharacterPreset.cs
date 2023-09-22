@@ -30,12 +30,16 @@ namespace SupplyRaid
         //Recycler
         [Tooltip("How many points the players get for recycling weapons")]
         public int recyclerPoints = 1;
-        
+
         //Ammo Table
-        public bool disableRearming = false;
-        public bool disableSpeedLoaders = false;
-        public bool disableClips = false;
-        public bool disableRounds = false;
+        [Tooltip("0 = False\n1 = True\n3 = Buy Once\n 4 = Pay Every Time")]
+        public int modeRearming = 1;
+        [Tooltip("0 = False\n1 = True\n3 = Buy Once\n 4 = Pay Every Time")]
+        public int modeSpeedLoaders = 1;
+        [Tooltip("0 = False\n1 = True\n3 = Buy Once\n 4 = Pay Every Time")]
+        public int modeClips = 1;
+        [Tooltip("0 = False\n1 = True\n3 = Buy Once\n 4 = Pay Every Time")]
+        public int modeRounds = 1;
 
         //Panels
         public bool disableAmmoTable = false;
@@ -59,6 +63,9 @@ namespace SupplyRaid
         public List<string> startGearCategories = new List<string>();
         [Tooltip("(REQUIRED) What buy categories are available to this character")]
         public List<SR_PurchaseCategory> purchaseCategories = new List<SR_PurchaseCategory>();
+
+        
+        public List<SR_LootCategory> lootCategories = new List<SR_LootCategory>();
 
         [Tooltip("Globally Removes these ObjectIDs from ALL system including Attachments and Ammo types")]
         public List<string> subtractionObjectIDs = new List<string>();
@@ -115,7 +122,7 @@ namespace SupplyRaid
 
                 if (purchaseCategories[i].GetIndex() == -1)
                 {
-                    Debug.Log("Supply Raid - Purchase Category " + purchaseCategories[i].name + " could not set item Category");
+                    Debug.Log("Supply Raid - Purchase Category " + purchaseCategories[i].itemCategory + " could not set item Category");
                     removeCategory.Add(purchaseCategories[i]);
                 }
             }
@@ -126,7 +133,37 @@ namespace SupplyRaid
                 purchaseCategories.Remove(removeCategory[i]);
             }
 
-            //Debug.Log("Setting up Character Faction for " + name);
+            List<SR_LootCategory> removeLootCategory = new List<SR_LootCategory>();
+
+            //Loot Categories
+            for (int i = 0; i < lootCategories.Count; i++)
+            {
+                //Already setup
+                if (lootCategories[i].GetIndex() != -1)
+                    continue;
+
+                for (int y = 0; y < items.Count; y++)
+                {
+                    if (lootCategories[i].itemCategory == items[y].name)
+                    {
+                        lootCategories[i].SetIndex(y);
+                        break;
+                    }
+                }
+
+                if (lootCategories[i].GetIndex() == -1)
+                {
+                    Debug.Log("Supply Raid - Purchase Category " + lootCategories[i].itemCategory + " could not set item Category");
+                    removeLootCategory.Add(lootCategories[i]);
+                }
+            }
+
+            //Remove any non-functional Loot category
+            for (int i = 0; i < removeLootCategory.Count; i++)
+            {
+                lootCategories.Remove(removeLootCategory[i]);
+            }
+
             //Assign the Faction
             for (int i = 0; i < factions.Count; i++)
             {
@@ -196,10 +233,38 @@ namespace SupplyRaid
 	}
 
     [System.Serializable]
+    public class SR_LootCategory
+    {
+        private int index = -1;
+        public float chance = 0.01f;
+        public string itemCategory;
+
+        public void SetIndex(int i)
+        {
+            index = i;
+        }
+
+        public int GetIndex()
+        {
+            return index;
+        }
+
+        public SR_ItemCategory ItemCategory()
+        {
+            if (index != -1)
+            {
+                return SR_Manager.instance.itemCategories[index];
+            }
+
+            return null;
+        }
+    }
+
+
+    [System.Serializable]
     public class SR_PurchaseCategory
     {
         private int index = -1;
-        public string name;
         public string itemCategory;
         public int cost = 1;
 
@@ -214,8 +279,6 @@ namespace SupplyRaid
 
         public SR_ItemCategory ItemCategory()
         {
-            //Debug.Log("Supply Raid - Item Category Check " + index);
-
             if (index != -1)
             {
                 return SR_Manager.instance.itemCategories[index];

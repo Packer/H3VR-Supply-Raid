@@ -495,6 +495,9 @@ namespace SupplyRaid
             var sosig = sosigs.FirstOrDefault(x => x == s);
             if (!sosig) return;
 
+            //Loot Drop
+            LootDrop(s);
+
             if (gameRunning && !ignoreKillStat)
             {
                 stats.Kills++;
@@ -505,6 +508,52 @@ namespace SupplyRaid
 
             // Start a coroutine to respawn this sosig
             StartCoroutine(ClearSosig(sosig));
+        }
+
+        void LootDrop(Sosig s)
+        {
+
+
+            //Get all categories are within the first match
+
+            //Get the chance Range
+            float randomChance = Random.Range(0, 100f) / 100;
+
+            List<SR_LootCategory> chanceLoot = new List<SR_LootCategory>();
+
+            //Collect all valid Loot
+            for (int i = 0; i < character.lootCategories.Count; i++)
+            {
+                if (character.lootCategories[i].chance <= randomChance)
+                {
+                    
+                }
+            }
+
+
+            int lootSize = character.lootCategories.Count;
+
+            if (lootSize <= 0)
+                return;
+
+            float lootRandom = Random.Range(0, lootSize);
+            int floorRandom = Mathf.FloorToInt(lootRandom);
+            float result = lootRandom - floorRandom;
+
+            //In the chance zone
+            if(result <= character.lootCategories[floorRandom].chance)
+            {
+                //Spawn Loot
+                int index = character.lootCategories[floorRandom].GetIndex();
+
+                //Not setup correctly
+                if (index == -1)
+                    return;
+
+                SR_ItemCategory item = itemCategories[character.lootCategories[floorRandom].GetIndex()];
+                Transform[] spawns = new Transform[] { s.transform, s.transform, s.transform, s.transform, s.transform };
+                SR_Global.SpawnLoot(item.InitializeLootTable(), item, spawns);
+            }
         }
 
         private void PlayerDeathEvent(bool killedSelf)
