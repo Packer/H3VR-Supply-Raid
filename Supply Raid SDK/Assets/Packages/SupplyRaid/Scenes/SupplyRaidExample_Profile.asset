@@ -20,7 +20,7 @@ MonoBehaviour:
   Description: An example scene of the gamemode Supply Raid
   AdditionalDependencies:
   - VIP-H3MP-1.8.0
-  - Packer-SupplyRaid-0.1.0
+  - Packer-SupplyRaid-1.0.0
   - nrgill28-HookGenPatcher_H3VR-1.2.3
   StripNamespaces: 1
   AdditionalNamespaces:

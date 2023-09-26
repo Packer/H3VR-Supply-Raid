@@ -15,7 +15,6 @@ namespace SupplyRaid
         public SR_BuyMenu spawner;
         public Text text;
         public GameObject go;
-        public GameObject[] disableGO;
 
         public void SelectCharacter()
         {
@@ -89,17 +88,17 @@ namespace SupplyRaid
 
         public void TryBuyAmmo()
         {
-            if (SR_AmmoSpawner.instance == null)
+            if (SR_AmmoSpawner.instance == null || SR_Manager.instance.character.ammoUpgradeCost[index] <= -1)
                 return;
 
             //Try Buy
-            if (SR_AmmoSpawner.instance.purchased[index] == false)
+            if (SR_AmmoSpawner.instance.purchasedAmmoTypes[index] == false)
             {
                 if (SR_Manager.EnoughPoints(SR_Manager.instance.character.ammoUpgradeCost[index]))
                 {
                     if (SR_Manager.SpendPoints(SR_Manager.instance.character.ammoUpgradeCost[index]))
                     {
-                        SR_AmmoSpawner.instance.purchased[index] = true;
+                        SR_AmmoSpawner.instance.purchasedAmmoTypes[index] = true;
                         text.text = ""; //Blank Cost because we own it
 
                         SR_Manager.PlayPointsGainSFX();
@@ -113,20 +112,12 @@ namespace SupplyRaid
             }
 
             //Set Ammo Type
-            if(SR_AmmoSpawner.instance.purchased[index])
+            if(SR_AmmoSpawner.instance.purchasedAmmoTypes[index])
             {
                 SR_Manager.PlayConfirmSFX();
                 //SetAmmoType
                 Debug.Log("Setting Via Button");
                 SR_AmmoSpawner.instance.SetAmmoType((AmmoEnum)index);
-            }
-        }
-
-        public void DisableGameObjects()
-        {
-            for (int i = 0; i < disableGO.Length; i++)
-            {
-                disableGO[i].SetActive(false);
             }
         }
     }

@@ -52,6 +52,8 @@ namespace SupplyRaid
         public Stats stats = new Stats();
 
         [Header("Game Options")]
+        [Tooltip("The character name that will be auto selected for this map")]
+        public string defaultCharacter = "";
         [Tooltip("Force the players supply point to never move, useful for a none moving central buy zone")]
         public bool forceStaticPlayerSupplyPoint = false;
         [Tooltip("Force the map to be a specific Supply Points order \n-1 - Off\n0 - Random Order\n1 - Random\n2 - Ordered"), Range(-1, 2)]
@@ -60,6 +62,7 @@ namespace SupplyRaid
         public int forceStartPointsOverride = -1;
 
         [Header("Gameplay")]
+        private int points = 0;
         [HideInInspector]
         public SR_CharacterPreset character;
         [HideInInspector]
@@ -88,9 +91,13 @@ namespace SupplyRaid
 
         // Trackers
         private bool ignoreKillStat = false;
-        private int currentEnemies = 0;
-        private int remainEnemies = 0;
+        private int currentDefenders = 0;
+        private int remainDefenders = 0;
         private float rabbitHoleTimer = 0;
+
+        private int currentSquad = 0;
+        private int remainSquad = 0;
+        private float rabbitHoleSquadTimer = 0;
 
         [Header("World Transforms")]
         public Transform srMenu;
@@ -108,10 +115,16 @@ namespace SupplyRaid
 
         [Header("Supply Raid Data")]
         public Sprite fallbackThumbnail;
+        [HideInInspector]
+        public float sosigAlertness = 0;
+        [HideInInspector]
         public List<SR_CharacterPreset> characters;
+        [HideInInspector]
         public List<SR_SosigFaction> factions;
+        [HideInInspector]
         public List<SR_ItemCategory> itemCategories;
-        [HideInInspector] public LootTable lt_RequiredAttachments;
+        [HideInInspector] 
+        public LootTable lt_RequiredAttachments;
 
         [Header("Sosig Setup")]
         public SosigSettings sosigGuard = new SosigSettings();
@@ -122,8 +135,9 @@ namespace SupplyRaid
         public TNH_SosiggunShakeReloading shakeReloading = TNH_SosiggunShakeReloading.On;
         private readonly List<Sosig> sosigs = new List<Sosig>();
         private readonly List<Sosig> defenderSosigs = new List<Sosig>();
+        private readonly List<Sosig> squadSosigs = new List<Sosig>();
 
-        private readonly SosigAPI.SpawnOptions _spawnOptions = new SosigAPI.SpawnOptions
+        public readonly SosigAPI.SpawnOptions _spawnOptions = new SosigAPI.SpawnOptions
         {
             SpawnState = Sosig.SosigOrder.PathTo,
             SpawnActivated = true,
@@ -140,13 +154,33 @@ namespace SupplyRaid
         public delegate void LaunchedDelegate();
         public static event LaunchedDelegate LaunchedEvent;
 
-        public delegate void PostCaptureDelegate();
-        public static event PostCaptureDelegate PostCaptureEvent;
-
         public delegate void PointGainDelegate(int i);
         public static event PointGainDelegate PointEvent;
 
-        private int points = 0;
+        public delegate void SupplyPointChangeDelegate();
+        public static event SupplyPointChangeDelegate SupplyPointChangeEvent;
+
+        public delegate void GameCompleteDelegate();
+        public static event GameCompleteDelegate GameCompleteEvent;
+
+        public delegate void ObjectiveDelegate();
+        public static event ObjectiveDelegate ObjectiveEvent;
+
+        public delegate void EndlessDelegate();
+        public static event EndlessDelegate EndlessEvent;
+
+        [Header("Audio")]
+        public AudioSource globalAudio;
+        public AudioClip audioConfirm;  //Accepted Input
+        public AudioClip audioFail;     //Failed Input
+        public AudioClip audioError;    //Something went wrong
+        public AudioClip audioRearm;    //Reload Sound
+        public AudioClip audioPointsGain;    //Gaining Points
+        [Header("Audio - Capture")]
+        public AudioClip audioTick;     //Clock Ticking
+        public AudioClip audioTickAlmost;    //Clock Ticking last 5 seconds
+        public AudioClip audioCaptureComplete;     //Capture complete
+        public AudioClip audioFailCapture;
 
         public int Points
         {
@@ -165,18 +199,6 @@ namespace SupplyRaid
             get { return points; }
         }
 
-        [Header("Audio")]
-        public AudioSource globalAudio;
-        public AudioClip audioConfirm;  //Accepted Input
-        public AudioClip audioFail;     //Failed Input
-        public AudioClip audioError;    //Something went wrong
-        public AudioClip audioRearm;    //Reload Sound
-        public AudioClip audioPointsGain;    //Gaining Points
-        [Header("Audio - Capture")]
-        public AudioClip audioTick;     //Clock Ticking
-        public AudioClip audioTickAlmost;    //Clock Ticking last 5 seconds
-        public AudioClip audioCaptureComplete;     //Capture complete
-        public AudioClip audioFailCapture;
 
         // Use this for initialization
         void Awake()
@@ -186,15 +208,8 @@ namespace SupplyRaid
             SetupGameData();
         }
 
-        void JSONExample()
+        void ExportJSONs()
         {
-            /*
-            for (int i = 0; i < itemCategories.Count; i++)
-            {
-                itemCategories[i].ExportJson();
-            }
-            */
-
 
             for (int i = 0; i < characters.Count; i++)
             {
@@ -248,6 +263,9 @@ namespace SupplyRaid
 
             //TODO set active to true for when we have instructions
             SR_HelpMenu.instance.SetActive(false);
+
+            //Random the Random
+            Random.InitState((int)Time.realtimeSinceStartup);
         }
 
         void OnDisable()
@@ -367,10 +385,16 @@ namespace SupplyRaid
                 SR_Networking.instance.ServerRunning_Send();
             }
 
+            //Delay Rabbit Hole by 5 seconds
+            rabbitHoleTimer = 5;
+
             //Game Launched
             Debug.Log("Supply Raid: Launched Game");
             if (LaunchedEvent != null)
                 LaunchedEvent.Invoke();
+
+            //DEBUG
+            //StartCoroutine(SR_Global.SpawnAllLevelSosigs());
         }
 
         void SetupSupplyPoints()
@@ -491,6 +515,13 @@ namespace SupplyRaid
 
         private void CurrentSceneSettingsOnSosigKillEvent(Sosig s)
         {
+            //Stat Tracking before game management
+            if (gameRunning && !ignoreKillStat)
+            {
+                stats.Kills++;
+                SR_Networking.instance.UpdateStats_Send();
+            }
+
             // Make sure the sosig is managed by us
             var sosig = sosigs.FirstOrDefault(x => x == s);
             if (!sosig) return;
@@ -498,13 +529,10 @@ namespace SupplyRaid
             //Loot Drop
             LootDrop(s);
 
-            if (gameRunning && !ignoreKillStat)
-            {
-                stats.Kills++;
-                SR_Networking.instance.UpdateStats_Send();
-            }
-            
-            currentEnemies--;
+            if (squadSosigs.Contains(s))
+                currentSquad--;
+            else
+                currentDefenders--;
 
             // Start a coroutine to respawn this sosig
             StartCoroutine(ClearSosig(sosig));
@@ -512,47 +540,35 @@ namespace SupplyRaid
 
         void LootDrop(Sosig s)
         {
+            float lootSize = 0;
 
-
-            //Get all categories are within the first match
-
-            //Get the chance Range
-            float randomChance = Random.Range(0, 100f) / 100;
-
-            List<SR_LootCategory> chanceLoot = new List<SR_LootCategory>();
+            List<float> lootLow = new List<float>();
+            List<float> lootHigh = new List<float>();
 
             //Collect all valid Loot
             for (int i = 0; i < character.lootCategories.Count; i++)
             {
-                if (character.lootCategories[i].chance <= randomChance)
-                {
-                    
-                }
+                //Loot
+                lootLow.Add(lootSize);
+                lootSize += character.lootCategories[i].chance;
+                lootHigh.Add(lootSize);
             }
 
+            //Get Complete Loot Range
+            float lootRange = Random.Range(0f, (float)character.lootCategories.Count);
 
-            int lootSize = character.lootCategories.Count;
-
-            if (lootSize <= 0)
-                return;
-
-            float lootRandom = Random.Range(0, lootSize);
-            int floorRandom = Mathf.FloorToInt(lootRandom);
-            float result = lootRandom - floorRandom;
-
-            //In the chance zone
-            if(result <= character.lootCategories[floorRandom].chance)
+            //Loop through each low and high and compare with the 
+            for (int i = 0; i < lootLow.Count; i++)
             {
-                //Spawn Loot
-                int index = character.lootCategories[floorRandom].GetIndex();
-
-                //Not setup correctly
-                if (index == -1)
+                if (lootRange >= lootLow[i] && 
+                    lootRange < lootHigh[i])
+                {
+                    //Spawn Loot
+                    SR_ItemCategory item = itemCategories[character.lootCategories[i].GetIndex()];
+                    Transform[] spawns = new Transform[] { s.transform, s.transform, s.transform, s.transform, s.transform };
+                    SR_Global.SpawnLoot(item.InitializeLootTable(), item, spawns);
                     return;
-
-                SR_ItemCategory item = itemCategories[character.lootCategories[floorRandom].GetIndex()];
-                Transform[] spawns = new Transform[] { s.transform, s.transform, s.transform, s.transform, s.transform };
-                SR_Global.SpawnLoot(item.InitializeLootTable(), item, spawns);
+                }
             }
         }
 
@@ -566,6 +582,8 @@ namespace SupplyRaid
                 if (!optionRespawn)
                 {
                     stats.ObjectiveComplete = false;
+                    if(ObjectiveEvent != null)
+                        ObjectiveEvent.Invoke();
 
                     if (!isClient)
                         CompleteGame();
@@ -583,8 +601,12 @@ namespace SupplyRaid
 
             if (sosigs.Contains(sosig))
                 sosigs.Remove(sosig);
+
             if (defenderSosigs.Contains(sosig))
                 defenderSosigs.Remove(sosig);
+
+            if (squadSosigs.Contains(sosig))
+                squadSosigs.Remove(sosig);
 
             // Wait a little bit after before checking Complete
             yield return new WaitForSeconds(1f);
@@ -605,7 +627,10 @@ namespace SupplyRaid
                 return;
 
             //Increase Captures
+            Debug.Log("Supply Raid: Captured Point: " + CurrentCaptures);
+
             CurrentCaptures++;
+
             if (inEndless)
                 endlessLevel++;
 
@@ -613,16 +638,14 @@ namespace SupplyRaid
             if (optionCaptures > 0 && CurrentCaptures - optionStartLevel >= optionCaptures)
             {
                 stats.ObjectiveComplete = true;
+                if(ObjectiveEvent != null)
+                    ObjectiveEvent.Invoke();
                 CompleteGame();
             }
             else //Continue To Next level
             {
                 SetLevel_Server();
             }
-
-            //Post Capture Event
-            if(PostCaptureEvent != null)
-                PostCaptureEvent.Invoke();
         }
 
         public void CompleteGame()
@@ -630,7 +653,8 @@ namespace SupplyRaid
             if (!gameRunning)
                 return;
 
-            stats.ObjectiveComplete = true;
+            if(ObjectiveEvent != null)
+                ObjectiveEvent.Invoke();
 
             //Game Complete
             resultsMenu.gameObject.SetActive(true);
@@ -663,6 +687,9 @@ namespace SupplyRaid
                 SR_Networking.instance.ServerRunning_Send();
                 SR_Networking.instance.LevelUpdate_Send(gameCompleted);
             }
+
+            if(GameCompleteEvent != null)
+                GameCompleteEvent.Invoke();
         }
 
         void MovePanelsToLastSupply()
@@ -670,7 +697,6 @@ namespace SupplyRaid
             buyMenu.SetPositionAndRotation(LastSupplyPoint().buyMenu.position, LastSupplyPoint().buyMenu.rotation);
 
             ammoStation.SetPositionAndRotation(LastSupplyPoint().ammoStation.position, LastSupplyPoint().ammoStation.rotation);
-            //ammoStation.gameObject.GetComponent<SR_AmmoSpawner>().SetRandomSeed();
 
             recycler.SetPositionAndRotation(LastSupplyPoint().recycler.position, LastSupplyPoint().recycler.rotation);
 
@@ -781,14 +807,14 @@ namespace SupplyRaid
 
             //Update Capture Zone
             if (AttackSupplyPoint() != null)
-                captureZone.MoveCaptureZone(AttackSupplyPoint().captureZone.position, AttackSupplyPoint().captureZone.localScale);
+                captureZone.MoveCaptureZone(AttackSupplyPoint().captureZone);
 
             if (SR_ResultsMenu.instance != null)
                 SR_ResultsMenu.instance.UpdateResults();
 
-            //Post Capture Event
-            if(PostCaptureEvent != null)
-                PostCaptureEvent.Invoke();
+            //Capture / Supply Point Change
+            if (SupplyPointChangeEvent != null)
+                SupplyPointChangeEvent.Invoke();
         }
 
         void GivePlayerLevelPoints()
@@ -839,6 +865,7 @@ namespace SupplyRaid
                 {
                     while (playerSupplyID == attackSupplyID)
                     {
+                        //Debug.Log("Set Level Server SP While");
                         attackSupplyID = Random.Range(0, supplyPoints.Count);
                     }
                 }
@@ -857,7 +884,7 @@ namespace SupplyRaid
                 //Debug.Log("Supply Raid: Post Supply Setup");
 
                 //Update Capture Zone
-                captureZone.MoveCaptureZone(AttackSupplyPoint().captureZone.position, AttackSupplyPoint().captureZone.localScale);
+                captureZone.MoveCaptureZone(AttackSupplyPoint().captureZone);
 
                 SetupSquadSosigs(GetFactionLevel());
                 StartCoroutine(SetupDefenderSosigs(GetFactionLevel()));
@@ -879,6 +906,10 @@ namespace SupplyRaid
                 SR_Networking.instance.LevelUpdate_Send(gameCompleted);
                 SR_Networking.instance.UpdateStats_Send();
             }
+
+            if (SupplyPointChangeEvent != null)
+                SupplyPointChangeEvent.Invoke();
+
             Debug.Log("Supply Raid: End of Set Level");
         }
 
@@ -949,6 +980,8 @@ namespace SupplyRaid
 
                     while (true)
                     {
+
+                        //Debug.Log("SquadSosig While");
                         spawnPoint = supplyPoints[Random.Range(0, supplyPoints.Count)];
 
                         //If not Player or Defender Supplypoint
@@ -985,6 +1018,7 @@ namespace SupplyRaid
             {
                 while (true)
                 {
+                    //Debug.Log("Spawn Squads Sosigs While");
                     target = supplyPoints[Random.Range(0, supplyPoints.Count)];
 
                     //If not Player or Defender Supplypoint
@@ -1030,17 +1064,23 @@ namespace SupplyRaid
             //Sniper Setup
             if (currentLevel.sniperCount > 0 && currentLevel.sniperPool.Count() > 0)
             {
-                List<Transform> usedSpots = new List<Transform>();
+                //List<Transform> usedSpots = new List<Transform>();
 
                 int sniperCount = currentLevel.sniperCount * optionPlayerCount;
                 for (int i = 0; i < sniperCount; i++)
                 {
+                    Transform spot = AttackSupplyPoint().GetRandomSniperSpawn();
+                    SpawnSniperSosig(spot.position, spot.rotation, currentLevel);
+                    yield return new WaitForSeconds(1f);
+
+                    /*
                     //While we haven't filled all the spots
                     while (true)
                     {
-                        Transform spot = AttackSupplyPoint().sniperPoints[Random.Range(0, AttackSupplyPoint().sniperPoints.Length)];
+                        Debug.Log("Defender While");
+                        Transform spot = AttackSupplyPoint().GetRandomSniperSpawn();
 
-                        if ((usedSpots.Count >= AttackSupplyPoint().sniperPoints.Length))
+                        if ((usedSpots.Count >= AttackSupplyPoint().sniperPoints.Count))
                         {
                             usedSpots.Clear();
                             yield return new WaitForSeconds(1f);
@@ -1049,16 +1089,17 @@ namespace SupplyRaid
                         //Already in use, continue
                         if (usedSpots.Contains(spot))
                             continue;
-                        else
+                        else if (spot != null)
                         {
                             enemyCount--;
                             usedSpots.Add(spot);
                             SpawnSniperSosig(spot.position, spot.rotation, currentLevel);
 
-                            yield return new WaitForSeconds(0.25f);
+                            yield return new WaitForSeconds(1f);
                             break;
                         }
                     }
+                    */
                 }
             }
 
@@ -1067,34 +1108,48 @@ namespace SupplyRaid
             //Guard Setup
             if (currentLevel.guardCount > 0 && currentLevel.guardPool.Count() > 0)
             {
-                List<Transform> usedSpots = new List<Transform>();
+                //List<Transform> usedSpots = new List<Transform>();
 
                 int guardCount = currentLevel.guardCount * optionPlayerCount;
                 for (int i = 0; i < guardCount; i++)
                 {
+                    Transform spot = AttackSupplyPoint().GetRandomGuardSpawn();
+                    SpawnGuardSosig(spot.position, spot.rotation, currentLevel);
+                    yield return new WaitForSeconds(1f);
+
+
+                    /*
                     //While we haven't filled all the spots
                     while (true)
                     {
-                        Transform spot = AttackSupplyPoint().guardPoints[Random.Range(0, AttackSupplyPoint().guardPoints.Length)];
+                        Debug.Log("Guard While");
+                        Debug.Log("spotCount = " + usedSpots.Count);
+                        Transform spot = AttackSupplyPoint().GetRandomGuardSpawn();
 
-                        if ((usedSpots.Count >= AttackSupplyPoint().guardPoints.Length))
+                        if (usedSpots.Count >= AttackSupplyPoint().guardPoints.Count)
                         {
+                            Debug.Log("Guard While Clear");
                             usedSpots.Clear();
                             yield return new WaitForSeconds(1f);
                         }
 
                         //Already in use, continue
                         if (usedSpots.Contains(spot))
-                            continue;
-                        else
                         {
+                            Debug.Log("Guard While Continue");
+                            continue;
+                        }
+                        else if(spot != null)
+                        {
+                            Debug.Log("Guard While Enemy COunt");
                             enemyCount--;
                             usedSpots.Add(spot);
                             SpawnGuardSosig(spot.position, spot.rotation, currentLevel);
-                            yield return new WaitForSeconds(0.25f);
+                            yield return new WaitForSeconds(1f);
                             break;
                         }
                     }
+                    */
                 }
             }
 
@@ -1156,6 +1211,7 @@ namespace SupplyRaid
                 {
                     while (pp == null)
                     {
+                        Debug.Log("PP While");
                         pathID = Random.Range(0, AttackSupplyPoint().patrolPaths.Length);
 
                         if (!usedPaths.Contains(pathID))
@@ -1194,12 +1250,12 @@ namespace SupplyRaid
 
                             enemiesTotal--;
 
-                            yield return new WaitForSeconds(0.75f);
+                            yield return new WaitForSeconds(1f);
 
                             //Stop if nothing is running or we hit the enemy cap
-                            if (!gameRunning || currentEnemies >= optionMaxEnemies)
+                            if (!gameRunning || currentDefenders >= optionMaxEnemies)
                             {
-                                remainEnemies = enemiesTotal;
+                                remainDefenders = enemiesTotal;
                                 //Debug.Log("Remaining Enemies: " + remainEnemies);
 
                                 yield break;
@@ -1212,13 +1268,16 @@ namespace SupplyRaid
 
         void UpdateRabbithole()
         {
+            if (GetFactionLevel() == null)
+                return;
+
             bool infiniteEnemies = GetFactionLevel().infiniteEnemies;
 
             if (infiniteEnemies && optionCaptureZone == false)
                 infiniteEnemies = false;
 
             //No more spawning enemies
-            if (!infiniteEnemies && remainEnemies <= 0 || isClient)
+            if (!infiniteEnemies && remainDefenders <= 0 || isClient)
                 return;
 
             //Do once a second check
@@ -1234,10 +1293,10 @@ namespace SupplyRaid
                     maxEnemies = GetFactionLevel().enemiesTotal; //Max Extra Enemies in infinite mode
 
                 //If a enemy slot has freed up
-                if (currentEnemies < maxEnemies)
+                if (currentDefenders < maxEnemies)
                 {
                     if(!infiniteEnemies)
-                        remainEnemies--;
+                        remainDefenders--;
 
                     SpawnRabbitholeSosig(GetFactionLevel());
                 }
@@ -1248,6 +1307,12 @@ namespace SupplyRaid
         {
             bool infiniteEnemies = GetFactionLevel().infiniteEnemies;
 
+
+            //Do once a second check
+            if ((rabbitHoleSquadTimer -= Time.deltaTime) <= 0)
+            {
+                rabbitHoleSquadTimer = GetFactionLevel().enemySpawnTimer;
+            }
         }
 
         void SpawnRabbitholeSosig(FactionLevel currentLevel)
@@ -1261,7 +1326,6 @@ namespace SupplyRaid
                 Debug.LogError("Supply Raid - Missing Rabbithole spawn position " + pathID);
                 return;
             }
-
 
             SpawnPatrolSosig(sosigSpawn.position, sosigSpawn.rotation,
                                 pp,
@@ -1282,6 +1346,10 @@ namespace SupplyRaid
                 Debug.Log("Supply Raid - Missing Guard Spawn Data");
                 return;
             }
+            float size = AttackSupplyPoint().spawnRadius / 2;
+            //Todo make this better?
+            position.x += Random.Range(-size, size);
+            position.z += Random.Range(-size, size);
 
             Sosig sosig = CreateSosig(_spawnOptions, position, rotation, currentLevel.guardPool, currentLevel.name);
 
@@ -1291,7 +1359,7 @@ namespace SupplyRaid
                 return;
             }
 
-            currentEnemies++;
+            currentDefenders++;
 
             sosig.m_pathToPoint = position;
             sosig.SetCurrentOrder(Sosig.SosigOrder.GuardPoint);
@@ -1319,6 +1387,10 @@ namespace SupplyRaid
                 return;
             }
 
+            //Todo make this better?
+            position.x += Random.Range(-1, 1);
+            position.z += Random.Range(-1, 1);
+
             Sosig sosig = CreateSosig(_spawnOptions, position, rotation, currentLevel.sniperPool, currentLevel.name);
 
             if (sosig == null)
@@ -1327,7 +1399,7 @@ namespace SupplyRaid
                 return;
             }
 
-            currentEnemies++;
+            currentDefenders++;
 
             sosig.Speed_Walk = 0;
             sosig.Speed_Run = 0;
@@ -1367,7 +1439,7 @@ namespace SupplyRaid
                 return;
             }
 
-            currentEnemies++;
+            currentDefenders++;
 
             List<Vector3> pathPoints = pp.GetPathPositionList();
             List<Vector3> pathDirs = pp.GetPathRotationList();
@@ -1451,6 +1523,8 @@ namespace SupplyRaid
             sosigSquad.AssignToSosig(sosig);
 
             sosigs.Add(sosig);
+
+            squadSosigs.Add(sosig);
         }
 
         Sosig CreateSosig(SosigAPI.SpawnOptions spawnOptions, Vector3 position, Quaternion rotation, SosigPool pool, string poolName)
@@ -1465,11 +1539,14 @@ namespace SupplyRaid
             }
 
             SosigEnemyID id = SR_Global.GetRandomSosigIDFromPool(pool.sosigEnemyID);
+
             if (id == SosigEnemyID.None)
             {
                 Debug.LogError("Supply Raid - No valid squad enemy IDs in faction level " + poolName);
                 return null;
             }
+
+            Debug.Log("Supply Raid - Spawning SosigEnemyID: " + (int)id + " - " + id);
 
             Sosig sosig =
                 SosigAPI.Spawn(
@@ -1488,15 +1565,19 @@ namespace SupplyRaid
         void ClearSosigs()
         {
             ignoreKillStat = true;
-            remainEnemies = 0;
+            remainDefenders = 0;
+            currentDefenders = 0;
+
+            remainSquad = 0;
+            currentSquad = 0;
 
             for (int i = 0; i < sosigs.Count; i++)
             {
-                sosigs[i].KillSosig();
+                if(sosigs[i] != null)
+                    sosigs[i].KillSosig();
             }
             sosigs.Clear();
 
-            currentEnemies = 0;
             ignoreKillStat = false;
         }
 
@@ -1577,6 +1658,8 @@ namespace SupplyRaid
                 if (level >= instance.faction.levels.Length && instance.faction.endless.Length > 0)
                 {
                     instance.inEndless = true;
+                    if (EndlessEvent != null)
+                        EndlessEvent.Invoke();
                     level = instance.endlessLevel = 0;
                 }
                 else if(level >= instance.faction.levels.Length) //No endless, just last level

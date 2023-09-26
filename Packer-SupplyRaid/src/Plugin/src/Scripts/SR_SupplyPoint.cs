@@ -1,6 +1,7 @@
 ﻿using FistVR;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace SupplyRaid
 {
@@ -40,12 +41,13 @@ namespace SupplyRaid
         public Transform[] sosigSpawns;
 
         [Header("Sosig Waypoints")]
+        public float spawnRadius = 1.5f;
         [Tooltip("Squad waypoint when going to this supply point")]
         public Transform squadPoint;
         [Tooltip("Guard spawn points, they will move during combat/alerted")]
-        public Transform[] guardPoints;
+        public List<Transform> guardPoints = new List<Transform>();
         [Tooltip("Snipers never move, this points should be in overwatch points")]
-        public Transform[] sniperPoints;
+        public List<Transform> sniperPoints = new List<Transform>();
         [Tooltip("Groups of patrol paths")]
         public PatrolPath[] patrolPaths;
 
@@ -54,6 +56,11 @@ namespace SupplyRaid
         //public GameObject[] activeObjects;
 
         private RaycastHit rayHit = new RaycastHit();
+
+        void Awake()
+        {
+            //CleanSupplyPoint();
+        }
 
         void Start()
         {
@@ -72,6 +79,26 @@ namespace SupplyRaid
             if (SR_Manager.instance != null)
                 SR_Manager.RemoveSupplyPoint(this);
         }
+
+        /// <summary>
+        /// Fixes and removes any doubleups
+        /// </summary>
+        public void CleanSupplyPoint()
+        {
+            Debug.Log("Guard Points pre clean: " + guardPoints.Count);
+            List<Transform> cleanList = guardPoints.Distinct().ToList();
+            guardPoints = cleanList;
+            Debug.Log("Guard Points POST clean: " + guardPoints.Count);
+
+            cleanList.Clear();
+
+            Debug.Log("Sniper Points pre clean: " + sniperPoints.Count);
+            cleanList = sniperPoints.Distinct().ToList();
+            sniperPoints = cleanList;
+            Debug.Log("Sniper Points POST clean: " + sniperPoints.Count);
+
+        }
+
         /*
         public void SetActiveSupplyPoint(bool state)
         {
@@ -82,7 +109,17 @@ namespace SupplyRaid
             }
         }
         */
+        public Transform GetRandomSniperSpawn()
+        {
+            return sniperPoints[Random.Range(0, sniperPoints.Count - 1)];
+        }
 
+        public Transform GetRandomGuardSpawn()
+        {
+            int guardCount = guardPoints.Count;
+
+            return guardPoints[Random.Range(0, guardCount)];
+        }
 
         public PatrolPath GetRandomPatrolPath()
 		{
@@ -109,7 +146,7 @@ namespace SupplyRaid
             }
 
             //Guards
-            for (int i = 0; i < guardPoints.Length; i++)
+            for (int i = 0; i < guardPoints.Count; i++)
             {
                 if (Physics.Raycast(guardPoints[i].position, Vector3.down, out rayHit, 200f))
                 {
@@ -118,7 +155,7 @@ namespace SupplyRaid
             }
 
             //Sniper
-            for (int i = 0; i < sniperPoints.Length; i++)
+            for (int i = 0; i < sniperPoints.Count; i++)
             {
                 if (Physics.Raycast(sniperPoints[i].position, Vector3.down, out rayHit, 200f))
                 {
@@ -180,9 +217,9 @@ namespace SupplyRaid
             }
 
             //Guards
-            if (guardPoints != null && guardPoints.Length > 0)
+            if (guardPoints != null && guardPoints.Count > 0)
             {
-                for (int i = 0; i < guardPoints.Length; i++)
+                for (int i = 0; i < guardPoints.Count; i++)
                 {
                     Gizmos.color = new Color(1f, 0.1f, 0.1f, 1f);
                     Gizmos.DrawLine(guardPoints[i].position + Vector3.up, guardPoints[i].position + Vector3.up + guardPoints[i].forward);
@@ -190,13 +227,16 @@ namespace SupplyRaid
                     Gizmos.DrawSphere(guardPoints[i].position + (Vector3.up * 0.125f), 0.25f);
                     Gizmos.DrawSphere(guardPoints[i].position + Vector3.up, 0.25f);
                     Gizmos.DrawSphere(guardPoints[i].position + (Vector3.up * 1.75f), 0.25f);
+
+                    spawnSize = new Vector3(spawnRadius, 0.1f, spawnRadius);
+                    Gizmos.DrawWireCube(guardPoints[i].position, spawnSize);
                 }
             }
 
             //Snipers
-            if (sniperPoints != null && sniperPoints.Length > 0)
+            if (sniperPoints != null && sniperPoints.Count > 0)
             {
-                for (int i = 0; i < sniperPoints.Length; i++)
+                for (int i = 0; i < sniperPoints.Count; i++)
                 {
                     Gizmos.color = new Color(0.1f, 0.1f, 1f, 1f);
                     Gizmos.DrawLine(sniperPoints[i].position + (Vector3.up * 1.75f), sniperPoints[i].position + (Vector3.up * 1.75f) + (sniperPoints[i].forward * 3));
@@ -204,6 +244,9 @@ namespace SupplyRaid
                     Gizmos.DrawSphere(sniperPoints[i].position + (Vector3.up * 0.125f), 0.25f);
                     Gizmos.DrawSphere(sniperPoints[i].position + Vector3.up, 0.25f);
                     Gizmos.DrawSphere(sniperPoints[i].position + (Vector3.up * 1.75f), 0.25f);
+
+                    spawnSize = new Vector3(spawnRadius, 0.1f, spawnRadius);
+                    Gizmos.DrawWireCube(sniperPoints[i].position, spawnSize);
                 }
             }
 
@@ -231,13 +274,16 @@ namespace SupplyRaid
             }
             #endregion
 
+            //MATRIX
+
             if (captureZone != null)
             {
+                Gizmos.matrix = Matrix4x4.TRS(captureZone.position, captureZone.rotation, captureZone.lossyScale);
                 Gizmos.color = new Color(1f, 0, 1f, 0.25f);
-                Gizmos.DrawSphere(captureZone.position, 0.25f);
-                Gizmos.DrawCube(captureZone.position, captureZone.localScale);
+                Gizmos.DrawSphere(Vector4.zero, 0.1f);
+                Gizmos.DrawCube(Vector3.zero, Vector3.one);
                 Gizmos.color = new Color(1f, 0, 1f, 1f);
-                Gizmos.DrawWireCube(captureZone.position, captureZone.localScale);
+                Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
             }
 
             if (respawn != null)

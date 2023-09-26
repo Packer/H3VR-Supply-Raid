@@ -60,7 +60,6 @@ namespace SupplyRaid
                 SR_Manager.instance.SetLocalAsClient();
         }
 
-
         /// <summary>
         /// When a player joins the server MID game.
         /// </summary>
@@ -230,6 +229,8 @@ namespace SupplyRaid
             packet.Write(SR_Manager.instance.stats.ObjectiveComplete);
             packet.Write(gameComplete);
             ServerSend.SendTCPDataToAll(packet, true);
+
+            Debug.Log("Supply Raid Host - Level Update: " + SR_Manager.instance.CurrentCaptures);
         }
 
         //Level Update Receive
@@ -256,6 +257,9 @@ namespace SupplyRaid
             }
             else
                 SR_Manager.instance.SetLevel_Client(totalCaptures, supply, lastSupply, endless);
+
+
+            Debug.Log("Supply Raid Client - Level Update: " + totalCaptures);
         }
 
         //GameOptions Send ----------------------------------------------

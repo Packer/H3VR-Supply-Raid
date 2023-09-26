@@ -7,7 +7,6 @@ using H3MP.Networking;
 
 namespace SupplyRaid
 {
-
     public class SR_CaptureZone : MonoBehaviour
     {
         public Transform zone;
@@ -37,7 +36,6 @@ namespace SupplyRaid
 
         }
 
-
         void CaptureZoneScan()
         {
             captureTick -= Time.deltaTime;
@@ -46,6 +44,9 @@ namespace SupplyRaid
                 if (WithinCaptureZone())
                 {
                     captureRemain -= 1;
+                    if (captureRemain < 0)
+                        captureRemain = 0;
+
                     captureTick = 1;
 
                     //Count Down Sounds
@@ -95,10 +96,11 @@ namespace SupplyRaid
             }
         }
 
-        public void MoveCaptureZone(Vector3 position, Vector3 scale)
+        public void MoveCaptureZone(Transform point)
         {
-            zone.position = position;
-            zone.localScale = scale;
+            zone.position = point.position;
+            zone.localScale = point.localScale;
+            zone.rotation = point.rotation;
 
             bounds.center = zone.position;
             bounds.size = zone.localScale;
@@ -109,10 +111,14 @@ namespace SupplyRaid
 
         bool WithinCaptureZone()
         {
-            if (bounds.Contains(GM.CurrentPlayerBody.Head.position))
-                return true;
+            Vector3 localPoint = Quaternion.Inverse(zone.rotation) * (GM.CurrentPlayerBody.Head.position - zone.position);
 
-            return false;
+            // Check if the local point is within the box's bounds
+            return Mathf.Abs(localPoint.x) <= zone.localScale.x / 2f &&
+                   Mathf.Abs(localPoint.y) <= zone.localScale.y / 2f &&
+                   Mathf.Abs(localPoint.z) <= zone.localScale.z / 2f;
         }
+
+
     }
 }

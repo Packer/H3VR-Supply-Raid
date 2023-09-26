@@ -76,6 +76,21 @@ namespace SupplyRaid
 
             //Force Select first character
             SR_Manager.instance.character = SR_Manager.instance.characters[0];
+
+            //Select Default Character
+            if (SR_Manager.instance.defaultCharacter != "")
+            {
+                for (int i = 0; i < SR_Manager.instance.characters.Count; i++)
+                {
+                    if (SR_Manager.instance.defaultCharacter == SR_Manager.instance.characters[i].name)
+                    {
+                        SR_Manager.instance.character = SR_Manager.instance.characters[i];
+                        OpenCharacterCategory(SR_Manager.instance.character);
+                        break;
+                    }
+                }                        
+            }
+
             UpdateCharacter();
 
             if (SR_Manager.instance.character.Faction() != null)
@@ -383,6 +398,18 @@ namespace SupplyRaid
         // CHARACTERS and FACTIONS
         //----------------------------------------
 
+        public void OpenCharacterCategory(SR_CharacterPreset character)
+        {
+            for (int i = 0; i < characterCategories.Count; i++)
+            {
+                if (characterCategories[i].name == character.category)
+                {
+                    OpenCharacterCategory(i);
+                    break;
+                }
+            }
+        }
+
         public void OpenCharacterCategory(int i)
         {
             if (characterCategories.Count <= 0)
@@ -516,6 +543,7 @@ namespace SupplyRaid
                 GameObject categoryButton = Instantiate(categoryBtnPrefab, categoryContent);
                 categoryButton.GetComponent<SR_GenericButton>().index = i;  //Each category content index
                 categoryButton.GetComponent<Text>().text = createdCategories[i];
+                categoryButton.name = createdCategories[i];
                 categoryButton.SetActive(true);
             }
         }

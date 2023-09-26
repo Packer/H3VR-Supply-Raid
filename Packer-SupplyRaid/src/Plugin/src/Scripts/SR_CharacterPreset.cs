@@ -34,12 +34,16 @@ namespace SupplyRaid
         //Ammo Table
         [Tooltip("0 = False\n1 = True\n3 = Buy Once\n 4 = Pay Every Time")]
         public int modeRearming = 1;
+        public int rearmingCost = 0;
         [Tooltip("0 = False\n1 = True\n3 = Buy Once\n 4 = Pay Every Time")]
         public int modeSpeedLoaders = 1;
+        public int speedLoadersCost = 0;
         [Tooltip("0 = False\n1 = True\n3 = Buy Once\n 4 = Pay Every Time")]
         public int modeClips = 1;
+        public int clipsCost = 0;
         [Tooltip("0 = False\n1 = True\n3 = Buy Once\n 4 = Pay Every Time")]
         public int modeRounds = 1;
+        public int roundsCost = 0;
 
         //Panels
         public bool disableAmmoTable = false;

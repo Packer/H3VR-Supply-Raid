@@ -1,10 +1,9 @@
-﻿using FistVR;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SupplyRaid
 {
 
-	public class SR_SpawnStation : MonoBehaviour
+    public class SR_SpawnStation : MonoBehaviour
 	{
 		private bool countDown = false;
 		private float timeRemain = 60;

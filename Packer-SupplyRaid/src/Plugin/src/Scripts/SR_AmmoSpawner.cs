@@ -13,11 +13,14 @@ namespace SupplyRaid
         public LayerMask ScanningLM;
         public Transform selectionIcon;
 
-        public bool[] purchased = new bool[28];    //Ammo Enum Length
+        [HideInInspector]
+        public bool[] purchasedAmmoTypes = new bool[28];    //Ammo Enum Length
         public GameObject rearmButton;
         public GameObject speedloaderButton;
         public GameObject clipButton;
         public GameObject roundButton;
+        [HideInInspector, Tooltip("0 = Rearm \n1 = Speed Loader\n2 = Clip\n3 Round")] 
+        bool[] purchaseButtons = new bool[4];
 
         public GameObject[] ammoTypeButtons = new GameObject[28];    //Ammo Enum Length
 
@@ -65,34 +68,101 @@ namespace SupplyRaid
 
         public void Setup()
         {
+            //Ammo Types
             for (int i = 0; i < ammoTypeButtons.Length; i++)
             {
                 SR_GenericButton btn = ammoTypeButtons[i].GetComponent<SR_GenericButton>();
                 //btn.index = i;
-                btn.text.text = SR_Manager.instance.character.ammoUpgradeCost[i].ToString();
+                if (SR_Manager.instance.character.ammoUpgradeCost[i] == 0)
+                {
+                    purchasedAmmoTypes[i] = true;
+                    btn.text.text = "";
+                }
+                else
+                    btn.text.text = SR_Manager.instance.character.ammoUpgradeCost[i].ToString();
 
                 //Disable Buttons here after setup
             }
 
-            if(SR_Manager.instance.character.modeRearming == 0)
-                rearmButton.SetActive(false);
-            else
-                rearmButton.SetActive(true);
+            //REARM
+            switch (SR_Manager.instance.character.modeRearming)
+            {
+                case 0: //false
+                    rearmButton.SetActive(false);
+                    break;
+                case 1: //true
+                default:
+                    rearmButton.SetActive(true);
+                    rearmButton.GetComponent<SR_GenericButton>().text.text = "";
+                    break;
+                case 2: //Buy Once
+                case 3: //Buy Repeat
+                    if (SR_Manager.instance.character.rearmingCost > 0)
+                        rearmButton.GetComponent<SR_GenericButton>().text.text = SR_Manager.instance.character.rearmingCost.ToString();
+                    else
+                        rearmButton.GetComponent<SR_GenericButton>().text.text = "";
+                    break;
+            }
 
-            if (SR_Manager.instance.character.modeSpeedLoaders == 0)
-                speedloaderButton.SetActive(false);
-            else
-                speedloaderButton.SetActive(true);
+            //SPEED LOADERS
+            switch (SR_Manager.instance.character.modeSpeedLoaders)
+            {
+                case 0: //false
+                    speedloaderButton.SetActive(false);
+                    break;
+                case 1: //true
+                default:
+                    speedloaderButton.SetActive(true);
+                    speedloaderButton.GetComponent<SR_GenericButton>().text.text = "";
+                    break;
+                case 2: //Buy Once
+                case 3: //Buy Repeat
+                    if (SR_Manager.instance.character.speedLoadersCost > 0)
+                        speedloaderButton.GetComponent<SR_GenericButton>().text.text = SR_Manager.instance.character.rearmingCost.ToString();
+                    else
+                        speedloaderButton.GetComponent<SR_GenericButton>().text.text = "";
+                    break;
+            }
 
-            if (SR_Manager.instance.character.modeClips == 0)
-                clipButton.SetActive(false);
-            else
-                clipButton.SetActive(true);
+            //CLIPS
+            switch (SR_Manager.instance.character.modeClips)
+            {
+                case 0: //false
+                    clipButton.SetActive(false);
+                    break;
+                case 1: //true
+                default:
+                    clipButton.SetActive(true);
+                    clipButton.GetComponent<SR_GenericButton>().text.text = "";
+                    break;
+                case 2: //Buy Once
+                case 3: //Buy Repeat
+                    if (SR_Manager.instance.character.clipsCost > 0)
+                        clipButton.GetComponent<SR_GenericButton>().text.text = SR_Manager.instance.character.rearmingCost.ToString();
+                    else
+                        clipButton.GetComponent<SR_GenericButton>().text.text = "";
+                    break;
+            }
 
-            if (SR_Manager.instance.character.modeRounds == 0)
-                roundButton.SetActive(false);
-            else
-                roundButton.SetActive(true);
+            //ROUNDS
+            switch (SR_Manager.instance.character.modeRounds)
+            {
+                case 0: //false
+                    roundButton.SetActive(false);
+                    break;
+                case 1: //true
+                default:
+                    roundButton.SetActive(true);
+                    roundButton.GetComponent<SR_GenericButton>().text.text = "";
+                    break;
+                case 2: //Buy Once
+                case 3: //Buy Repeat
+                    if (SR_Manager.instance.character.roundsCost > 0)
+                        roundButton.GetComponent<SR_GenericButton>().text.text = SR_Manager.instance.character.rearmingCost.ToString();
+                    else
+                        roundButton.GetComponent<SR_GenericButton>().text.text = "";
+                    break;
+            }
         }
 
         public void SetAmmoType(AmmoEnum ammo)
@@ -102,9 +172,54 @@ namespace SupplyRaid
             selectionIcon.position = ammoTypeButtons[(int)selectedAmmoType].transform.position;
         }
 
+        bool CanSpawn(int mode, int cost, int id)
+        {
+            //Already Purchased
+            if (purchaseButtons[id] == true || mode <= 1)
+                return true;
+
+            //Pay for this
+            if (mode > 1
+                && cost > 0)
+            {
+                if (SR_Manager.EnoughPoints(cost))
+                {
+                    if (SR_Manager.SpendPoints(cost))
+                    {
+                        if (mode == 3) //Buy Once
+                        {
+                            purchaseButtons[id] = true;
+                            //Update UI
+                            switch (id)
+                            {
+                                case 0: //Rearm
+                                    rearmButton.GetComponent<SR_GenericButton>().text.text = "";
+                                    break;
+                                case 1: //Loader
+                                    speedloaderButton.GetComponent<SR_GenericButton>().text.text = "";
+                                    break;
+                                case 2: //Clip
+                                    clipButton.GetComponent<SR_GenericButton>().text.text = "";
+                                    break;
+                                case 4: //Rounds
+                                    roundButton.GetComponent<SR_GenericButton>().text.text = "";
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public void Button_SpawnRound()
         {
-            if (m_roundTypes == null || m_roundTypes.Count < 1 || ammoList == null)
+            if (m_roundTypes == null || m_roundTypes.Count < 1 || ammoList == null || 
+                !CanSpawn(SR_Manager.instance.character.modeRounds, SR_Manager.instance.character.roundsCost, 3))
             {
                 SR_Manager.PlayFailSFX();
                 return;
@@ -135,6 +250,12 @@ namespace SupplyRaid
 
         public void Button_SpawnSpeedLoader()
         {
+            if (!CanSpawn(SR_Manager.instance.character.modeSpeedLoaders, SR_Manager.instance.character.speedLoadersCost, 1))
+            {
+                SR_Manager.PlayFailSFX();
+                return;
+            }
+
             bool flag = false;
             for (int i = 0; i < m_detectedFirearms.Count; i++)
             {
@@ -181,6 +302,12 @@ namespace SupplyRaid
 
         public void Button_SpawnClip()
         {
+            if (!CanSpawn(SR_Manager.instance.character.modeClips, SR_Manager.instance.character.clipsCost, 2))
+            {
+                SR_Manager.PlayFailSFX();
+                return;
+            }
+
             bool flag = false;
             for (int i = 0; i < m_detectedFirearms.Count; i++)
             {
@@ -235,6 +362,12 @@ namespace SupplyRaid
 
         public void Button_ReloadGuns()
         {
+            if (!CanSpawn(SR_Manager.instance.character.modeRearming, SR_Manager.instance.character.rearmingCost, 0))
+            {
+                SR_Manager.PlayFailSFX();
+                return;
+            }
+
             if (m_detectedMags.Count < 1 && m_detectedClips.Count < 1 && m_detectedSLs.Count < 1 && m_detectedSweapons.Count < 1)
             {
                 SR_Manager.PlayFailSFX();
@@ -501,14 +634,6 @@ namespace SupplyRaid
                     ammoTypeButtons[i].SetActive(false);
             }
 
-
-            //Selection
-            if (ammoList.Count > 0)
-            {
-                selectionIcon.gameObject.SetActive(true);
-                selectionIcon.position = ammoTypeButtons[(int)selectedAmmoType].transform.position;
-            }
-
             //Loop through entire list
             for (int i = 0; i < ammoList.Count; i++)
             {
@@ -517,15 +642,24 @@ namespace SupplyRaid
                 {
                     for (int x = 0; x < ammoList[i].roundClasses.Count; x++)
                     {
-                        //Debug.Log("Class Btn: " + ammoList[i].roundClasses[x].ammo);
-                        if (ammoTypeButtons[(int)ammoList[i].roundClasses[x].ammo] != null
-                            && SR_Manager.instance.character.ammoUpgradeCost[(int)ammoList[i].roundClasses[x].ammo] >= 0)
+                        if (ammoTypeButtons[(int)ammoList[i].roundClasses[x].ammo] == null
+                            || SR_Manager.instance.character.ammoUpgradeCost[(int)ammoList[i].roundClasses[x].ammo] <= -1)
+                            continue;
+
+                        if (SR_Manager.instance.character.ammoUpgradeCost[(int)ammoList[i].roundClasses[x].ammo] >= 0)
                         {
                             //Debug.Log("BUTTON ACTIVE!");
                             ammoTypeButtons[(int)ammoList[i].roundClasses[x].ammo].SetActive(true);
                         }
                     }
                 }
+            }
+
+            //Selection
+            if (ammoList.Count > 0)
+            {
+                selectionIcon.gameObject.SetActive(true);
+                selectionIcon.position = ammoTypeButtons[(int)selectedAmmoType].transform.position;
             }
         }
 

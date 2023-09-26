@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-
 namespace SupplyRaid
 {
 
@@ -35,6 +34,83 @@ namespace SupplyRaid
             Sprite NewSprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0), 100.0f);
 
             return NewSprite;
+        }
+
+        public static IEnumerator SpawnAllLevelSosigs()
+        {
+            Debug.Log("Supply Raid - Spawning all Sosigs");
+            Transform spawnPoint = SR_Manager.AttackSupplyPoint().respawn;
+            List<SosigEnemyID> idList = new List<SosigEnemyID>();
+
+            for (int x = 0; x < SR_Manager.instance.faction.levels.Length; x++)
+            {
+                //Guards
+                if (SR_Manager.instance.faction.levels[x].guardPool != null && SR_Manager.instance.faction.levels[x].guardPool.sosigEnemyID != null)
+                {
+                    for (int y = 0; y < SR_Manager.instance.faction.levels[x].guardPool.sosigEnemyID.Length; y++)
+                    {
+                        if (!idList.Contains(SR_Manager.instance.faction.levels[x].guardPool.sosigEnemyID[y]))
+                            idList.Add(SR_Manager.instance.faction.levels[x].guardPool.sosigEnemyID[y]);
+                    }
+                }
+
+                //Sniper
+                if (SR_Manager.instance.faction.levels[x].sniperPool != null && SR_Manager.instance.faction.levels[x].sniperPool.sosigEnemyID != null)
+                {
+                    for (int y = 0; y < SR_Manager.instance.faction.levels[x].sniperPool.sosigEnemyID.Length; y++)
+                    {
+                        if (!idList.Contains(SR_Manager.instance.faction.levels[x].sniperPool.sosigEnemyID[y]))
+                            idList.Add(SR_Manager.instance.faction.levels[x].sniperPool.sosigEnemyID[y]);
+                    }
+                }
+
+                //Patrol
+                if (SR_Manager.instance.faction.levels[x].patrolPool != null && SR_Manager.instance.faction.levels[x].patrolPool.sosigEnemyID != null)
+                {
+                    for (int y = 0; y < SR_Manager.instance.faction.levels[x].patrolPool.sosigEnemyID.Length; y++)
+                    {
+                        if (!idList.Contains(SR_Manager.instance.faction.levels[x].patrolPool.sosigEnemyID[y]))
+                            idList.Add(SR_Manager.instance.faction.levels[x].patrolPool.sosigEnemyID[y]);
+                    }
+                }
+
+                //Squad
+                if (SR_Manager.instance.faction.levels[x].squadPool != null && SR_Manager.instance.faction.levels[x].squadPool.sosigEnemyID != null)
+                {
+                    for (int y = 0; y < SR_Manager.instance.faction.levels[x].squadPool.sosigEnemyID.Length; y++)
+                    {
+                        if (!idList.Contains(SR_Manager.instance.faction.levels[x].squadPool.sosigEnemyID[y]))
+                            idList.Add(SR_Manager.instance.faction.levels[x].squadPool.sosigEnemyID[y]);
+                    }
+                }
+
+                //Spawn everything
+                foreach (SosigEnemyID id in idList)
+                {
+                    SpawnTempSosig(id, spawnPoint);
+                    yield return new WaitForSeconds(0.33f);
+                }
+            }
+        }
+        public static void SpawnTempSosig(SosigEnemyID id, Transform spawnPoint)
+        {
+            Debug.Log("Supply Raid - Spawning: " + (int)id + " - " + id);
+
+            Sosig sosig =
+                Sodalite.Api.SosigAPI.Spawn(
+                    IM.Instance.odicSosigObjsByID[id],
+                    SR_Manager.instance._spawnOptions,
+                    spawnPoint.position,
+                    spawnPoint.rotation);
+
+            if (sosig.Hand_Primary.HeldObject != null)
+                Destroy(sosig.Hand_Primary.HeldObject);
+
+            if(sosig.Hand_Secondary.HeldObject != null)
+                Destroy(sosig.Hand_Secondary.HeldObject);
+
+            Destroy(sosig.gameObject);
+            //sosig.ClearSosig();
         }
 
         /// <summary>
@@ -576,7 +652,7 @@ namespace SupplyRaid
                 //----Unsorted---------------------------
 
                 default:
-                    return AmmoEnum.None;
+                    return AmmoEnum.Special;
             }
         }
     }
