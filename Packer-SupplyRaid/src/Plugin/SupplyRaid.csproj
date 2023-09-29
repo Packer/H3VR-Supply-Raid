@@ -5,6 +5,11 @@
         <LangVersion>9</LangVersion>
         <Nullable>disable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Title>Supply Raid</Title>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <Optimize>True</Optimize>
     </PropertyGroup>
     
     <ItemGroup>       
@@ -16,10 +21,11 @@
     
     <ItemGroup>
       <Reference Include="Atlas">
-        <HintPath>..\..\..\Supply Raid Dedicated\src\libs\Atlas.dll</HintPath>
+        <HintPath>..\libs\Atlas.dll</HintPath>
       </Reference>
       <Reference Include="H3MP">
-        <HintPath>..\..\..\Supply Raid Dedicated\src\libs\H3MP.dll</HintPath>
+        <HintPath>..\libs\H3MP.dll</HintPath>
+        <Private>True</Private>
       </Reference>
       <Reference Include="MMHOOK_Assembly-CSharp">
         <HintPath>..\libs\MMHOOK_Assembly-CSharp.dll</HintPath>

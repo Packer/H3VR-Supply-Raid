@@ -31,6 +31,7 @@ namespace SupplyRaid
 
         public float optionDifficulty = 1f;
 
+        public GameObject settingsButton;
         public GameObject settingsMenu;
         public GameObject settingsPrefab;
 
@@ -111,6 +112,7 @@ namespace SupplyRaid
 
 
             //Force Hide Settings Menu
+            settingsButton.SetActive(false);    //Hide for Release
             settingsMenu.SetActive(false);
 
             //Populate Settings Menu
