@@ -27,6 +27,9 @@ namespace SupplyRaid
         [Tooltip("Cost of Duplicating a magazine - if -1 disable")]
         public int duplicateMagazineCost = 1;
 
+        [Tooltip("Custom Mod Cost")]
+        public int modCost = 1;
+
         //Recycler
         [Tooltip("How many points the players get for recycling weapons")]
         public int recyclerPoints = 1;
@@ -78,7 +81,7 @@ namespace SupplyRaid
         [Tooltip("Preview image of the character when selected")]
         private Sprite thumbnail;
         private int factionIndex = -1;
-        private int[] startGearIndex;
+        private int[] startGearIndex = new int[0];
 
         private string thumbnailPath = "";
 
@@ -100,6 +103,7 @@ namespace SupplyRaid
             //Setup Start Gear
             for (int x = 0; x < startGearCategories.Count; x++)
             {
+                startGearIndex[x] = -1;
                 for (int y = 0; y < items.Count; y++)
                 {
                     if (items[y] != null && startGearCategories[x] == items[y].name)
@@ -108,6 +112,12 @@ namespace SupplyRaid
                         break;
                     }
                 }
+
+                if (startGearIndex[x] == -1)
+                { 
+                    Debug.LogError("Supply Raid - Missing character start gear index: " + x);
+                }
+
             }
 
             //Setup Purchase Categories Indexes
@@ -217,7 +227,7 @@ namespace SupplyRaid
 
         public SR_ItemCategory StartGear(int i)
         {
-            if (i != -1)
+            if (i != -1 && startGearIndex[i] != -1)
                 return SR_Manager.instance.itemCategories[startGearIndex[i]];
 
             return null;

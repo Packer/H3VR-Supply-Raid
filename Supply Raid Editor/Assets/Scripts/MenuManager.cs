@@ -1,11 +1,8 @@
-using SFB;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 
 namespace Supply_Raid_Editor
 {
@@ -595,6 +592,9 @@ namespace Supply_Raid_Editor
             }
             purchaseCategoryLists.Clear();
         }
+
+        //Points Per Level
+
 
         //Character -------------------------------------------------------------------
 

@@ -5,16 +5,20 @@ namespace Supply_Raid_Editor
 {
     public class SR_SosigFaction
     {
+        [Tooltip("(REQUIRED) Name of this Sosig Faction")]
         public string name = "Faction Name";
+        [Tooltip("Short explanation of this faction"), Multiline(6)]
         public string description = "A short description of this sosig faction";
+        [Tooltip("(REQUIRED) The menu category this faction will go in, Recommend mod creator names etc")]
         public string category = "Mod";
 
-        public TeamEnum teamID = TeamEnum.Ally0;
+        [Tooltip("This factions defenders team ID, 0 = Player, 1,2,3... = Enemy")]
+        public TeamEnum teamID = TeamEnum.Team1;
 
         //List / Table / Group / Faction
         public FactionLevel[] levels;
+        [Tooltip("Endless looping levels after all levels are complete")]
         public FactionLevel[] endless;
-
 
         public void ExportJson()
         {

@@ -12,7 +12,7 @@ namespace SupplyRaid
     {
         public static Sprite LoadSprite(string path)
         {
-            Debug.Log("Supply Raid - Loading External Image at " + path);
+            //Debug.Log("Supply Raid - Loading: " + path);
             Texture2D tex = null;
 
             byte[] fileData;
@@ -28,7 +28,7 @@ namespace SupplyRaid
 
             if (tex == null)
             {
-                Debug.LogError("Texture Not Found at path: " + path);
+                Debug.LogError("Supply Raid - Texture Not Found: " + path);
                 return null;
             }
             Sprite NewSprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0), 100.0f);

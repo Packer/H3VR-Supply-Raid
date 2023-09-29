@@ -54,6 +54,8 @@ namespace SupplyRaid
         [Header("Game Options")]
         [Tooltip("The character name that will be auto selected for this map")]
         public string defaultCharacter = "";
+        [Tooltip("The character category that players can only select from")]
+        public string forceCharacterCategory = "";
         [Tooltip("Force the players supply point to never move, useful for a none moving central buy zone")]
         public bool forceStaticPlayerSupplyPoint = false;
         [Tooltip("Force the map to be a specific Supply Points order \n-1 - Off\n0 - Random Order\n1 - Random\n2 - Ordered"), Range(-1, 2)]
@@ -96,8 +98,10 @@ namespace SupplyRaid
         private float rabbitHoleTimer = 0;
 
         private int currentSquad = 0;
-        private int remainSquad = 0;
-        private float rabbitHoleSquadTimer = 0;
+        private bool spawningSquad = false;
+        List<int> squadGroups = new List<int>();
+        List<int> squadIFFs = new List<int>();
+        private float squadRespawnTimer = 0;
 
         [Header("World Transforms")]
         public Transform srMenu;
@@ -132,7 +136,8 @@ namespace SupplyRaid
         public SosigSettings sosigPatrol = new SosigSettings();
         public SosigSettings sosigSquad = new SosigSettings();
 
-        public TNH_SosiggunShakeReloading shakeReloading = TNH_SosiggunShakeReloading.On;
+        [HideInInspector]
+        public TNH_SosiggunShakeReloading shakeReloading = TNH_SosiggunShakeReloading.Off;
         private readonly List<Sosig> sosigs = new List<Sosig>();
         private readonly List<Sosig> defenderSosigs = new List<Sosig>();
         private readonly List<Sosig> squadSosigs = new List<Sosig>();
@@ -283,6 +288,8 @@ namespace SupplyRaid
                 if (captureProtection > 0)
                     captureProtection -= Time.deltaTime;
 
+                CaptureHotkey();
+
                 stats.GameTime += Time.deltaTime;
                 UpdateRabbithole();
                 UpdateSquadSpawner();
@@ -387,6 +394,7 @@ namespace SupplyRaid
 
             //Delay Rabbit Hole by 5 seconds
             rabbitHoleTimer = 5;
+            squadRespawnTimer = 5;
 
             //Game Launched
             Debug.Log("Supply Raid: Launched Game");
@@ -917,112 +925,101 @@ namespace SupplyRaid
         // Sosig Setup
         //----------------------------------------------------------------------
 
-        void SetupSquadSosigs(FactionLevel currentLevel)
+        int GetSquadIFF()
         {
-            //Are squads enabled for this level?
-            if (currentLevel.squadCount <= 0 || currentLevel.squadPool.Count() <= 0)
-                return;
-
-            //Team
-            switch (currentLevel.squadTeamRandomized)
+            int teamIFF;
+            switch (GetFactionLevel().squadTeamRandomized)
             {
-                case TeamEnum.Ally0:
-                case TeamEnum.Team1:
-                case TeamEnum.Team2:
-                case TeamEnum.Team3:
-                    _spawnOptions.IFF = (int)currentLevel.squadTeamRandomized;
-                    break;
                 case TeamEnum.RandomTeam:
-                    _spawnOptions.IFF = Random.Range(0, 4);
+                    teamIFF = Random.Range(0, 4);
                     break;
                 case TeamEnum.RandomEnemyTeam:
-                    _spawnOptions.IFF = Random.Range(1, 4);
+                    teamIFF = Random.Range(1, 4);
                     break;
-                default:
-                    _spawnOptions.IFF = 0;
+
+                default: //int Set Team IFF
+                    teamIFF = (int)GetFactionLevel().squadTeamRandomized;
                     break;
             }
 
+            //Add Random Team
+            return teamIFF;
+        }
+
+        int GetRandomSquadSize(FactionLevel currentLevel)
+        {
             //Setup sizes and safty check
             int minSquad = Mathf.Clamp(currentLevel.squadSizeMin, 0, int.MaxValue);
-            int maxSquad = Mathf.Clamp(currentLevel.squadSizeMax, 1, int.MaxValue);
+            int maxSquad = Mathf.Clamp(currentLevel.squadSizeMax, 1, optionMaxSquadEnemies);
 
             if (maxSquad < minSquad)
                 maxSquad = minSquad;
 
+            return Random.Range(minSquad, maxSquad);
+        }
+
+        void SetupSquadSosigs(FactionLevel currentLevel)
+        {
+            //Are squads enabled for this level?
+            if (currentLevel == null || currentLevel.squadCount <= 0 || currentLevel.squadPool.Count() <= 0
+                || currentLevel.squadSizeMax <= 0)
+                return;
 
             //Group Setup
-            List<int> groups = new List<int>();
-            for (int i = 0; i < currentLevel.squadCount; i++)
-            {
-                int groupSize = Random.Range(minSquad, maxSquad + 1);
+            squadGroups.Clear();
 
-                if (groupSize != 0)
-                    groups.Add(groupSize);
+            //Team
+            squadIFFs.Clear();
+
+            if (currentLevel.infiniteSquadEnemies)
+            {
+                //Create only one group
+                int groupSize = GetRandomSquadSize(currentLevel);
+                squadGroups.Add(groupSize);
+
+                //Add Random Team
+                squadIFFs.Add(GetSquadIFF());
             }
-
-            //Spawn Location
-            SR_SupplyPoint spawnPoint = null;
-            List<SR_SupplyPoint> usedSP = new List<SR_SupplyPoint>();
-
-            //Spawn All Groups
-            for (int x = 0; x < groups.Count; x++)
+            else
             {
-                //Get Supply Point unoccupied
-                //Make sure we have enough supply points
-                if (supplyPoints.Count > 2)
+                for (int i = 0; i < currentLevel.squadCount; i++)
                 {
-                    spawnPoint = null;
+                    int groupSize = GetRandomSquadSize(currentLevel);
 
-                    //Clear UsedSPs if we run out
-                    if (usedSP.Count >= supplyPoints.Count + 2)
-                        usedSP.Clear();
-
-                    while (true)
+                    if (groupSize != 0)
                     {
-
-                        //Debug.Log("SquadSosig While");
-                        spawnPoint = supplyPoints[Random.Range(0, supplyPoints.Count)];
-
-                        //If not Player or Defender Supplypoint
-                        if (spawnPoint != AttackSupplyPoint() && _spawnOptions.IFF == (int)TeamEnum.Ally0)
-                        {
-                            usedSP.Add(spawnPoint);
-                            break;
-                        }
-                        else if (spawnPoint != AttackSupplyPoint() && spawnPoint != LastSupplyPoint())
-                        {
-                            usedSP.Add(spawnPoint);
-                            break;
-                        }
+                        squadGroups.Add(groupSize);
+                        squadIFFs.Add(GetSquadIFF());
                     }
                 }
-                else
-                    return; //Not enough for Squads to work TODO Make this work with ALLY squads
-
-                //Error Check
-                if (spawnPoint == null)
-                    continue;
-
-                StartCoroutine(SpawnSquadSosigs(groups[x], spawnPoint, currentLevel));
             }
         }
 
-        private IEnumerator SpawnSquadSosigs(int groupSize, SR_SupplyPoint spawnPoint, FactionLevel currentLevel)
+        private IEnumerator SpawnSquadSosigs(int groupSize, int iff, SR_SupplyPoint spawnPoint, FactionLevel currentLevel)
         {
-            //Squad Move To Target
+            //We're spawning Sosigs
+            spawningSquad = true;
+
+            if (spawnPoint == null || currentLevel == null)
+            {
+                Debug.LogError("Supply Raid - Missing spawnPoint or currentLevel");
+                yield break;
+            }
+
+            //Squad Move To Supply Point
             SR_SupplyPoint target = null;
             if (currentLevel.squadBehaviour == SquadBehaviour.CaptureSupplyPoint)
                 target = AttackSupplyPoint();
             else
             {
+                //Random Supply Point
                 while (true)
                 {
                     //Debug.Log("Spawn Squads Sosigs While");
                     target = supplyPoints[Random.Range(0, supplyPoints.Count)];
 
                     //If not Player or Defender Supplypoint
-                    if (target != spawnPoint)
+                    if (target != spawnPoint || target == null)
                     {
                         break;
                     }
@@ -1031,9 +1028,12 @@ namespace SupplyRaid
 
             if (target == null)
             {
-                Debug.Log("ERROR: Cannot find Target supply point in SpawnSquadSosigs");
+                Debug.LogError("ERROR: Cannot find Target supply point in SpawnSquadSosigs");
                 yield break;
             }
+
+            //Setup Team
+            _spawnOptions.IFF = iff;
 
             //Slight delay to allow other spawns
             yield return new WaitForSeconds(1f);
@@ -1042,9 +1042,22 @@ namespace SupplyRaid
                 if (!gameRunning)
                     yield break;
 
-                SpawnSquadSosig(spawnPoint, target.squadPoint, currentLevel);
-                yield return new WaitForSeconds(2f);
+                SpawnSquadSosig(spawnPoint, target, currentLevel);
+                yield return new WaitForSeconds(1f);
             }
+
+            //Remove spawned group
+            squadGroups.RemoveAt(0);
+            squadIFFs.RemoveAt(0);
+
+            //Generate new squad for infinite
+            if (GetFactionLevel().infiniteSquadEnemies)
+            {
+                squadGroups.Add(GetRandomSquadSize(currentLevel));
+                squadIFFs.Add(GetSquadIFF());
+            }
+            //Finished Spawning
+            spawningSquad = false;
         }
 
         private IEnumerator SetupDefenderSosigs(FactionLevel currentLevel)
@@ -1268,7 +1281,7 @@ namespace SupplyRaid
 
         void UpdateRabbithole()
         {
-            if (GetFactionLevel() == null)
+            if (GetFactionLevel() == null || isClient)
                 return;
 
             bool infiniteEnemies = GetFactionLevel().infiniteEnemies;
@@ -1277,7 +1290,7 @@ namespace SupplyRaid
                 infiniteEnemies = false;
 
             //No more spawning enemies
-            if (!infiniteEnemies && remainDefenders <= 0 || isClient)
+            if (!infiniteEnemies && remainDefenders <= 0)
                 return;
 
             //Do once a second check
@@ -1305,13 +1318,77 @@ namespace SupplyRaid
 
         void UpdateSquadSpawner()
         {
-            bool infiniteEnemies = GetFactionLevel().infiniteEnemies;
+            if (isClient || GetFactionLevel() == null || GetFactionLevel().squadCount <= 0 || squadGroups.Count <= 0 || spawningSquad)
+                return;
 
+            if (squadIFFs.Count == 0)
+            {
+                Debug.LogError("Supply Raid - no IFF been set");
+                return;
+            }
+
+            //Infinite Enemies
+            bool infiniteSquad = GetFactionLevel().infiniteSquadEnemies;
 
             //Do once a second check
-            if ((rabbitHoleSquadTimer -= Time.deltaTime) <= 0)
+            if ((squadRespawnTimer -= Time.deltaTime) <= 0)
             {
-                rabbitHoleSquadTimer = GetFactionLevel().enemySpawnTimer;
+                squadRespawnTimer = GetFactionLevel().enemySpawnTimer;
+
+                //Enough room to spawn more - Max Onscreen - Current alive = remaining
+                if (squadGroups[0] > optionMaxSquadEnemies - currentSquad)
+                {
+                    //Not enough space to spawn next group
+                    return;
+                }
+
+                //Make sure group is not empty
+                if (!infiniteSquad && squadGroups[0] <= 0)
+                {
+                    squadGroups.RemoveAt(0);
+                    squadIFFs.RemoveAt(0);
+                    return;
+                }
+
+                //Spawn Location
+                SR_SupplyPoint spawnPoint = null;
+                List<SR_SupplyPoint> collectedSP = new List<SR_SupplyPoint>();
+
+                //Collect possible spawn points
+                for (int i = 0; i < supplyPoints.Count; i++)
+                {
+                    //Supply Point matches players supply
+                    if (supplyPoints[i] == LastSupplyPoint())
+                    {
+                        //Allow if Friendly
+                        if (squadIFFs[0] == (int)TeamEnum.Ally0)
+                        {
+                            collectedSP.Add(supplyPoints[i]);
+                        }
+
+                    }
+                    else if (supplyPoints[i] == AttackSupplyPoint())
+                    {
+                        //Allow if Enemy
+                        if (squadIFFs[0] != (int)TeamEnum.Ally0)
+                        {
+                            collectedSP.Add(supplyPoints[i]);
+                        }
+                    }
+                    else
+                    {
+                        //Add Supply Point
+                        collectedSP.Add(supplyPoints[i]);
+                    }
+                }
+
+                spawnPoint = collectedSP[Random.Range(0, collectedSP.Count)];
+
+                //Error Check
+                if (spawnPoint == null)
+                    return;
+
+                StartCoroutine(SpawnSquadSosigs(squadGroups[0], squadIFFs[0], spawnPoint, GetFactionLevel()));
             }
         }
 
@@ -1465,15 +1542,17 @@ namespace SupplyRaid
             defenderSosigs.Add(sosig);
         }
 
-        void SpawnSquadSosig(SR_SupplyPoint spawnSupply, Transform target, FactionLevel currentLevel)
+        void SpawnSquadSosig(SR_SupplyPoint spawnSupply, SR_SupplyPoint target, FactionLevel currentLevel)
         {
             //Error Check
-            if (spawnSupply == null || target == null || currentLevel == null)
+            if (spawnSupply == null || spawnSupply.squadPoint == null || currentLevel == null)
             {
                 Debug.Log("Supply Raid - Missing Squad Spawn Data");
                 return;
             }
-            Transform sosigSpawn = AttackSupplyPoint().GetRandomSosigSpawn();
+
+            //Place sosig on the squad point
+            Transform sosigSpawn = spawnSupply.squadPoint;
 
             Sosig sosig = CreateSosig(_spawnOptions, sosigSpawn.position, sosigSpawn.rotation, currentLevel.squadPool, currentLevel.name);
 
@@ -1483,27 +1562,33 @@ namespace SupplyRaid
                 return;
             }
 
+            currentSquad++;
+
             //Randomize in the sosig Squad Waypoint scale
-            sosig.m_pathToPoint = target.position + new Vector3(
-                Random.Range(-target.lossyScale.x, target.lossyScale.x) / 2,
+            sosig.m_pathToPoint = target.squadPoint.position + new Vector3(
+                Random.Range(-target.squadPoint.lossyScale.x, target.squadPoint.lossyScale.x) / 2,
                 0,
-                Random.Range(-target.lossyScale.z, target.lossyScale.z) / 2);
+                Random.Range(-target.squadPoint.lossyScale.z, target.squadPoint.lossyScale.z) / 2);
 
             List<Vector3> pathPoints = new List<Vector3>
             {
-                sosig.m_pathToPoint,
+                sosig.m_pathToPoint,    //Target Point
+                sosigSpawn.position,    //Spawn Point
             };
 
             List<Vector3> pathDirs = new List<Vector3>
             {
-                target.rotation.eulerAngles,
+                target.squadPoint.rotation.eulerAngles,
+                sosigSpawn.rotation.eulerAngles,
             };
 
+            /*
             if (currentLevel.squadBehaviour == SquadBehaviour.RandomSupplyPoint)
             {
-                pathPoints.Add(spawnSupply.captureZone.position);
-                pathDirs.Add(spawnSupply.captureZone.rotation.eulerAngles);
+                pathPoints.Add(target.squadPoint.position);
+                pathDirs.Add(target.squadPoint.rotation.eulerAngles);
             }
+            */
 
             sosig.CommandPathTo(
                 pathPoints,
@@ -1524,12 +1609,13 @@ namespace SupplyRaid
 
             sosigs.Add(sosig);
 
+            //Squad Tracking
             squadSosigs.Add(sosig);
         }
 
         Sosig CreateSosig(SosigAPI.SpawnOptions spawnOptions, Vector3 position, Quaternion rotation, SosigPool pool, string poolName)
         {
-            Debug.Log("Supply Raid - Spawning Sosig at position: " + position);
+            //Debug.Log("Supply Raid - Spawning Sosig at position: " + position);
 
             //Get Valid Sosig ID
             if (pool.Count() <= 0)
@@ -1568,7 +1654,6 @@ namespace SupplyRaid
             remainDefenders = 0;
             currentDefenders = 0;
 
-            remainSquad = 0;
             currentSquad = 0;
 
             for (int i = 0; i < sosigs.Count; i++)
@@ -1768,6 +1853,17 @@ namespace SupplyRaid
         //----------------------------------------------------------------------
         // Networking
         //----------------------------------------------------------------------
+
+        void CaptureHotkey()
+        { 
+            if ((Networking.ServerRunning() && !Networking.IsHost()) || captureProtection > 0)
+                return;
+
+            if (Input.GetKey(KeyCode.RightControl) && Input.GetKeyDown(KeyCode.C))
+            {
+                CapturedPoint();
+            }
+        }
 
         public void SetLocalAsClient()
         {

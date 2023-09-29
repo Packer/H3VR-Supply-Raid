@@ -31,6 +31,9 @@ namespace SupplyRaid
 
         public float optionDifficulty = 1f;
 
+        public GameObject settingsMenu;
+        public GameObject settingsPrefab;
+
         [Header("Side Menus")]
         [SerializeField] GameObject categoryContentPrefab;  //Content container for Characters/Factions
 
@@ -70,6 +73,7 @@ namespace SupplyRaid
             PopulateCharacters();
             PopulateFactions();
 
+
             //Open first of everything TODO maybe disable this ?
             OpenCharacterCategory(0);
             OpenFactionCategory(0);
@@ -104,6 +108,12 @@ namespace SupplyRaid
                 lauchGameButton.SetActive(SR_Manager.instance.gameServerRunning);
                 UpdateGameOptions();
             }
+
+
+            //Force Hide Settings Menu
+            settingsMenu.SetActive(false);
+
+            //Populate Settings Menu
         }
 
         void SetOptions()
@@ -128,6 +138,11 @@ namespace SupplyRaid
                 }
             }
             UpdateGameOptions();
+        }
+
+        public void ToggleSettingsMenu()
+        {
+            settingsMenu.SetActive(!settingsMenu.activeSelf);
         }
 
         public void ToggleRespawn()

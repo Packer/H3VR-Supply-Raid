@@ -8,12 +8,18 @@ namespace Supply_Raid_Editor
     [System.Serializable]
     public class SR_ItemCategory
     {
-        public string name = "Item Category";
+        public string name;
 
+        [Tooltip("Magazine/Clip Min Capacity for this loot table")]
         public int minCapacity = -1;
-        public List<string> objectID = new List<string>();
+        [Tooltip("Magazine/Clip Max Capacity for this loot table")]
+        public int maxCapacity = -1;
+
+        [Header("Manual Setup Table")]
+        //Groups of objects that get spawned if selected
+        public List<ObjectGroup> objectGroups = new List<ObjectGroup>();
         
-        //Loot Table
+        [Header("Loot Table")]
         public LootTable.LootTableType type = LootTable.LootTableType.Firearm;
         public List<FVRObject.OTagSet> set = new List<FVRObject.OTagSet>();
         public List<FVRObject.OTagEra> eras = new List<FVRObject.OTagEra>();
@@ -30,7 +36,15 @@ namespace Supply_Raid_Editor
         public List<FVRObject.OTagPowerupType> powerupTypes = new List<FVRObject.OTagPowerupType>(); 
         public List<FVRObject.OTagThrownType> thrownTypes = new List<FVRObject.OTagThrownType>();
 
-        //Subtraction
+        [Header("Subtraction Items")]
+        [Tooltip("These defined ObjectIDs will be subtracted from the category pool")]
         public List<string> subtractionID = new List<string>();
+    }
+
+    [System.Serializable]
+    public class ObjectGroup
+    {
+        public string name;
+        public List<string> objectID = new List<string>();
     }
 }

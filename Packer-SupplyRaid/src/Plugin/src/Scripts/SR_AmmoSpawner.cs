@@ -93,14 +93,14 @@ namespace SupplyRaid
                 case 1: //true
                 default:
                     rearmButton.SetActive(true);
-                    rearmButton.GetComponent<SR_GenericButton>().text.text = "";
+                    rearmButton.GetComponent<FVRPointableButton>().Text.text = "";
                     break;
                 case 2: //Buy Once
                 case 3: //Buy Repeat
                     if (SR_Manager.instance.character.rearmingCost > 0)
-                        rearmButton.GetComponent<SR_GenericButton>().text.text = SR_Manager.instance.character.rearmingCost.ToString();
+                        rearmButton.GetComponent<FVRPointableButton>().Text.text = SR_Manager.instance.character.rearmingCost.ToString();
                     else
-                        rearmButton.GetComponent<SR_GenericButton>().text.text = "";
+                        rearmButton.GetComponent<FVRPointableButton>().Text.text = "";
                     break;
             }
 
@@ -113,14 +113,14 @@ namespace SupplyRaid
                 case 1: //true
                 default:
                     speedloaderButton.SetActive(true);
-                    speedloaderButton.GetComponent<SR_GenericButton>().text.text = "";
+                    speedloaderButton.GetComponent<FVRPointableButton>().Text.text = "";
                     break;
                 case 2: //Buy Once
                 case 3: //Buy Repeat
                     if (SR_Manager.instance.character.speedLoadersCost > 0)
-                        speedloaderButton.GetComponent<SR_GenericButton>().text.text = SR_Manager.instance.character.rearmingCost.ToString();
+                        speedloaderButton.GetComponent<FVRPointableButton>().Text.text = SR_Manager.instance.character.rearmingCost.ToString();
                     else
-                        speedloaderButton.GetComponent<SR_GenericButton>().text.text = "";
+                        speedloaderButton.GetComponent<FVRPointableButton>().Text.text = "";
                     break;
             }
 
@@ -133,14 +133,14 @@ namespace SupplyRaid
                 case 1: //true
                 default:
                     clipButton.SetActive(true);
-                    clipButton.GetComponent<SR_GenericButton>().text.text = "";
+                    clipButton.GetComponent<FVRPointableButton>().Text.text = "";
                     break;
                 case 2: //Buy Once
                 case 3: //Buy Repeat
                     if (SR_Manager.instance.character.clipsCost > 0)
-                        clipButton.GetComponent<SR_GenericButton>().text.text = SR_Manager.instance.character.rearmingCost.ToString();
+                        clipButton.GetComponent<FVRPointableButton>().Text.text = SR_Manager.instance.character.rearmingCost.ToString();
                     else
-                        clipButton.GetComponent<SR_GenericButton>().text.text = "";
+                        clipButton.GetComponent<FVRPointableButton>().Text.text = "";
                     break;
             }
 
@@ -153,14 +153,14 @@ namespace SupplyRaid
                 case 1: //true
                 default:
                     roundButton.SetActive(true);
-                    roundButton.GetComponent<SR_GenericButton>().text.text = "";
+                    roundButton.GetComponent<FVRPointableButton>().Text.text = "";
                     break;
                 case 2: //Buy Once
                 case 3: //Buy Repeat
                     if (SR_Manager.instance.character.roundsCost > 0)
-                        roundButton.GetComponent<SR_GenericButton>().text.text = SR_Manager.instance.character.rearmingCost.ToString();
+                        roundButton.GetComponent<FVRPointableButton>().Text.text = SR_Manager.instance.character.rearmingCost.ToString();
                     else
-                        roundButton.GetComponent<SR_GenericButton>().text.text = "";
+                        roundButton.GetComponent<FVRPointableButton>().Text.text = "";
                     break;
             }
         }
@@ -193,16 +193,16 @@ namespace SupplyRaid
                             switch (id)
                             {
                                 case 0: //Rearm
-                                    rearmButton.GetComponent<SR_GenericButton>().text.text = "";
+                                    rearmButton.GetComponent<FVRPointableButton>().Text.text = "";
                                     break;
                                 case 1: //Loader
-                                    speedloaderButton.GetComponent<SR_GenericButton>().text.text = "";
+                                    speedloaderButton.GetComponent<FVRPointableButton>().Text.text = "";
                                     break;
                                 case 2: //Clip
-                                    clipButton.GetComponent<SR_GenericButton>().text.text = "";
+                                    clipButton.GetComponent<FVRPointableButton>().Text.text = "";
                                     break;
                                 case 4: //Rounds
-                                    roundButton.GetComponent<SR_GenericButton>().text.text = "";
+                                    roundButton.GetComponent<FVRPointableButton>().Text.text = "";
                                     break;
                                 default:
                                     break;
@@ -650,6 +650,12 @@ namespace SupplyRaid
                         {
                             //Debug.Log("BUTTON ACTIVE!");
                             ammoTypeButtons[(int)ammoList[i].roundClasses[x].ammo].SetActive(true);
+
+                            //If purchased, select it
+                            if (purchasedAmmoTypes[(int)ammoList[i].roundClasses[x].ammo])
+                            {
+                                SetSelectionIcon((int)selectedAmmoType);
+                            }
                         }
                     }
                 }
@@ -658,9 +664,14 @@ namespace SupplyRaid
             //Selection
             if (ammoList.Count > 0)
             {
-                selectionIcon.gameObject.SetActive(true);
-                selectionIcon.position = ammoTypeButtons[(int)selectedAmmoType].transform.position;
+                SetSelectionIcon((int)selectedAmmoType);
             }
+        }
+
+        void SetSelectionIcon(int i)
+        {
+            selectionIcon.gameObject.SetActive(true);
+            selectionIcon.position = ammoTypeButtons[i].transform.position;
         }
 
         private void OnDrawGizmos()

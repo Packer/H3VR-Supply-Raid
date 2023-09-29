@@ -29,5 +29,5 @@ MonoBehaviour:
   ApplyHarmonyPatches: 1
   BuildItems:
   - {fileID: 11400000, guid: 9dae6755624a75e408bb6549abaa74b8, type: 2}
-  BuildAction: 1
+  BuildAction: 2
   OutputProfile: C:/Users/glenn/AppData/Roaming/r2modmanPlus-local/H3VR/profiles/SR-SDK-Test
