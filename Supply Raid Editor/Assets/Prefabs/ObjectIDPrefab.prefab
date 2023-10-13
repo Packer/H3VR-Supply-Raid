@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3430977425119808597}
   - component: {fileID: 3430977425119808596}
-  - component: {fileID: 3430977425119808599}
+  - component: {fileID: 1401252888409730110}
   m_Layer: 5
   m_Name: ObjectIDPrefab
   m_TagString: Untagged
@@ -25,7 +25,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3430977425119808602}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -49,7 +49,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3430977425119808602}
   m_CullTransparentMesh: 1
---- !u!114 &3430977425119808599
+--- !u!114 &1401252888409730110
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -58,12 +58,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3430977425119808602}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81eb385e9640d124a8af7f00c73b5dfc, type: 3}
+  m_Script: {fileID: 11500000, guid: 90c950df10e8bf643af1060f156aef4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: 
   inputField: {fileID: 4957287862417369402}
-  inputFieldB: {fileID: 0}
-  inputFieldC: {fileID: 0}
+  objectGroup:
+    name: 
+    objectID: []
 --- !u!1001 &8961714462307897801
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -87,6 +89,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3769469705507020082, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
+      propertyPath: m_FontData.m_MinSize
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4077363882978048243, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
       propertyPath: m_Text
       value: 
@@ -109,7 +115,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4448935264168850705, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
       propertyPath: m_FontData.m_FontSize
-      value: 24
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 4448935264168850705, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
       propertyPath: m_FontData.m_VerticalOverflow
@@ -205,7 +211,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8707888764907811641, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -26
+      value: -22
       objectReference: {fileID: 0}
     - target: {fileID: 8707888764907811641, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -336,9 +342,21 @@ PrefabInstance:
       propertyPath: m_FontData.m_Alignment
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 1837799448762731506, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
+      propertyPath: m_FontData.m_VerticalOverflow
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1837799448762731506, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
+      propertyPath: m_FontData.m_HorizontalOverflow
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3120537135407656925, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
       propertyPath: m_Name
       value: Plus
+      objectReference: {fileID: 0}
+    - target: {fileID: 3120537135407656925, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5437129716312749057, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
       propertyPath: m_SizeDelta.x
@@ -379,7 +397,7 @@ PrefabInstance:
     - target: {fileID: 8252333423765423055, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 3430977425119808599}
+      objectReference: {fileID: 0}
     - target: {fileID: 8252333423765423055, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -432,7 +450,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1449082102283593548, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1449082102283593548, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
       propertyPath: m_AnchorMin.x
@@ -440,7 +458,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1449082102283593548, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1449082102283593548, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
       propertyPath: m_SizeDelta.x
@@ -480,11 +498,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1449082102283593548, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -16
+      value: -17
       objectReference: {fileID: 0}
     - target: {fileID: 1449082102283593548, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -16
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1449082102283593548, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -529,7 +547,7 @@ PrefabInstance:
     - target: {fileID: 8252333423765423055, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 3430977425119808599}
+      objectReference: {fileID: 0}
     - target: {fileID: 8252333423765423055, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2

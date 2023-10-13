@@ -35,6 +35,7 @@ namespace SupplyRaid
         public TableButton[] buttons = new TableButton[16];
 
         //Generation Table
+        private FVRObject fvrObject;
         private List<FVRObject.OTagEra> eras = new List<FVRObject.OTagEra>();
         private List<FVRObject.OTagFirearmMount> mounts = new List<FVRObject.OTagFirearmMount>();
         //private List<FVRObject.OTagAttachmentFeature> features = new List<FVRObject.OTagAttachmentFeature>();
@@ -93,11 +94,11 @@ namespace SupplyRaid
 
             if (detectedFireArm != null && IM.OD.ContainsKey(detectedFireArm.ObjectWrapper.ItemID))
             {
-                FVRObject fvrobject = IM.OD[detectedFireArm.ObjectWrapper.ItemID];
+                fvrObject = IM.OD[detectedFireArm.ObjectWrapper.ItemID];
 
                 //Add all of the weapon's compatible mounts
-                eras.Add(fvrobject.TagEra);
-                mounts.AddRange(fvrobject.TagFirearmMounts);
+                eras.Add(fvrObject.TagEra);
+                mounts.AddRange(fvrObject.TagFirearmMounts);
                 //features.Add(fvrobject.TagAttachmentFeature);
 
                 DisableAllButtons();
@@ -131,6 +132,12 @@ namespace SupplyRaid
             //Table Generation
             List<FVRObject.OTagAttachmentFeature> desiredFeature = new List<FVRObject.OTagAttachmentFeature>();
 
+            bool[] bespoke = new bool[16];
+            for (int i = 0; i < fvrObject.BespokeAttachments.Count; i++)
+            {
+                bespoke[(int)fvrObject.BespokeAttachments[i].TagAttachmentFeature] = true;
+            }
+
             for (int i = 0; i < buttons.Length; i++)
             {
                 //Ignore None and Decorations
@@ -140,10 +147,39 @@ namespace SupplyRaid
                 desiredFeature.Clear();
                 desiredFeature.Add((FVRObject.OTagAttachmentFeature)i);
 
-
                 //Don't recalculate loot tables if its the same weapon
                 if (lastFireArm != detectedFireArm)
+                {
                     buttons[i].attachmentTable.InitializeAttachmentTable(eras, mounts, desiredFeature);
+
+                    //Remove GLOBAL character subtractions
+                    buttons[i].attachmentTable = SR_Global.RemoveGlobalSubtractionOnTable(buttons[i].attachmentTable);
+
+                    //Only bespoke on these attachments
+                    if (bespoke[i])
+                    {
+                        //Fix Bespoke to specific attachments
+                        if (mounts.Contains(FVRObject.OTagFirearmMount.Bespoke))
+                        {
+                            List<FVRObject> removeAttachments = new List<FVRObject>();
+                            for (int y = buttons[i].attachmentTable.Loot.Count - 1; y >= 0; y--)
+                            {
+                                //If Bespoke attachments for this weapon does not contain the loot table item, remove it
+                                if (!fvrObject.BespokeAttachments.Contains(buttons[i].attachmentTable.Loot[y]))
+                                {
+                                    removeAttachments.Add(buttons[i].attachmentTable.Loot[y]);
+                                }
+                            }
+
+                            //Clear Unused attachments
+                            for (int x = removeAttachments.Count - 1; x >= 0; x--)
+                            {
+                                buttons[i].attachmentTable.Loot.Remove(removeAttachments[x]);
+                            }
+                        }
+                    }
+                    
+                }
 
                 //Debug.Log("Loottable size:  " + buttons[i].attachmentTable.Loot.Count);
 

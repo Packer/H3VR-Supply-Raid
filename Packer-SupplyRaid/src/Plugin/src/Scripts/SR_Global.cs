@@ -21,9 +21,7 @@ namespace SupplyRaid
             {
                 fileData = File.ReadAllBytes(path);
                 tex = new Texture2D(2, 2);
-                tex.LoadImage(fileData); //..this will auto-resize the texture dimensions.
-                                         //if (tex.texelSize.x > 256)
-                                         //    tex.Resize(256, 256);
+                tex.LoadImage(fileData);
             }
 
             if (tex == null)
@@ -158,6 +156,43 @@ namespace SupplyRaid
             return false;
         }
 
+        public static SR_SosigFaction GetFactionByName(string factionName)
+        {
+            for (int i = 0; i < SR_Manager.instance.factions.Count; i++)
+            {
+                if (SR_Manager.instance.factions[i].name == factionName)
+                    return SR_Manager.instance.factions[i];
+            }
+
+            return null;
+        }
+
+        public static LootTable RemoveGlobalSubtractionOnTable(LootTable table)
+        {
+            //Collect items
+            List<int> detractItems = new List<int>();
+
+            //Remove GLOBAL character subtractions from character list
+            if (SR_Manager.Character() != null && SR_Manager.Character().subtractionObjectIDs.Count > 0)
+            {
+                for (int x = 0; x < table.Loot.Count; x++)
+                {
+                    if (SR_Manager.Character().subtractionObjectIDs.Contains(table.Loot[x].ItemID))
+                    {
+                        detractItems.Add(x);
+                    }
+                }
+            }
+
+            //Remove Items in reverse
+            for (int y = detractItems.Count - 1; y >= 0; y--)
+            {
+                table.Loot.RemoveAt(detractItems[y]);
+            }
+
+            return table;
+        }
+
         /// <summary>
         /// Attempts to spawn input gear, otherwise returns false
         /// </summary>
@@ -173,28 +208,68 @@ namespace SupplyRaid
             //Create one Spawn
             int itemCount = 1;
 
-            List<string> idGroup = new List<string>();
-            //Get Random Group
-            if (itemCategory != null && itemCategory.objectGroups != null && itemCategory.objectGroups.Count > 0)
-            {
-                idGroup = itemCategory.objectGroups[Random.Range(0, itemCategory.objectGroups.Count)].objectID;
-            }
+            //Randomize from both pools
+            int objectCount = 0;
 
-            if (idGroup.Count > 1)
-                itemCount = idGroup.Count;
+            //The different loot pools
+            bool useLootTags = true;
+            bool useGroupIDs = false;
+
+            //Item Category settings
+            if (itemCategory != null)
+            {
+                //Using Group ids
+                if (itemCategory.objectGroups.Count > 0)
+                {
+                    useGroupIDs = true;
+                    objectCount += (itemCategory.objectGroups.Count);
+                }
+
+                //Using the Loot Tags
+                if (itemCategory.lootTagsEnabled)
+                    objectCount += table.Loot.Count;
+                else //No Loot tags enabled
+                    useLootTags = false;
+            }
+            else //Default to table loot
+                objectCount += table.Loot.Count;
+
+            //Random Select from Table Loot and Group IDs
+            int index = Random.Range(0, objectCount);
+
+            //Group IDs
+            List<string> idGroup = new List<string>();
+
+            //Using Group IDs
+            if (useGroupIDs)
+            {
+
+                if(useLootTags)
+                    index -= table.Loot.Count - 1;
+
+                //Get Random Group
+                if (itemCategory != null && itemCategory.objectGroups != null && itemCategory.objectGroups.Count > 0)
+                {
+                    idGroup = itemCategory.objectGroups[index].objectID;
+                }
+
+                //Increase Items to Spawn
+                if (idGroup.Count > 1)
+                    itemCount = idGroup.Count;
+            }
 
             bool spawnedObject = false;
 
+            //Min Magazine Size
             int minCapacity = -1;
             if (itemCategory != null)
                 minCapacity = itemCategory.minCapacity;
-
 
             //Loop through each group ID
             for (int z = 0; z < itemCount; z++)
             {
                 //Use Manual weapon IDs?
-                if (idGroup != null && idGroup.Count > 0)
+                if (useGroupIDs)
                 {
                     if (idGroup[z] == "" || idGroup[z] == null)
                         return false;
@@ -215,7 +290,7 @@ namespace SupplyRaid
                 else
                 {
                     //Weapon + Ammo references
-                    mainObject = table.GetRandomObject();
+                    mainObject = table.Loot[index];
                     if (mainObject != null)
                     {
                         ammoObject = GetLowestCapacityAmmoObject(mainObject, table.Eras, minCapacity);
@@ -296,7 +371,7 @@ namespace SupplyRaid
                 {
                     for (int i = 0; i < mainSpawn; i++)
                     {
-                        spawnedMain = Instantiate(mainObject.GetGameObject(), spawns[0].position + ((Vector3.up * 0.25f) * i), spawns[0].rotation);
+                        spawnedMain = Instantiate(mainObject.GetGameObject(), spawns[0].position + ((Vector3.up * 0.25f) * i) + ((Vector3.up * 0.2f) * z), spawns[0].rotation);
                     }
                 }
 
@@ -309,11 +384,20 @@ namespace SupplyRaid
                     //ammoCount = mainObject.MagazineCapacity > mainObject.MaxCapacityRelated ? mainObject.MagazineCapacity * 2: mainObject.MaxCapacityRelated * 2;
                 }
 
+                //Item Category ammo that will spawn, -1 = default
+                
                 if (SR_Manager.instance.optionSpawnLocking)
+                {
                     ammoCount = 3;
-                else if (ammoCount < 12)
+                    if (itemCategory != null && itemCategory.ammoSpawnLockedCount >= 0)
+                        ammoCount = itemCategory.ammoLimitedCount;
+                }
+                else if (ammoCount < 12) //TODO make this reflect something
+                {
                     ammoCount = 12;
-
+                    if (itemCategory != null && itemCategory.ammoLimitedCount >= 0)
+                        ammoCount = itemCategory.ammoLimitedCount;
+                }
 
                 //Ammo
                 if (ammoObject != null && ammoObject.GetGameObject() != null)

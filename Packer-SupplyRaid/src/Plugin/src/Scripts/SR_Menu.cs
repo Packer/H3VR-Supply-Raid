@@ -82,6 +82,9 @@ namespace SupplyRaid
             //Force Select first character
             SR_Manager.instance.character = SR_Manager.instance.characters[0];
 
+            //Force Select First Faction
+            SR_Manager.instance.faction = SR_Manager.instance.factions[0];
+
             //Select Default Character
             if (SR_Manager.instance.defaultCharacter != "")
             {
@@ -96,13 +99,19 @@ namespace SupplyRaid
                 }                        
             }
 
+            //If no Character selected, Assign Default Character
+            if (SR_Manager.instance.character == null)
+                SR_Manager.instance.character = SR_Manager.instance.characters[0];
+
             UpdateCharacter();
 
-            if (SR_Manager.instance.character.Faction() != null)
-            {
-                SR_Manager.instance.faction = SR_Manager.instance.character.Faction();
-                UpdateFaction();
-            }
+            //If no Faction Selected
+            if (SR_Manager.instance.faction == null || SR_Manager.instance.faction.name == "")
+                SR_Manager.instance.faction = SR_Manager.instance.factions[0];
+
+            UpdateFaction();
+
+            //Debug.Log("Faction: " + SR_Manager.instance.faction);
 
             if (Networking.IsClient())
             {
@@ -112,8 +121,10 @@ namespace SupplyRaid
 
 
             //Force Hide Settings Menu
-            settingsButton.SetActive(false);    //Hide for Release
-            settingsMenu.SetActive(false);
+            if(settingsButton != null)
+                settingsButton.SetActive(false);    //Hide for Release
+            if(settingsMenu != null)
+                settingsMenu.SetActive(false);
 
             //Populate Settings Menu
         }
@@ -175,7 +186,8 @@ namespace SupplyRaid
 
         public void AdjustStartLevel(int i)
         {
-            SR_Manager.instance.optionStartLevel = Mathf.Clamp(SR_Manager.instance.optionStartLevel + i, 0, SR_Manager.instance.faction.levels.Length - 1);
+            if(SR_Manager.Faction() != null)
+                SR_Manager.instance.optionStartLevel = Mathf.Clamp(SR_Manager.instance.optionStartLevel + i, 0, SR_Manager.instance.faction.levels.Length - 1);
 
             /*
             //Catch starting level being ahead of captures
@@ -253,18 +265,31 @@ namespace SupplyRaid
 
         public void UpdateFaction()
         {
-            var faction = SR_Manager.instance.faction;
+            /*
+            //Assign first Faction if Blank
+            if (SR_Manager.instance.faction == null)
+            {
+                SR_Manager.instance.faction = SR_Manager.instance.factions[0];
+            }
+            */
+
+            SR_SosigFaction faction = SR_Manager.instance.faction;
             if (faction == null)
                 return;
 
             factionTitle.text = faction.name;
             factionDescription.text = faction.description;
             factionThumbnail.sprite = faction.Thumbnail();
+
+            //Network Faction - Mostly for icon displaying
             SR_Networking.instance.GameOptions_Send();
         }
 
         public void SetFactionByName(string factionName)
         {
+            if (factionName == "")
+                return;
+
             for (int i = 0; i < SR_Manager.instance.factions.Count; i++)
             {
                 if (SR_Manager.instance.factions[i].name == factionName)

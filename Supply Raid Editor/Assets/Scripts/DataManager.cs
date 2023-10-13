@@ -34,8 +34,6 @@ namespace Supply_Raid_Editor
         //Loaded Categories from mod folder
         public List<SR_ItemCategory> loadedCategories = new List<SR_ItemCategory>();
 
-
-
         [Header("Debug")]
         [SerializeField] Text debugLine;
         private string debugLog = "";
@@ -87,7 +85,7 @@ namespace Supply_Raid_Editor
         }
 
 
-        public void OnLoadDialogue(JSONTypeEnum loadType)
+        public bool OnLoadDialogue(JSONTypeEnum loadType)
         {
             string[] paths;
 
@@ -116,31 +114,35 @@ namespace Supply_Raid_Editor
             switch (loadType)
             {
                 case JSONTypeEnum.Faction:
-                    paths = StandaloneFileBrowser.OpenFilePanel("Load Faction", modPath, "json", false);
+                    paths = StandaloneFileBrowser.OpenFilePanel("Load Faction", modPath, ".sfsr", false);
+                    /*
                     if (paths.Length > 0 && !paths[0].Contains("SR_Faction"))
                     {
                         LogError("Not a valid Faction, check the file name  - " + paths[0]);
                         return;
-                    }
+                    }*/
                     break;
 
                 case JSONTypeEnum.ItemCategory:
-                    paths = StandaloneFileBrowser.OpenFilePanel("Load Item Category", modPath, "json", false);
+                    paths = StandaloneFileBrowser.OpenFilePanel("Load Item Category", modPath, "icsr", false);
+                    /*
                     if (paths.Length > 0 && !paths[0].Contains("SR_IC"))
                     {
                         LogError("Not a valid Item Category, check the file name  - " + paths[0]);
                         return;
-                    }
+                    }*/
                     break;
 
                 case JSONTypeEnum.Character:
                 default:
-                    paths = StandaloneFileBrowser.OpenFilePanel("Load Character", modPath, "json", false);
+                    paths = StandaloneFileBrowser.OpenFilePanel("Load Character", modPath, "cpsr", false);
+                    /*
                     if (paths.Length > 0 && !paths[0].Contains("SR_Character"))
                     {
                         LogError("Not a valid Character Preset, check the file name  - " + paths[0]);
                         return;
                     }
+                    */
                     break;
             }
 
@@ -165,7 +167,12 @@ namespace Supply_Raid_Editor
                 StartCoroutine(OutputRoutine(new Uri(paths[0]).AbsoluteUri, loadType));
             }
             else
-                Log("JSON loading canceled");
+            {
+                Log("Loading json canceled");
+                return false;
+            }
+
+            return true;
         }
 
         private IEnumerator OutputRoutine(string url, JSONTypeEnum loadType)
@@ -180,11 +187,12 @@ namespace Supply_Raid_Editor
                     yield return null;
                     MenuManager.instance.characterLoaded = true;
                     MenuManager.instance.OpenCharacterPanel();
-                    MenuManager.instance.RefreshCharacter();
+                    CharacterUI.instance.LoadCharacter();
 
                     url = url.Remove(url.Length - 4) + "png";
                     url = url.Remove(0, 8);
-                    MenuManager.instance.characterThumbnail.sprite = LoadSprite(url);
+                    CharacterUI.instance.thumbnail.sprite = LoadSprite(url);
+                    //MenuManager.instance.characterThumbnail.sprite = LoadSprite(url);
                     break;
                 case JSONTypeEnum.Faction:
                     //DataManager.instance.LoadFaction(url);
@@ -194,11 +202,11 @@ namespace Supply_Raid_Editor
                     yield return null;
                     MenuManager.instance.itemLoaded = true;
                     MenuManager.instance.OpenItemCategoryPanel();
-                    MenuManager.instance.RefreshItemCategory();
+                    ItemCategoryUI.instance.LoadItemCategory(itemCategory);
 
                     url = url.Remove(url.Length - 4) + "png";
                     url = url.Remove(0, 8);
-                    MenuManager.instance.itemThumbnail.sprite = LoadSprite(url);
+                    ItemCategoryUI.instance.itemThumbnail.sprite = LoadSprite(url);
                     break;
                 default:
                     break;
@@ -214,15 +222,15 @@ namespace Supply_Raid_Editor
                     path = StandaloneFileBrowser.SaveFilePanel(
                         "Save Faction", 
                         lastFactionDirectory, 
-                        "SR_Faction_" + saveName, 
-                        "json");
+                        saveName, 
+                        "sfsr");
                     break;
                 case JSONTypeEnum.ItemCategory:
                     path = StandaloneFileBrowser.SaveFilePanel(
                         "Save Item Category", 
                         lastCharacterDirectory, 
-                        "SR_IC_" + saveName, 
-                        "json");
+                        saveName, 
+                        "icsr");
                     break;
 
                 case JSONTypeEnum.Character:
@@ -230,8 +238,8 @@ namespace Supply_Raid_Editor
                     path = StandaloneFileBrowser.SaveFilePanel(
                         "Save Character", 
                         lastCharacterDirectory, 
-                        "SR_Character_" + saveName, 
-                        "json");
+                        saveName, 
+                        "cpsr");
                     break;
             }
 
@@ -344,17 +352,33 @@ namespace Supply_Raid_Editor
 
         public List<string> GetCharactersDirectory()
         {
-            return Directory.GetFiles(modPath, "SR_Character*.json", SearchOption.AllDirectories).ToList();
+            return Directory.GetFiles(modPath, "*.cpsr", SearchOption.AllDirectories).ToList();
         }
 
         public List<string> GetFactionDirectory()
         {
-            return Directory.GetFiles(modPath, "SR_Faction*.json", SearchOption.AllDirectories).ToList();
+            return Directory.GetFiles(modPath, "*.sfsr", SearchOption.AllDirectories).ToList();
         }
 
         public List<string> GetItemCategoriesDirectory()
         {
-            return Directory.GetFiles(modPath, "SR_IC*.json", SearchOption.AllDirectories).ToList();
+            return Directory.GetFiles(modPath, "*.icsr", SearchOption.AllDirectories).ToList();
+        }
+
+
+        public static SR_CharacterPreset Character()
+        {
+            return instance.character;
+        }
+
+        public static SR_ItemCategory ItemCategory()
+        {
+            return instance.itemCategory;
+        }
+
+        public static SR_SosigFaction Faction()
+        {
+            return instance.faction;
         }
     }
     public enum JSONTypeEnum

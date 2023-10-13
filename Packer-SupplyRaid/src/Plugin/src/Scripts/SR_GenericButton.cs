@@ -31,9 +31,10 @@ namespace SupplyRaid
 
             SR_Menu.instance.UpdateCharacter();
 
-            if (SR_Manager.instance.character.Faction() != null)
+            //Update Faction if one is assigned
+            if (SR_Manager.Character().factionName != "")
             {
-                SR_Manager.instance.faction = SR_Manager.instance.character.Faction();
+                SR_Manager.instance.faction = SR_Global.GetFactionByName(SR_Manager.Character().factionName);
                 SR_Menu.instance.UpdateFaction();
             }
         }
@@ -52,7 +53,17 @@ namespace SupplyRaid
 
         public void SelectFaction()
         {
-            SR_Manager.instance.faction = SR_Manager.instance.factions[index];
+            if (index < SR_Manager.instance.factions.Count)
+            {
+                SR_Manager.instance.faction = SR_Manager.instance.factions[index];
+                SR_Manager.PlayConfirmSFX();
+            }
+            else
+            {
+                SR_Manager.PlayErrorSFX();
+                return;
+            }
+
             SR_Manager.PlayConfirmSFX();
             SR_Menu.instance.UpdateFaction();
         }
@@ -64,8 +75,12 @@ namespace SupplyRaid
 
         public void SpawnAtPlayer()
         {
-            if (Networking.GetPlayer(index).IFF != GM.CurrentPlayerBody.GetPlayerIFF())
+            //if (index == -1 || Networking.GetPlayer(index).IFF != GM.CurrentPlayerBody.GetPlayerIFF())
+            if (index == -1)
+            {
+                Debug.Log("Supply Raid: Attempting to spawn at player without an index set!");
                 return;
+            }
 
             Transform playerHead = Networking.GetPlayer(index).head;
 
@@ -78,7 +93,7 @@ namespace SupplyRaid
                 GM.CurrentMovementManager.TeleportToPoint(newPos, true, playerHead.rotation.eulerAngles);
             }
             else
-                Debug.LogError("Player " + index + " is missing their teleport transform");
+                Debug.LogError("Supply Raid: Player " + index + " is missing their teleport transform");
         }
 
         public void BuyModAttachment()
@@ -116,7 +131,7 @@ namespace SupplyRaid
             {
                 SR_Manager.PlayConfirmSFX();
                 //SetAmmoType
-                Debug.Log("Setting Via Button");
+                //Debug.Log("Setting Via Button");
                 SR_AmmoSpawner.instance.SetAmmoType((AmmoEnum)index);
             }
         }

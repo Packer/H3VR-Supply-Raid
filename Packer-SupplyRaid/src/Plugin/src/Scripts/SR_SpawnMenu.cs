@@ -57,9 +57,8 @@ namespace SupplyRaid
                     playerBtn.gameObject.SetActive(true);
 
                     //Setup
-                    Text nameText = playerBtn.go.GetComponent<Text>();
-                    if (nameText != null)
-                        playerBtn.go.GetComponent<Text>().text = Networking.GetPlayer(playerIDs[i]).username;
+                    if (playerBtn.text != null)
+                        playerBtn.text.text = Networking.GetPlayer(playerIDs[i]).username;
                     playerBtn.index = playerIDs[i];
 
                     playerButtons.Add(playerBtn.gameObject);

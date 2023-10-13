@@ -20,6 +20,13 @@ namespace SupplyRaid
         [Tooltip("Magazine/Clip Max Capacity for this loot table")]
         public int maxCapacity = -1;
 
+        [Tooltip("Magazine/Clip/Speed Loaders/Rounds that spawn with this itemCategory")]
+        public int ammoLimitedCount = -1;
+        public int ammoSpawnLockedCount = -1;
+
+        //Do we use the loot tag system
+        public bool lootTagsEnabled = true;
+
         [Header("Manual Setup Table")]
         //Groups of objects that get spawned if selected
         public List<ObjectGroup> objectGroups = new List<ObjectGroup>();
@@ -45,7 +52,7 @@ namespace SupplyRaid
         [Tooltip("These defined ObjectIDs will be subtracted from the category pool")]
         public List<string> subtractionID = new List<string>();
 
-
+        /*
         public void ExportJson()
         {
             Debug.Log("Exporting Item");
@@ -55,6 +62,7 @@ namespace SupplyRaid
                 streamWriter.Write(json);
             }
         }
+        */
 
         public void SetupThumbnailPath(string thumbPath)
         {
@@ -147,11 +155,12 @@ namespace SupplyRaid
                 }
             }
 
+            //Collect items
+            List<int> detractItems = new List<int>();
+
             //Remove any subtraction Items
             if (subtractionID != null && subtractionID.Count > 0)
             {
-                //Collect items
-                List<int> detractItems = new List<int>();
                 for (int i = 0; i < table.Loot.Count; i++)
                 {
                     if (subtractionID.Contains(table.Loot[i].ItemID))
@@ -159,13 +168,16 @@ namespace SupplyRaid
                         detractItems.Add(i);
                     }
                 }
-
-                //Remove Items
-                for (int i = 0; i < detractItems.Count; i++)
-                {
-                    table.Loot.RemoveAt(detractItems[i]);
-                }
             }
+
+            //Remove Items - Count Down
+            for (int i = detractItems.Count - 1; i >= 0; i--)
+            {
+                table.Loot.RemoveAt(detractItems[i]);
+            }
+
+            //Remove GLOBAL character subtractions from character list
+            table = SR_Global.RemoveGlobalSubtractionOnTable(table);
 
             //Debug.Log("Supply Raid - Loot Table Post " + name + " | Size: " + table.Loot.Count);
 

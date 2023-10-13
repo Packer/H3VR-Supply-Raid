@@ -17,9 +17,9 @@ namespace Supply_Raid_Editor
         [Tooltip("(REQUIRED) The menu category this character will go in, Recommend mod creator names etc")]
         public string category = "Mod";
         public string factionName = "";
-        
+
         [Tooltip("Points player receives per capture, endless reuses the last array position")]
-        public int[] pointsLevel = new int[1];
+        public List<int> pointsLevel = new List<int>();
 
 //Supply Point
         // Duplicator

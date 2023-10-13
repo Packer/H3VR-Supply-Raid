@@ -80,12 +80,11 @@ namespace SupplyRaid
         //PRIVATE after we create the functions
         [Tooltip("Preview image of the character when selected")]
         private Sprite thumbnail;
-        private int factionIndex = -1;
         private int[] startGearIndex = new int[0];
 
         private string thumbnailPath = "";
 
-
+        /*
         public void ExportJson()
         {
             using (StreamWriter streamWriter = new StreamWriter(Application.dataPath + "/SR_Character_" + name + ".json"))
@@ -94,8 +93,9 @@ namespace SupplyRaid
                 streamWriter.Write(json);
             }
         }
+        */
 
-        public void SetupCharacterPreset(List<SR_ItemCategory> items, List<SR_SosigFaction> factions)
+        public void SetupCharacterPreset(List<SR_ItemCategory> items)
         {
             //Debug.Log("Setting up Character Gear for " + name);
             startGearIndex = new int[startGearCategories.Count];
@@ -179,12 +179,14 @@ namespace SupplyRaid
             }
 
             //Assign the Faction
-            for (int i = 0; i < factions.Count; i++)
+            if (factionName != "" && factionName != " ")
             {
-                if (factions[i] != null && factionName == factions[i].name)
+                for (int i = 0; i < SR_Manager.instance.factions.Count; i++)
                 {
-                    factionIndex = i;
-                    break;
+                    if (SR_Manager.instance.factions[i] != null && factionName == SR_Manager.instance.factions[i].name)
+                    {
+                        break;
+                    }
                 }
             }
 
@@ -210,14 +212,6 @@ namespace SupplyRaid
                 return SR_Manager.instance.fallbackThumbnail;
 
             return thumbnail;
-        }
-
-        public SR_SosigFaction Faction()
-        {
-            if (factionIndex != -1)
-                return SR_Manager.instance.factions[factionIndex];
-
-            return null;
         }
 
         public int StartGearLength()

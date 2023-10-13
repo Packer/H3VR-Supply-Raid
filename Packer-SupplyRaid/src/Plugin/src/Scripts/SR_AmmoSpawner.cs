@@ -20,7 +20,7 @@ namespace SupplyRaid
         public GameObject clipButton;
         public GameObject roundButton;
         [HideInInspector, Tooltip("0 = Rearm \n1 = Speed Loader\n2 = Clip\n3 Round")] 
-        bool[] purchaseButtons = new bool[4];
+        private bool[] purchaseButtons = new bool[4];
 
         public GameObject[] ammoTypeButtons = new GameObject[28];    //Ammo Enum Length
 
@@ -118,7 +118,7 @@ namespace SupplyRaid
                 case 2: //Buy Once
                 case 3: //Buy Repeat
                     if (SR_Manager.instance.character.speedLoadersCost > 0)
-                        speedloaderButton.GetComponent<FVRPointableButton>().Text.text = SR_Manager.instance.character.rearmingCost.ToString();
+                        speedloaderButton.GetComponent<FVRPointableButton>().Text.text = SR_Manager.instance.character.speedLoadersCost.ToString();
                     else
                         speedloaderButton.GetComponent<FVRPointableButton>().Text.text = "";
                     break;
@@ -138,7 +138,7 @@ namespace SupplyRaid
                 case 2: //Buy Once
                 case 3: //Buy Repeat
                     if (SR_Manager.instance.character.clipsCost > 0)
-                        clipButton.GetComponent<FVRPointableButton>().Text.text = SR_Manager.instance.character.rearmingCost.ToString();
+                        clipButton.GetComponent<FVRPointableButton>().Text.text = SR_Manager.instance.character.clipsCost.ToString();
                     else
                         clipButton.GetComponent<FVRPointableButton>().Text.text = "";
                     break;
@@ -158,7 +158,7 @@ namespace SupplyRaid
                 case 2: //Buy Once
                 case 3: //Buy Repeat
                     if (SR_Manager.instance.character.roundsCost > 0)
-                        roundButton.GetComponent<FVRPointableButton>().Text.text = SR_Manager.instance.character.rearmingCost.ToString();
+                        roundButton.GetComponent<FVRPointableButton>().Text.text = SR_Manager.instance.character.roundsCost.ToString();
                     else
                         roundButton.GetComponent<FVRPointableButton>().Text.text = "";
                     break;
@@ -169,7 +169,14 @@ namespace SupplyRaid
         {
             //TODO check if we can set the ammo for this weapon
             selectedAmmoType = ammo;
-            selectionIcon.position = ammoTypeButtons[(int)selectedAmmoType].transform.position;
+
+            //If selected Ammo Type is enabled, then enable other wise hide selection
+            if (ammoTypeButtons[(int)selectedAmmoType].activeSelf == true)
+                selectionIcon.position = ammoTypeButtons[(int)selectedAmmoType].transform.position;
+            else
+            {
+                selectionIcon.gameObject.SetActive(false);
+            }
         }
 
         bool CanSpawn(int mode, int cost, int id)
@@ -186,7 +193,7 @@ namespace SupplyRaid
                 {
                     if (SR_Manager.SpendPoints(cost))
                     {
-                        if (mode == 3) //Buy Once
+                        if (mode == 2) //Buy Once
                         {
                             purchaseButtons[id] = true;
                             //Update UI
@@ -589,6 +596,11 @@ namespace SupplyRaid
                 UpdateDisplayButtons();
                 return;
             }
+            else
+            {
+                SetAmmoType(selectedAmmoType);
+            }
+
 
             UpdateAmmoList();
 

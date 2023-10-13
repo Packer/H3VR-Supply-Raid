@@ -15,6 +15,12 @@ namespace Supply_Raid_Editor
         [Tooltip("Magazine/Clip Max Capacity for this loot table")]
         public int maxCapacity = -1;
 
+        [Tooltip("Magazine/Clip/Speed Loaders/Rounds that spawn with this itemCategory")]
+        public int ammoLimitedCount = -1;
+        public int ammoSpawnLockedCount = -1;
+
+        public bool lootTagsEnabled = true;
+
         [Header("Manual Setup Table")]
         //Groups of objects that get spawned if selected
         public List<ObjectGroup> objectGroups = new List<ObjectGroup>();
@@ -46,5 +52,14 @@ namespace Supply_Raid_Editor
     {
         public string name;
         public List<string> objectID = new List<string>();
+        private int index = -1;
+
+
+        public int Index   // property
+        {
+            get { return index; }   // get method
+            set { index = value; }  // set method
+        }
+
     }
 }

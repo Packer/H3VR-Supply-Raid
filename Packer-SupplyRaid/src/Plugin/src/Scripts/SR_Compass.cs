@@ -19,6 +19,7 @@ namespace SupplyRaid
         public Text pointsText;
         public float distance = .25f;
         public Slider healthBar;
+        public Text healthText;
         //public Text levelText;
         public Text capturesText;
 
@@ -54,7 +55,10 @@ namespace SupplyRaid
             //H3MP Setup NETWORKING player points
 
             healthBar.value = GM.GetPlayerHealth();
-            //GM.CurrentSceneSettings.IsSpawnLockingEnabled
+            
+            //Not in v1.0.0, error check
+            if(healthText != null)
+                healthText.text = (Mathf.CeilToInt(GM.GetPlayerHealth() * GM.CurrentPlayerBody.GetPlayerHealthRaw())).ToString();
 
             Transform marker = SR_Manager.instance.GetCompassMarker();
             if (!marker)

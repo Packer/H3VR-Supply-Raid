@@ -21,7 +21,7 @@ namespace Supply_Raid_Editor
             MenuManager.instance.DeletePurchaseCategory(this);
         }
 
-
+        /*
         public void CreateNewSubObjectID()
         {
             MenuManager.instance.CreateNewSubObjectID();
@@ -39,7 +39,7 @@ namespace Supply_Raid_Editor
         {
             MenuManager.instance.DeleteSubtractObjectID(this);
         }
-
+        */
         public void CreateNewStartGear()
         {
             MenuManager.instance.CreateNewStartGear();

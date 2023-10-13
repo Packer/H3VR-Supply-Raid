@@ -1,10 +1,10 @@
 ﻿using FistVR;
+using H3MP.Networking;
 using Sodalite.Api;
-using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Collections;
-using H3MP.Networking;
+using UnityEngine;
 
 namespace SupplyRaid
 {
@@ -18,34 +18,34 @@ namespace SupplyRaid
             get { return currentCaptures; }
         }
 
-        [Header("Default Settings")]
+        //[Header("Default Settings")]
         [Tooltip("Multiplier for multiplayer or harder games"), HideInInspector]
         public int optionPlayerCount = 1;
-        [Tooltip("Default 1 = Normal, 0.5 = Easier, 2 = Double enemy Stats"), Range(0.5f, 2)]
+        [Tooltip("Default 1 = Normal, 0.5 = Easier, 2 = Double enemy Stats"), Range(0.5f, 2), HideInInspector]
         public float optionDifficulty = 1f;
-        [Tooltip("Players currency enabled or disabled")]
+        [Tooltip("Players currency enabled or disabled"), HideInInspector]
         public bool optionFreeBuyMenu = false;
-        [Tooltip("false = Limited Ammo / true = spawn locking")]
+        [Tooltip("false = Limited Ammo / true = spawn locking"), HideInInspector]
         public bool optionSpawnLocking = true;
         [Tooltip("What level do we start on? Gain all points from those prev levels"), HideInInspector]
         public int optionStartLevel = 0;
-        [Tooltip("One Hit = 0, Half = 1, Standard = 2, Extra = 3, Double = 4, Too Much HP = 5"), Range(0, 4)]
+        [Tooltip("One Hit = 0, Half = 1, Standard = 2, Extra = 3, Double = 4, Too Much HP = 5"), Range(0, 4), HideInInspector]
         public int optionPlayerHealth = 2;
-        [Tooltip("Item Spawner")]
+        [Tooltip("Item Spawner"), HideInInspector]
         public bool optionItemSpawner = false;
-        [Tooltip("Is the capture Zone being used")]
+        [Tooltip("Is the capture Zone being used"), HideInInspector]
         public bool optionCaptureZone = true;
         [Tooltip("Right Hand = True, Left Hand = False"), HideInInspector]
         public bool optionHand = false;
-        [Tooltip("Do we do the supply points in Array Order, \n0 = Random Order\n1 = Random\n2 = Ordered")]
+        [Tooltip("Do we do the supply points in Array Order, \n0 = Random Order\n1 = Random\n2 = Ordered"), HideInInspector]
         public int optionCaptureOrder = 0;
-        [Tooltip("How many captures until the game completes, 0 = Infinite, 1+ = Number of Captures")]
+        [Tooltip("How many captures until the game completes, 0 = Infinite, 1+ = Number of Captures"), HideInInspector]
         public int optionCaptures = 5;
-        [Tooltip("Can the players respawn after dying?")]
+        [Tooltip("Can the players respawn after dying?"), HideInInspector]
         public bool optionRespawn = true;
-        [Tooltip("How many allowed to be alive at a time")]
+        [Tooltip("How many allowed to be alive at a time"), HideInInspector]
         public int optionMaxEnemies = 12;
-        [Tooltip("How many allowed to be alive at a time")]
+        [Tooltip("How many allowed to be alive at a time"), HideInInspector]
         public int optionMaxSquadEnemies = 8;
 
         [Header("Game Stats")]
@@ -213,6 +213,7 @@ namespace SupplyRaid
             SetupGameData();
         }
 
+        /*
         void ExportJSONs()
         {
 
@@ -221,7 +222,7 @@ namespace SupplyRaid
                 characters[i].ExportJson();
             }
 
-            /*
+            
             SR_CharacterPreset car = new SR_CharacterPreset();
             car.purchaseCategories = new SR_PurchaseCategory[1];
             car.purchaseCategories[0] = new SR_PurchaseCategory();
@@ -242,8 +243,8 @@ namespace SupplyRaid
 
             //SosigEnemyID.GetNames(typeof(SosigEnemyID)).Length;
             fac.ExportJson();
-            */
         }
+        */
 
         void SetupGameData()
         {
@@ -257,7 +258,7 @@ namespace SupplyRaid
             for (int i = 0; i < characters.Count; i++)
             {
                 if(characters[i] != null)
-                    characters[i].SetupCharacterPreset(itemCategories, factions);
+                    characters[i].SetupCharacterPreset(itemCategories);
             }
         }
 
@@ -299,7 +300,11 @@ namespace SupplyRaid
         public void LaunchGame()
         {
             if (character == null || faction == null)
+            {
+                Debug.LogError("Supply Raid: Missing Character or Faction");
+                PlayErrorSFX();
                 return;
+            }
 
             //Client Setup and Check
             isClient = Networking.IsClient();
@@ -1728,7 +1733,21 @@ namespace SupplyRaid
         // Static
         //----------------------------------------------------------------------
 
-        public static SR_CharacterPreset GetCharacter()
+
+        /// <summary>
+        /// Returns Sosig Faction thats currently selected
+        /// </summary>
+        /// <returns></returns>
+        public static SR_SosigFaction Faction()
+        {
+            return instance.faction;
+        }
+
+        /// <summary>
+        /// Returns Character Preset thats currently selected
+        /// </summary>
+        /// <returns></returns>
+        public static SR_CharacterPreset Character()
         {
             return instance.character;
         }
@@ -1868,12 +1887,13 @@ namespace SupplyRaid
         public void SetLocalAsClient()
         {
             isClient = true;
-            SR_Networking.instance.RequestSync_Send();
+            //SR_Networking.instance.RequestSync_Send();
         }
 
         public void Network_GameOptions(
             int playerCount, float difficulty, bool freeBuyMenu, bool spawnLocking, int startLevel, int playerHealth,
-            bool itemSpawner, bool captureZone, int order, int captures, bool respawn, int maxEnemies, int maxSquadEnemies)
+            bool itemSpawner, bool captureZone, int order, int captures, bool respawn, int maxEnemies, int maxSquadEnemies,
+            string factionID)
         {
             optionPlayerCount = playerCount;
             optionDifficulty = difficulty;
@@ -1889,7 +1909,8 @@ namespace SupplyRaid
             optionMaxEnemies = maxEnemies;
             optionMaxSquadEnemies = maxSquadEnemies;
 
-            //SR_Menu.instance.SetFactionByName(factionID);
+
+            SR_Menu.instance.SetFactionByName(factionID);
             //instance.factionID = factionID;
 
             //DO visual update here

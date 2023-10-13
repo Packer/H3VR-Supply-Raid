@@ -282,7 +282,13 @@ namespace SupplyRaid
             packet.Write(SR_Manager.instance.optionRespawn);
             packet.Write(SR_Manager.instance.optionMaxEnemies);
             packet.Write(SR_Manager.instance.optionMaxSquadEnemies);
-            
+
+            string faction = "";
+            if (SR_Manager.Faction() != null)
+                faction = SR_Manager.Faction().name;
+
+            packet.Write(faction);
+
             ServerSend.SendTCPDataToAll(packet, true);
         }
 
@@ -302,10 +308,10 @@ namespace SupplyRaid
             bool optionRespawn = packet.ReadBool();
             int optionMaxEnemies = packet.ReadInt();
             int optionSquadMaxEnemies = packet.ReadInt();
-            //string factionID = packet.ReadString();
+            string factionID = packet.ReadString();
 
             SR_Manager.instance.Network_GameOptions(optionPlayerCount, optionDifficulty, optionFreeBuyMenu, optionSpawnLocking, optionStartLevel,
-                optionPlayerHealth, optionItemSpawner, optionCaptureZone, optionOrder, optionCaptures, optionRespawn, optionMaxEnemies, optionSquadMaxEnemies);
+                optionPlayerHealth, optionItemSpawner, optionCaptureZone, optionOrder, optionCaptures, optionRespawn, optionMaxEnemies, optionSquadMaxEnemies, factionID);
         }
 
         //Captured Send ----------------------------------------------
@@ -458,7 +464,6 @@ namespace SupplyRaid
             }
         }
 
-
         void RequestSync_Received(string handlerID, int index)
         {
             if (handlerID == "SR_RequestSync")
@@ -466,6 +471,9 @@ namespace SupplyRaid
                 requestSync_ID = index;
                 Mod.customPacketHandlers[index] = RequestSync_Handler;
                 Mod.CustomPacketHandlerReceived -= RequestSync_Received;
+                
+                //Clients request data once handler is setup
+                RequestSync_Send();
             }
         }
 

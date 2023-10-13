@@ -11,7 +11,7 @@ namespace SupplyRaid
     public class SR_SosigFaction
     {
         [Tooltip("(REQUIRED) Name of this Sosig Faction")]
-        public string name = "Faction Name";
+        public string name = "";
         [Tooltip("Short explanation of this faction"), Multiline(6)]
         public string description = "A short description of this sosig faction";
         [Tooltip("(REQUIRED) The menu category this faction will go in, Recommend mod creator names etc")]
@@ -51,7 +51,7 @@ namespace SupplyRaid
             return thumbnail;
         }
 
-
+        /*
         public void ExportJson()
         {
             using (StreamWriter streamWriter = new StreamWriter(Application.dataPath + "/SR_Faction_" + name + ".json"))
@@ -60,6 +60,7 @@ namespace SupplyRaid
                 streamWriter.Write(json);
             }
         }
+        */
 
     }
 

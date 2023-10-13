@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 
 public class ItemTableContent : MonoBehaviour
 {

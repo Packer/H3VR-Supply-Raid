@@ -183,6 +183,7 @@ namespace SupplyRaid
             {
                 respawn.position = rayHit.point + (Vector3.up * 0.05f);
             }
+
         }
 
 		void OnDrawGizmos()
@@ -194,13 +195,14 @@ namespace SupplyRaid
                 for (int i = 0; i < sosigSpawns.Length; i++)
                 {
                     Gizmos.color = new Color(1f, 0.5f, 0, 1f);
-                    Gizmos.DrawLine(sosigSpawns[i].position, sosigSpawns[i].position + sosigSpawns[i].forward);
+                    Gizmos.DrawLine(sosigSpawns[i].position, sosigSpawns[i].position + sosigSpawns[i].forward + Vector3.up * 0.125f);
 
                     Gizmos.DrawSphere(sosigSpawns[i].position + (Vector3.up * 0.125f), 0.25f);
                     Gizmos.DrawSphere(sosigSpawns[i].position + Vector3.up, 0.25f);
                     Gizmos.DrawSphere(sosigSpawns[i].position + (Vector3.up * 1.75f), 0.25f);
                 }
             }
+
             #region Sosig Waypoints
             //Squad Waypoint
             if (squadPoint != null)
@@ -276,7 +278,7 @@ namespace SupplyRaid
 
             //MATRIX
 
-            if (captureZone != null)
+            if (captureZone != null && captureZone.gameObject.activeSelf == true)
             {
                 Gizmos.matrix = Matrix4x4.TRS(captureZone.position, captureZone.rotation, captureZone.lossyScale);
                 Gizmos.color = new Color(1f, 0, 1f, 0.25f);

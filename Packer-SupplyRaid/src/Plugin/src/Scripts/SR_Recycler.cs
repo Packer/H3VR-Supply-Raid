@@ -99,7 +99,7 @@ namespace SupplyRaid
                 Destroy(this.weapons[0].gameObject);
             }
             this.weapons.Clear();
-            SR_Manager.PlayConfirmSFX();
+            SR_Manager.PlayPointsGainSFX();
             SR_Manager.instance.Points += SR_Manager.instance.character.recyclerPoints;
         }
         private void Update()

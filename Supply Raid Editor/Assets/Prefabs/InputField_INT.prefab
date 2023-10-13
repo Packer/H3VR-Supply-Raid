@@ -16,12 +16,28 @@ PrefabInstance:
       value: Enter number...
       objectReference: {fileID: 0}
     - target: {fileID: 3769469705507020082, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
+      propertyPath: m_Color.b
+      value: 0.42814758
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769469705507020082, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
+      propertyPath: m_Color.g
+      value: 0.42814758
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769469705507020082, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
+      propertyPath: m_Color.r
+      value: 0.7735849
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769469705507020082, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3769469705507020082, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
       propertyPath: m_FontData.m_BestFit
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769469705507020082, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
+      propertyPath: m_FontData.m_Alignment
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4077363882978048243, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
       propertyPath: m_Text
@@ -42,6 +58,10 @@ PrefabInstance:
     - target: {fileID: 4448935264168850705, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
       propertyPath: m_FontData.m_BestFit
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4448935264168850705, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
+      propertyPath: m_FontData.m_Alignment
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8285742172811193823, guid: a3c144d1969c6c44da449b0a97638be6, type: 3}
       propertyPath: m_Pivot.x

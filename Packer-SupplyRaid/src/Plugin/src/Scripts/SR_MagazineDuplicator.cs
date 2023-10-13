@@ -224,6 +224,10 @@ namespace SupplyRaid
                     SR_Manager.PlayFailSFX();
                     return;
                 }
+
+                //Can duplicate Magazine
+                SetDuplicateStatus(true);
+
                 List<FVRObject> list = IM.CompatMags[m_detectedMag.MagazineType];
                 FVRObject fvrobject = null;
                 int num = 10000;
@@ -240,20 +244,21 @@ namespace SupplyRaid
                 }
                 if (fvrobject != null)
                 {
-                    SetButtonStatus(true);
+                    SetUpgradeStatus(true);
                     m_hasUpgradeableMags = true;
                     //OCIconUpgrade.SetOption(TNH_ObjectConstructorIcon.IconState.Accept, OCIconUpgrade.Sprite_Accept, 0);
                 }
                 else
                 {
-                    SetButtonStatus(false);
+                    SetUpgradeStatus(false);
                     //OCIconUpgrade.SetOption(TNH_ObjectConstructorIcon.IconState.Cancel, OCIconUpgrade.Sprite_Cancel, 0);
                     m_hasUpgradeableMags = false;
                 }
             }
             else
             {
-                SetButtonStatus(false);
+                SetUpgradeStatus(false);
+                SetDuplicateStatus(false);
                 //OCIconUpgrade.SetOption(TNH_ObjectConstructorIcon.IconState.Cancel, OCIconUpgrade.Sprite_Cancel, 0);
                 m_hasUpgradeableMags = false;
             }
@@ -324,7 +329,22 @@ namespace SupplyRaid
             magazineCostText.text = SR_Manager.instance.character.newMagazineCost.ToString();
         }
 
-        void SetButtonStatus(bool status)
+        void SetUpgradeStatus(bool status)
+        {
+
+            if (SR_Manager.instance.character.upgradeMagazineCost < 0)
+            {
+                upgradeBtn.transform.parent.gameObject.SetActive(false);
+                return;
+            }
+            else
+            {
+                upgradeBtn.sprite = statusImages[status ? 0 : 1];
+                upgradeCostText.text = SR_Manager.instance.character.upgradeMagazineCost.ToString();
+            }
+        }
+
+        void SetDuplicateStatus(bool status)
         {
             if (SR_Manager.instance.character.duplicateMagazineCost < 0)
                 duplicateBtn.transform.parent.gameObject.SetActive(false);
@@ -334,13 +354,6 @@ namespace SupplyRaid
                 duplicateCostText.text = SR_Manager.instance.character.duplicateMagazineCost.ToString();
             }
 
-            if (SR_Manager.instance.character.upgradeMagazineCost < 0)
-                upgradeBtn.transform.parent.gameObject.SetActive(false);
-            else
-            {
-                upgradeBtn.sprite = statusImages[status ? 0 : 1];
-                upgradeCostText.text = SR_Manager.instance.character.upgradeMagazineCost.ToString();
-            }
         }
 
         private void OnDrawGizmos()

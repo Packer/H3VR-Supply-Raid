@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using SupplyRaid;
 
-
+#if UNITY_EDITOR
 [CustomEditor(typeof(SR_SupplyPoint))]
 public class SR_SupplyPointEditor : Editor
 {
@@ -23,3 +23,4 @@ public class SR_SupplyPointEditor : Editor
     }
     
 }
+#endif
