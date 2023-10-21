@@ -64,7 +64,6 @@ namespace SupplyRaid
 
     }
 
-
     [System.Serializable]
     public class SosigPool
     {

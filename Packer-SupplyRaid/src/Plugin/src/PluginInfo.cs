@@ -1,9 +1,9 @@
-namespace H3VRMod
+namespace SupplyRaid
 {
 	internal static class PluginInfo
 	{
 		internal const string NAME = "Supply Raid";
-		internal const string GUID = "com.Packer.h3vrmod";
-		internal const string VERSION = "1.0.2";
+		internal const string GUID = "com.Packer.SupplyRaid";
+		internal const string VERSION = "1.0.3";
 	}
 }

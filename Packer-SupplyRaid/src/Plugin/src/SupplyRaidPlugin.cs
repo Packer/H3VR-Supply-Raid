@@ -1,14 +1,14 @@
 ﻿using BepInEx;
 
-namespace H3VRMod
+namespace SupplyRaid
 {
 	[BepInPlugin(PluginInfo.GUID, PluginInfo.NAME, PluginInfo.VERSION)]
 	[BepInProcess("h3vr.exe")]
-	public class Plugin : BaseUnityPlugin
+	public class SupplyRaidPlugin : BaseUnityPlugin
 	{
 		private readonly Hooks _hooks;
 
-		public Plugin()
+		public SupplyRaidPlugin()
 		{
 			_hooks = new Hooks();
 			_hooks.Hook();

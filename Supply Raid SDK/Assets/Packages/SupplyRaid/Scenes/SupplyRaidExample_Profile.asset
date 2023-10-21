@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PackageName: SupplyRaidExample
   Author: Packer
-  Version: 1.0.2
+  Version: 1.0.3
   Icon: {fileID: 2800000, guid: faa5af54481d5a74085e3764f0b080ba, type: 3}
   ReadMe: {fileID: 102900000, guid: 3634afcb0e997034ab39e6154341f430, type: 3}
   WebsiteURL: 

@@ -207,6 +207,13 @@ namespace Supply_Raid_Editor
                 item.thrownTypes.Add((FVRObject.OTagThrownType)tables[13].dropdowns[i].value);
             }
 
+
+            item.countryOfOrigins.Clear();
+            for (int i = 0; i < tables[14].dropdowns.Count; i++)
+            {
+                item.countryOfOrigins.Add((FVRObject.OTagFirearmCountryOfOrigin)tables[14].dropdowns[i].value);
+            }
+
             //Update UI
             UpdateUI();
         }
@@ -346,6 +353,12 @@ namespace Supply_Raid_Editor
                 thrownList.Add((int)item.thrownTypes[i]);
             }
 
+            List<int> countryOfOriginsList = new List<int>();
+            for (int i = 0; i < item.countryOfOrigins.Count; i++)
+            {
+                countryOfOriginsList.Add((int)item.countryOfOrigins[i]);
+            }
+
             //Tables
             SetupDropdown(tables[0], setList);
             SetupDropdown(tables[1], eraList);
@@ -361,6 +374,7 @@ namespace Supply_Raid_Editor
             SetupDropdown(tables[11], meleeHandList);
             SetupDropdown(tables[12], powerUpList);
             SetupDropdown(tables[13], thrownList);
+            SetupDropdown(tables[14], countryOfOriginsList);
         }
 
         /// <summary>
@@ -408,7 +422,7 @@ namespace Supply_Raid_Editor
 
         void GenerateItemTables()
         {
-            tables = new ItemTableContent[14];
+            tables = new ItemTableContent[15];
 
             for (int i = 0; i < tables.Length; i++)
             {
@@ -430,6 +444,7 @@ namespace Supply_Raid_Editor
             GenerateTable(tables[11], "MELEE HANDEDNESS", Enum.GetNames(typeof(FVRObject.OTagMeleeHandedness)));
             GenerateTable(tables[12], "POWERUP TYPE", Enum.GetNames(typeof(FVRObject.OTagPowerupType)));
             GenerateTable(tables[13], "THROWN TYPE", Enum.GetNames(typeof(FVRObject.OTagThrownType)));
+            GenerateTable(tables[14], "COUNTRY OF ORIGIN", Enum.GetNames(typeof(FVRObject.OTagFirearmCountryOfOrigin)));
         }
 
         public void GenerateTable(ItemTableContent table, string title, string[] enumList)

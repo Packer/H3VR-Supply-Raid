@@ -1,4 +1,4 @@
-namespace H3VRMod
+namespace SupplyRaid
 {
 	public class Hooks
 	{

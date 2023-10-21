@@ -21,7 +21,6 @@ namespace SupplyRaid
         [Header("Spawn Positions")]
         public Transform[] spawnPoints;
 
-
         [System.Serializable]
         public class TableButton
         {

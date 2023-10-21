@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace SupplyRaid
 {
@@ -79,6 +80,7 @@ namespace SupplyRaid
         public bool gameCompleted = false;
         [HideInInspector]
         public bool inEndless = false;
+        public ObstacleAvoidanceType avoidanceQuailty = ObstacleAvoidanceType.MedQualityObstacleAvoidance;
 
         [Header("Supply Points")]
         [HideInInspector, Tooltip("The next supply point that is being attacked by the player")]
@@ -203,7 +205,6 @@ namespace SupplyRaid
             }
             get { return points; }
         }
-
 
         // Use this for initialization
         void Awake()
@@ -1637,8 +1638,6 @@ namespace SupplyRaid
                 return null;
             }
 
-            Debug.Log("Supply Raid - Spawning SosigEnemyID: " + (int)id + " - " + id);
-
             Sosig sosig =
                 SosigAPI.Spawn(
                     IM.Instance.odicSosigObjsByID[id],
@@ -1646,12 +1645,14 @@ namespace SupplyRaid
                     position,
                     rotation);
 
-            //TODO not a hack job
+            //TODO this does nothing
             sosig.m_isBlinded = false;
+
+            //Set Agents to quailty level
+            sosig.GetComponent<NavMeshAgent>().obstacleAvoidanceType = avoidanceQuailty;
 
             return sosig;
         }
-
 
         void ClearSosigs()
         {
@@ -1712,6 +1713,7 @@ namespace SupplyRaid
             List<FVRObject.OTagSet> set = new List<FVRObject.OTagSet>
             {
                 FVRObject.OTagSet.Real,
+                FVRObject.OTagSet.GroundedFictional,
                 FVRObject.OTagSet.TNH,
             };
 

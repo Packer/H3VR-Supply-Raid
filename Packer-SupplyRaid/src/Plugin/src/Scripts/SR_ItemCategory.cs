@@ -47,6 +47,7 @@ namespace SupplyRaid
         public List<FVRObject.OTagMeleeHandedness> meleeHandedness = new List<FVRObject.OTagMeleeHandedness>();
         public List<FVRObject.OTagPowerupType> powerupTypes = new List<FVRObject.OTagPowerupType>(); 
         public List<FVRObject.OTagThrownType> thrownTypes = new List<FVRObject.OTagThrownType>();
+        public List<FVRObject.OTagFirearmCountryOfOrigin> countryOfOrigins = new List<FVRObject.OTagFirearmCountryOfOrigin>();
 
         [Header("Subtraction Items")]
         [Tooltip("These defined ObjectIDs will be subtracted from the category pool")]
@@ -139,8 +140,6 @@ namespace SupplyRaid
                 minCapacity,
                 maxCapacity);
 
-            //Debug.Log("Supply Raid - Loot Table " + name + " | Size: " + table.Loot.Count);
-
             //Tag Set Removal
             if (set != null && set.Count > 0)
             {
@@ -148,6 +147,20 @@ namespace SupplyRaid
                 {
                     FVRObject fVRObject = table.Loot[num];
                     if (set != null && !set.Contains(fVRObject.TagSet))
+                    {
+                        table.Loot.RemoveAt(num);
+                        continue;
+                    }
+                }
+            }
+
+            //Country of Origin
+            if (countryOfOrigins != null && countryOfOrigins.Count > 0)
+            {
+                for (int num = table.Loot.Count - 1; num >= 0; num--)
+                {
+                    FVRObject fVRObject = table.Loot[num];
+                    if (!countryOfOrigins.Contains(fVRObject.TagFirearmCountryOfOrigin))
                     {
                         table.Loot.RemoveAt(num);
                         continue;
