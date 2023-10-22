@@ -1713,7 +1713,6 @@ namespace SupplyRaid
             List<FVRObject.OTagSet> set = new List<FVRObject.OTagSet>
             {
                 FVRObject.OTagSet.Real,
-                FVRObject.OTagSet.GroundedFictional,
                 FVRObject.OTagSet.TNH,
             };
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -211,7 +212,12 @@ namespace Supply_Raid_Editor
             item.countryOfOrigins.Clear();
             for (int i = 0; i < tables[14].dropdowns.Count; i++)
             {
-                item.countryOfOrigins.Add((FVRObject.OTagFirearmCountryOfOrigin)tables[14].dropdowns[i].value);
+                FVRObject.OTagFirearmCountryOfOrigin origin = FVRObject.OTagFirearmCountryOfOrigin.None;
+                origin = 
+                    (FVRObject.OTagFirearmCountryOfOrigin)
+                    Enum.GetValues(origin.GetType()).GetValue(tables[14].dropdowns[i].value);
+
+                item.countryOfOrigins.Add(origin);
             }
 
             //Update UI
@@ -356,7 +362,8 @@ namespace Supply_Raid_Editor
             List<int> countryOfOriginsList = new List<int>();
             for (int i = 0; i < item.countryOfOrigins.Count; i++)
             {
-                countryOfOriginsList.Add((int)item.countryOfOrigins[i]);
+                int index = Array.IndexOf(Enum.GetValues(item.countryOfOrigins[i].GetType()), item.countryOfOrigins[i]);
+                countryOfOriginsList.Add(index);
             }
 
             //Tables
