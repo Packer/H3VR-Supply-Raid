@@ -1,5 +1,4 @@
 ﻿using FistVR;
-using SupplyRaid;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -372,10 +371,21 @@ namespace SupplyRaid
                     for (int i = 0; i < mainSpawn; i++)
                     {
                         spawnedMain = Instantiate(mainObject.GetGameObject(), spawns[0].position + ((Vector3.up * 0.25f) * i) + ((Vector3.up * 0.2f) * z), spawns[0].rotation);
+
+                        if (spawnedMain.name == "CharcoalBriquette(Clone)")
+                        {
+                            Material gold = SetToGoldMaterial(spawnedMain.transform.GetChild(0).GetComponent<Renderer>().material);
+
+                            if(spawnedMain.GetComponent<Renderer>())
+                                spawnedMain.GetComponent<Renderer>().material = gold;
+                            else if (spawnedMain.transform.GetChild(0))
+                                spawnedMain.transform.GetChild(0).GetComponent<Renderer>().material = gold;
+                        }
                     }
                 }
 
-                int ammoCount = 3;
+                //Default 4 - Limited Ammo Magazines in mind
+                int ammoCount = 4;
 
                 //Rounds
                 if (UsesRounds(mainObject))
@@ -388,6 +398,7 @@ namespace SupplyRaid
                 
                 if (SR_Manager.instance.optionSpawnLocking)
                 {
+                    //Spawn Locking only 3, 1 mag in, 1 mag lock, 1 for loading extra bullet in
                     ammoCount = 3;
                     if (itemCategory != null && itemCategory.ammoSpawnLockedCount >= 0)
                         ammoCount = itemCategory.ammoLimitedCount;
@@ -505,6 +516,40 @@ namespace SupplyRaid
                 return o.CompatibleSingleRounds[0];
             }
             return null;
+        }
+
+        public static float Distance2D(Vector3 a, Vector3 b)
+        {
+            Vector2 start = new Vector2(a.x, a.z);
+            Vector2 end = new Vector2(b.x, b.z);
+
+            return Vector2.Distance(start, end);
+        }
+
+        public static Material goldMaterial;
+
+        public static Material SetToGoldMaterial(Material input)
+        {
+            if(goldMaterial != null)
+                return goldMaterial;
+
+
+            Material gold = input;
+
+            Color goldColor = new Color(1, 0.75f, 0, 1);
+
+            gold.SetColor("_Color", goldColor);
+            gold.SetColor("_DecalColor", goldColor);
+
+
+            gold.SetFloat("_Mode", 0);
+            gold.SetFloat("_Metal", 0.666f);
+            gold.SetFloat("_Roughness", 0.5f);
+            gold.SetFloat("_SpecularTint", 1);
+            
+
+            goldMaterial = gold;
+            return gold;
         }
 
         public static List<FVRObject> GetLowestCapacity(List<FVRObject> ammo, int minCapacity)

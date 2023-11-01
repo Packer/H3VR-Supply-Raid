@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using FistVR;
-using System.IO;
 
 namespace SupplyRaid
 {
@@ -47,23 +46,12 @@ namespace SupplyRaid
         public List<FVRObject.OTagMeleeHandedness> meleeHandedness = new List<FVRObject.OTagMeleeHandedness>();
         public List<FVRObject.OTagPowerupType> powerupTypes = new List<FVRObject.OTagPowerupType>(); 
         public List<FVRObject.OTagThrownType> thrownTypes = new List<FVRObject.OTagThrownType>();
+        public List<FVRObject.OTagThrownDamageType> thrownDamage = new List<FVRObject.OTagThrownDamageType>();
         public List<FVRObject.OTagFirearmCountryOfOrigin> countryOfOrigins = new List<FVRObject.OTagFirearmCountryOfOrigin>();
 
         [Header("Subtraction Items")]
         [Tooltip("These defined ObjectIDs will be subtracted from the category pool")]
         public List<string> subtractionID = new List<string>();
-
-        /*
-        public void ExportJson()
-        {
-            Debug.Log("Exporting Item");
-            using (StreamWriter streamWriter = new StreamWriter(Application.dataPath + "/items/SR_IC_" + name + ".json"))
-            {
-                string json = JsonUtility.ToJson(this, true);
-                streamWriter.Write(json);
-            }
-        }
-        */
 
         public void SetupThumbnailPath(string thumbPath)
         {
@@ -147,6 +135,20 @@ namespace SupplyRaid
                 {
                     FVRObject fVRObject = table.Loot[num];
                     if (set != null && !set.Contains(fVRObject.TagSet))
+                    {
+                        table.Loot.RemoveAt(num);
+                        continue;
+                    }
+                }
+            }
+
+            //Thrown Damage
+            if (thrownDamage != null && thrownDamage.Count > 0)
+            {
+                for (int num = table.Loot.Count - 1; num >= 0; num--)
+                {
+                    FVRObject fVRObject = table.Loot[num];
+                    if (!thrownDamage.Contains(fVRObject.TagThrownDamageType))
                     {
                         table.Loot.RemoveAt(num);
                         continue;

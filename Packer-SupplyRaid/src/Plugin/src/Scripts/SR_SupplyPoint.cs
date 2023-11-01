@@ -33,12 +33,17 @@ namespace SupplyRaid
         [Tooltip("NOT IMPLEMENTED: Used for determining what the next supply point might be.")]
         public SupplySizeEnum supplySize = SupplySizeEnum.Medium;
 
+        [Tooltip("Force next supply points to be randomly selected from this list")]
+        public SR_SupplyPoint[] nextSupplyPoints;
+
         [Tooltip("Player Spawn/Respawn point")]
         public Transform respawn;
         [Tooltip("The capture zone transform, affected by scale")]
         public Transform captureZone;
         [Tooltip("The Sosig rabbit hole spawn points, should be hidden from")]
         public Transform[] sosigSpawns;
+        [Tooltip("How far a player needs to be for a sosig spawn to work")]
+        public float playerNearby = 6;
 
         [Header("Sosig Waypoints")]
         public float spawnRadius = 1.5f;

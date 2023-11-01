@@ -117,6 +117,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114338359181036748, guid: a434bad14f667da499326ecc7174a68c,
+        type: 2}
+      propertyPath: clientObjects.Array.size
+      value: 28
+      objectReference: {fileID: 0}
     - target: {fileID: 4856603007863100, guid: a434bad14f667da499326ecc7174a68c, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -164,9 +169,29 @@ Prefab:
       propertyPath: DistantGrabbable
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114338359181036748, guid: a434bad14f667da499326ecc7174a68c,
+        type: 2}
+      propertyPath: clientObjects.Array.data[26]
+      value: 
+      objectReference: {fileID: 309262814}
+    - target: {fileID: 114338359181036748, guid: a434bad14f667da499326ecc7174a68c,
+        type: 2}
+      propertyPath: clientObjects.Array.data[27]
+      value: 
+      objectReference: {fileID: 309262813}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a434bad14f667da499326ecc7174a68c, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &309262813 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1881511603534048, guid: a434bad14f667da499326ecc7174a68c,
+    type: 2}
+  m_PrefabInternal: {fileID: 309262812}
+--- !u!1 &309262814 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1001598682468572, guid: a434bad14f667da499326ecc7174a68c,
+    type: 2}
+  m_PrefabInternal: {fileID: 309262812}
 --- !u!1 &418305990
 GameObject:
   m_ObjectHideFlags: 0

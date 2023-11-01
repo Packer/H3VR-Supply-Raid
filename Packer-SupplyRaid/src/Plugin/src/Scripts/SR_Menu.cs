@@ -359,7 +359,7 @@ namespace SupplyRaid
             if (captureCount != null)
             {
                 captureCount.text = (SR_Manager.instance.optionCaptures == 0)
-                    ? "Marathon" : SR_Manager.instance.optionCaptures.ToString() + " (" + SR_ResultsMenu.FloatToTime(SR_Manager.instance.optionCaptures * 6) + ")";
+                    ? "Marathon" : SR_Manager.instance.optionCaptures.ToString() + " (" + SR_ResultsMenu.FloatToTime(SR_Manager.instance.optionCaptures * 7) + ")";
             }
 
             if (maxEnemies != null)

@@ -41,6 +41,7 @@ namespace Supply_Raid_Editor
         public List<FVRObject.OTagMeleeHandedness> meleeHandedness = new List<FVRObject.OTagMeleeHandedness>();
         public List<FVRObject.OTagPowerupType> powerupTypes = new List<FVRObject.OTagPowerupType>(); 
         public List<FVRObject.OTagThrownType> thrownTypes = new List<FVRObject.OTagThrownType>();
+        public List<FVRObject.OTagThrownDamageType> thrownDamage = new List<FVRObject.OTagThrownDamageType>();
         public List<FVRObject.OTagFirearmCountryOfOrigin> countryOfOrigins = new List<FVRObject.OTagFirearmCountryOfOrigin>();
 
         [Header("Subtraction Items")]

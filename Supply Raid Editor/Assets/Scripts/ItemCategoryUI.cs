@@ -208,9 +208,15 @@ namespace Supply_Raid_Editor
                 item.thrownTypes.Add((FVRObject.OTagThrownType)tables[13].dropdowns[i].value);
             }
 
+            item.thrownDamage.Clear();
+            for (int i = 0; i < tables[14].dropdowns.Count; i++)
+            {
+                item.thrownDamage.Add((FVRObject.OTagThrownDamageType)tables[14].dropdowns[i].value);
+            }
+
 
             item.countryOfOrigins.Clear();
-            for (int i = 0; i < tables[14].dropdowns.Count; i++)
+            for (int i = 0; i < tables[15].dropdowns.Count; i++)
             {
                 FVRObject.OTagFirearmCountryOfOrigin origin = FVRObject.OTagFirearmCountryOfOrigin.None;
                 origin = 
@@ -359,6 +365,13 @@ namespace Supply_Raid_Editor
                 thrownList.Add((int)item.thrownTypes[i]);
             }
 
+            List<int> thrownDamageList = new List<int>();
+            for (int i = 0; i < item.thrownDamage.Count; i++)
+            {
+                int index = Array.IndexOf(Enum.GetValues(item.thrownDamage[i].GetType()), item.thrownDamage[i]);
+                thrownDamageList.Add(index);
+            }
+
             List<int> countryOfOriginsList = new List<int>();
             for (int i = 0; i < item.countryOfOrigins.Count; i++)
             {
@@ -381,7 +394,8 @@ namespace Supply_Raid_Editor
             SetupDropdown(tables[11], meleeHandList);
             SetupDropdown(tables[12], powerUpList);
             SetupDropdown(tables[13], thrownList);
-            SetupDropdown(tables[14], countryOfOriginsList);
+            SetupDropdown(tables[14], thrownDamageList);
+            SetupDropdown(tables[15], countryOfOriginsList);
         }
 
         /// <summary>
@@ -429,7 +443,7 @@ namespace Supply_Raid_Editor
 
         void GenerateItemTables()
         {
-            tables = new ItemTableContent[15];
+            tables = new ItemTableContent[16];
 
             for (int i = 0; i < tables.Length; i++)
             {
@@ -441,17 +455,18 @@ namespace Supply_Raid_Editor
             GenerateTable(tables[1], "ERAS", Enum.GetNames(typeof(FVRObject.OTagEra)));
             GenerateTable(tables[2], "FIREARM SIZES", Enum.GetNames(typeof(FVRObject.OTagFirearmSize)));
             GenerateTable(tables[3], "FIREARM ACTION", Enum.GetNames(typeof(FVRObject.OTagFirearmAction)));
-            GenerateTable(tables[4], "MODES INCLUDE", Enum.GetNames(typeof(FVRObject.OTagFirearmFiringMode)));
-            GenerateTable(tables[5], "MODES EXCLUDE", Enum.GetNames(typeof(FVRObject.OTagFirearmFiringMode)));
-            GenerateTable(tables[6], "FEED OPTION", Enum.GetNames(typeof(FVRObject.OTagFirearmFeedOption)));
-            GenerateTable(tables[7], "MOUNTS", Enum.GetNames(typeof(FVRObject.OTagFirearmMount)));
-            GenerateTable(tables[8], "ROUND POWER", Enum.GetNames(typeof(FVRObject.OTagFirearmRoundPower)));
+            GenerateTable(tables[4], "FIREARM MODES INCLUDE", Enum.GetNames(typeof(FVRObject.OTagFirearmFiringMode)));
+            GenerateTable(tables[5], "FIREARM MODES EXCLUDE", Enum.GetNames(typeof(FVRObject.OTagFirearmFiringMode)));
+            GenerateTable(tables[6], "FIREARM FEED OPTION", Enum.GetNames(typeof(FVRObject.OTagFirearmFeedOption)));
+            GenerateTable(tables[7], "FIREARM MOUNTS", Enum.GetNames(typeof(FVRObject.OTagFirearmMount)));
+            GenerateTable(tables[8], "FIREARM ROUND POWER", Enum.GetNames(typeof(FVRObject.OTagFirearmRoundPower)));
             GenerateTable(tables[9], "ATTACHMENT FEATURES", Enum.GetNames(typeof(FVRObject.OTagAttachmentFeature)));
             GenerateTable(tables[10], "MELEE STYLE", Enum.GetNames(typeof(FVRObject.OTagMeleeStyle)));
             GenerateTable(tables[11], "MELEE HANDEDNESS", Enum.GetNames(typeof(FVRObject.OTagMeleeHandedness)));
             GenerateTable(tables[12], "POWERUP TYPE", Enum.GetNames(typeof(FVRObject.OTagPowerupType)));
             GenerateTable(tables[13], "THROWN TYPE", Enum.GetNames(typeof(FVRObject.OTagThrownType)));
-            GenerateTable(tables[14], "COUNTRY OF ORIGIN", Enum.GetNames(typeof(FVRObject.OTagFirearmCountryOfOrigin)));
+            GenerateTable(tables[14], "THROWN DAMAGE", Enum.GetNames(typeof(FVRObject.OTagThrownDamageType)));
+            GenerateTable(tables[15], "COUNTRY OF ORIGIN", Enum.GetNames(typeof(FVRObject.OTagFirearmCountryOfOrigin)));
         }
 
         public void GenerateTable(ItemTableContent table, string title, string[] enumList)

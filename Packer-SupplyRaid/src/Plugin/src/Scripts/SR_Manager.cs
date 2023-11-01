@@ -74,6 +74,7 @@ namespace SupplyRaid
         public bool gameRunning = false;
         [HideInInspector]
         public float captureProtection = 0;
+        [HideInInspector]
         public int endlessLevel = 0;
         private int currentCaptures = 0;
         [HideInInspector]
@@ -137,6 +138,8 @@ namespace SupplyRaid
         public SosigSettings sosigSniper = new SosigSettings();
         public SosigSettings sosigPatrol = new SosigSettings();
         public SosigSettings sosigSquad = new SosigSettings();
+
+        private LayerMask enviromentLayer;
 
         [HideInInspector]
         public TNH_SosiggunShakeReloading shakeReloading = TNH_SosiggunShakeReloading.Off;
@@ -267,6 +270,8 @@ namespace SupplyRaid
         {
             resultsMenu.gameObject.SetActive(false);
             SetupAttachmentLootTable();
+
+            enviromentLayer = LayerMask.NameToLayer("Enviroment");
 
             //TODO set active to true for when we have instructions
             SR_HelpMenu.instance.SetActive(false);
@@ -525,6 +530,12 @@ namespace SupplyRaid
                 //Attack position next on the supply order
                 attackSupplyID = supplyOrder[supplyOrderIndex];
             }
+
+            //STATIC SUPPLY POINT, REMOVE IT FROM THE LIST
+            if (forceStaticPlayerSupplyPoint == true)
+            {
+                
+            }
         }
 
         private void CurrentSceneSettingsOnSosigKillEvent(Sosig s)
@@ -554,7 +565,21 @@ namespace SupplyRaid
 
         void LootDrop(Sosig s)
         {
-            float lootSize = 0;
+            //Loop through each loot category
+            for (int i = 0; i < character.lootCategories.Count; i++)
+            {
+                //Roll to see if we meet the chance
+                if (Random.Range(0.00f, 1.00f) <= character.lootCategories[i].chance)
+                {
+                    //Spawn Loot
+                    SR_ItemCategory item = itemCategories[character.lootCategories[i].GetIndex()];
+                    Transform[] spawns = new Transform[] { s.transform, s.transform, s.transform, s.transform, s.transform };
+                    SR_Global.SpawnLoot(item.InitializeLootTable(), item, spawns);
+                }
+            }
+
+            /*
+            float lootSize = 1; //Default 100% chance of no loot
 
             List<float> lootLow = new List<float>();
             List<float> lootHigh = new List<float>();
@@ -569,7 +594,7 @@ namespace SupplyRaid
             }
 
             //Get Complete Loot Range
-            float lootRange = Random.Range(0f, (float)character.lootCategories.Count);
+            float lootRange = Random.Range(0f, lootSize);
 
             //Loop through each low and high and compare with the 
             for (int i = 0; i < lootLow.Count; i++)
@@ -584,6 +609,7 @@ namespace SupplyRaid
                     return;
                 }
             }
+            */
         }
 
         private void PlayerDeathEvent(bool killedSelf)
@@ -693,6 +719,31 @@ namespace SupplyRaid
             //Teleport player to Spawn
             GM.CurrentMovementManager.TeleportToPoint(spawnPoint.position, true, spawnPoint.rotation.eulerAngles);
 
+            //Convert All Coal on player to Money
+            for (int i = 0; i < GM.CurrentPlayerBody.QBSlots_Internal.Count; i++)
+            {
+                FVRPhysicalObject obj = GM.CurrentPlayerBody.QBSlots_Internal[i].CurObject;
+
+                if (obj != null && obj.gameObject.name == "CharcoalBriquette(Clone)")
+                {
+                    FVRObject mainObject = null;
+                    IM.OD.TryGetValue("Cartridge69CashMoneyD1", out mainObject);
+
+                    if (mainObject == null)
+                        continue;
+
+                    //Create Money
+                    GameObject moneyObj = Instantiate(mainObject.GetGameObject(), obj.transform.position, obj.transform.rotation);
+
+                    //Destroy Coal
+                    Destroy(GM.CurrentPlayerBody.QBSlots_Internal[i].CurObject.gameObject);
+
+                    //Attach money
+                    moneyObj.GetComponent<FVRPhysicalObject>().SetQuickBeltSlot(GM.CurrentPlayerBody.QBSlots_Internal[i]);
+                }
+            }
+
+
             //Tell Clients game is over!
             if (Networking.IsHost())
             {
@@ -704,6 +755,8 @@ namespace SupplyRaid
 
             if(GameCompleteEvent != null)
                 GameCompleteEvent.Invoke();
+
+            Debug.Log("Supply Raid: Game Complete");
         }
 
         void MovePanelsToLastSupply()
@@ -875,6 +928,23 @@ namespace SupplyRaid
             //Error Check, only 1 or less supply points, don't do while loop
             if (supplyPoints.Count > 1)
             {
+                /*
+                if (AttackSupplyPoint().nextSupplyPoints.Length > 0)
+                {
+                    int spIndex = Random.Range(0, AttackSupplyPoint().nextSupplyPoints.Length);
+
+                    //Loop through each supply point until it matches
+                    for (int i = 0; i < supplyPoints.Count; i++)
+                    {
+                        if (supplyPoints[i] == AttackSupplyPoint().nextSupplyPoints[spIndex])
+                        {
+                            attackSupplyID = i;
+                            break;
+                        }
+                    }
+
+                }
+                */
                 if (optionCaptureOrder == 1) //Random
                 {
                     while (playerSupplyID == attackSupplyID)
@@ -1402,7 +1472,65 @@ namespace SupplyRaid
         {
             int pathID = Random.Range(0, AttackSupplyPoint().patrolPaths.Length);
             PatrolPath pp = AttackSupplyPoint().patrolPaths[pathID];
-            Transform sosigSpawn = AttackSupplyPoint().GetRandomSosigSpawn();
+            Transform sosigSpawn = null; // AttackSupplyPoint().GetRandomSosigSpawn();
+
+            if (Networking.ServerRunning())
+            {
+                //Check all players
+                sosigSpawn = AttackSupplyPoint().GetRandomSosigSpawn();
+            }
+            else
+            {
+                //Default to only spawn point if there isn't any extra
+                if (AttackSupplyPoint().sosigSpawns.Length <= 1)
+                    sosigSpawn = AttackSupplyPoint().sosigSpawns[0];
+                else
+                {
+                    //Single Player
+                    bool[] spawnList = new bool[AttackSupplyPoint().sosigSpawns.Length];
+
+                    while (sosigSpawn == null)
+                    {
+                        int index = Random.Range(0, AttackSupplyPoint().sosigSpawns.Length);
+                        spawnList[index] = true;
+
+                        Transform spawnPoint = AttackSupplyPoint().sosigSpawns[index];
+
+                        Vector3 headPosition = GM.CurrentPlayerBody.Head.position + (GM.CurrentPlayerBody.Head.forward * 0.5f);
+                        Vector3 spawnPosition = spawnPoint.position + (Vector3.up * 1.7f);
+
+                        //Make sure the player isn't within range
+                        if (SR_Global.Distance2D(headPosition, spawnPosition) >= AttackSupplyPoint().playerNearby)
+                        {
+                            //If Line of Sight is blocked
+                            if (Physics.Linecast(spawnPosition, headPosition, out RaycastHit hit ,enviromentLayer))
+                            {
+                                //Spawn is safe to use
+                                sosigSpawn = spawnPoint;
+                                break;
+                            }
+                        }
+
+                        bool spawnLeft = false;
+                        //Loop through all spawn points
+                        for (int i = 0; i < spawnList.Length; i++)
+                        {
+                            if (spawnList[i] == false)
+                            {
+                                //Spawn point still left
+                                spawnLeft = true;
+                                break;
+                            }
+                        }
+
+                        //No spawns left, pick one at random
+                        if (spawnLeft == false)
+                        {
+                            sosigSpawn = AttackSupplyPoint().GetRandomSosigSpawn();
+                        }
+                    }
+                }
+            }
 
             if (sosigSpawn == null)
             {

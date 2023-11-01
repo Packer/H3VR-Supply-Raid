@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using FistVR;
-using System.Security.Policy;
 
 namespace SupplyRaid
 {
@@ -123,7 +122,7 @@ namespace SupplyRaid
             cashGameObject = null;
             for (int i = 0; i < num; i++)
             {
-                if (colbuffer[i].name == "CharcoalBriquette(Clone)")
+                if (colbuffer[i].name == "CharcoalBriquette(Clone)" || colbuffer[i].name == "Ammo_69_CashMoney_D1(Clone)")
                 {
                     cashGameObject = colbuffer[i].gameObject;
                 }
