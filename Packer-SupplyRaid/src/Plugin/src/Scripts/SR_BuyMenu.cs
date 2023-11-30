@@ -33,7 +33,6 @@ namespace SupplyRaid
                 //Debug.Log("Assigned EVENTS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                 pointDisplay.text = SR_Manager.instance.Points.ToString();
             }
-
         }
 
         void OnDestroy()

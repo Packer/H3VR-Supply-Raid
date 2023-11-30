@@ -57,7 +57,7 @@ namespace SupplyRaid
         [SerializeField] Transform factionCategoryContent;
         [SerializeField] Transform factionCategoryContainer;
         [SerializeField] GameObject factionButtonPrefab;
-        //[SerializeField] GameObject factionCategoryButtonPrefab;   //Button to Open a Category
+        [SerializeField] GameObject factionCategoryButtonPrefab;
         List<GameObject> factionCategories = new List<GameObject>();
 
         [Header("Networking")]
@@ -73,7 +73,6 @@ namespace SupplyRaid
             SetOptions();
             PopulateCharacters();
             PopulateFactions();
-
 
             //Open first of everything TODO maybe disable this ?
             OpenCharacterCategory(0);
@@ -118,7 +117,6 @@ namespace SupplyRaid
                 lauchGameButton.SetActive(SR_Manager.instance.gameServerRunning);
                 UpdateGameOptions();
             }
-
 
             //Force Hide Settings Menu
             if(settingsButton != null)
@@ -537,9 +535,9 @@ namespace SupplyRaid
                 }
             }
 
-            PopulateCategories(createdCategories, factionCategoryContent, factionCategoryContainer, factionButtonPrefab, factionCategories);
+            PopulateCategories(createdCategories, factionCategoryContent, factionCategoryContainer, factionCategoryContent.GetChild(0).gameObject, factionCategories);
 
-            //Create Our Characters Buttons
+            //Create Our Faction Buttons
             for (int i = 0; i < SR_Manager.instance.factions.Count; i++)
             {
                 GameObject content = null;

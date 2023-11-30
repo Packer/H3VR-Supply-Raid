@@ -11,13 +11,12 @@ namespace SupplyRaid
         //[SerializeField] AudioSource audioSource;
         //[SerializeField] AudioClip[] clips;
 
-        private GameObject cashGameObject;
-
-
         public Transform ScanningVolume;
-        private float m_scanTick = 1f;
+        private float m_scanTick = 0.8f;
         private Collider[] colbuffer;
         public LayerMask ScanningLM;
+
+        private List<GameObject> cashList = new List<GameObject>();
 
         /*
         void OnTriggerEnter(Collider other)
@@ -78,14 +77,16 @@ namespace SupplyRaid
         public void Button_Recycler()
         {
             bool ignoreFail = false;
-            if (cashGameObject != null)
+            for (int i = 0; i < cashList.Count; i++)
             {
-                SR_Manager.instance.Points += SR_Manager.instance.character.recyclerPoints;
-                SR_Manager.PlayPointsGainSFX();
-                Destroy(cashGameObject);
-                cashGameObject = null;
+                int cash = GetCashValue(cashList[i].name);
+                SR_Manager.instance.Points += cash;
+                Destroy(cashList[i]);
                 ignoreFail = true;
             }
+
+            if(ignoreFail)
+                SR_Manager.PlayPointsGainSFX();
 
             if (this.weapons.Count <= 0)
             {
@@ -101,12 +102,13 @@ namespace SupplyRaid
             SR_Manager.PlayPointsGainSFX();
             SR_Manager.instance.Points += SR_Manager.instance.character.recyclerPoints;
         }
+
         private void Update()
         {
             this.m_scanTick -= Time.deltaTime;
             if (this.m_scanTick <= 0f)
             {
-                this.m_scanTick = Random.Range(0.8f, 1f);
+                this.m_scanTick = Random.Range(0.6f, 0.8f);
                 float num = Vector3.Distance(base.transform.position, GM.CurrentPlayerBody.transform.position);
                 if (num < 12f)
                 {
@@ -115,16 +117,50 @@ namespace SupplyRaid
             }
         }
 
+        int GetCashValue(string itemName)
+        {
+            switch (itemName)
+            {
+                case "CharcoalBriquette(Clone)":
+                case "Ammo_69_CashMoney_D1(Clone)":
+                    return 1;
+                case "Ammo_69_CashMoney_D5(Clone)":
+                    return 5;
+                case "Ammo_69_CashMoney_D10(Clone)":
+                    return 10;
+                case "Ammo_69_CashMoney_D25(Clone)":
+                    return 25;
+                case "Ammo_69_CashMoney_D100(Clone)":
+                    return 100;
+                case "Ammo_69_CashMoney_D1000(Clone)":
+                    return 1000;
+                default:
+                    return 0;
+            }
+        }
+
         private void Scan()
         {
             int num = Physics.OverlapBoxNonAlloc(this.ScanningVolume.position, this.ScanningVolume.localScale * 0.5f, this.colbuffer, this.ScanningVolume.rotation, this.ScanningLM, QueryTriggerInteraction.Collide);
-            this.weapons.Clear();
-            cashGameObject = null;
+            weapons.Clear();
+            cashList.Clear();
+
+
             for (int i = 0; i < num; i++)
             {
-                if (colbuffer[i].name == "CharcoalBriquette(Clone)" || colbuffer[i].name == "Ammo_69_CashMoney_D1(Clone)")
+                switch (colbuffer[i].name)
                 {
-                    cashGameObject = colbuffer[i].gameObject;
+                    default:
+                        break;
+                    case "CharcoalBriquette(Clone)":
+                    case "Ammo_69_CashMoney_D1(Clone)":
+                    case "Ammo_69_CashMoney_D5(Clone)":
+                    case "Ammo_69_CashMoney_D10(Clone)":
+                    case "Ammo_69_CashMoney_D25(Clone)":
+                    case "Ammo_69_CashMoney_D100(Clone)":
+                    case "Ammo_69_CashMoney_D1000(Clone)":
+                        cashList.Add(colbuffer[i].gameObject);
+                        break;
                 }
 
                 if (this.colbuffer[i].attachedRigidbody != null)

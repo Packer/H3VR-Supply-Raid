@@ -552,7 +552,8 @@ namespace SupplyRaid
             if (!sosig) return;
 
             //Loot Drop
-            LootDrop(s);
+            if(!ignoreKillStat)
+                LootDrop(s);
 
             if (squadSosigs.Contains(s))
                 currentSquad--;
@@ -1686,7 +1687,7 @@ namespace SupplyRaid
             }
 
             //Place sosig on the squad point
-            Transform sosigSpawn = spawnSupply.squadPoint;
+            Transform sosigSpawn = spawnSupply.GetRandomSosigSpawn();
 
             Sosig sosig = CreateSosig(_spawnOptions, sosigSpawn.position, sosigSpawn.rotation, currentLevel.squadPool, currentLevel.name);
 
@@ -1777,7 +1778,10 @@ namespace SupplyRaid
             sosig.m_isBlinded = false;
 
             //Set Agents to quailty level
-            sosig.GetComponent<NavMeshAgent>().obstacleAvoidanceType = avoidanceQuailty;
+            NavMeshAgent agent = sosig.GetComponent<NavMeshAgent>();
+
+            agent.obstacleAvoidanceType = avoidanceQuailty;
+            agent.stoppingDistance = 1;
 
             return sosig;
         }

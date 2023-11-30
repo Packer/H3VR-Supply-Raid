@@ -6,7 +6,6 @@ using FistVR;
 
 namespace SupplyRaid
 {
-
     public class SR_Compass : MonoBehaviour
     {
         [Header("Directions")]
@@ -23,11 +22,20 @@ namespace SupplyRaid
         //public Text levelText;
         public Text capturesText;
 
-
         [Header("Networking")]
         public GameObject playerArrowPrefab;
         public int playerCount = 0;
         public List<Transform> playerArrows = new List<Transform>();
+
+        void Start()
+        {
+            //v1.0.6
+            Transform childArrow = Instantiate(supplyPointDirection.GetChild(0).gameObject, supplyPointDirection.GetChild(0)).transform;
+            supplyPointDirection.GetChild(0).GetComponent<Image>().enabled = false;
+            supplyPointDirection.GetChild(0).localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
+            childArrow.localRotation = Quaternion.Euler(new Vector3(270, 0, 0));
+            childArrow.localPosition = Vector3.zero;
+        }
 
         void Update()
         {
@@ -58,12 +66,14 @@ namespace SupplyRaid
             
             //Not in v1.0.0, error check
             if(healthText != null)
-                healthText.text = (Mathf.CeilToInt(GM.GetPlayerHealth() * GM.CurrentPlayerBody.GetPlayerHealthRaw())).ToString();
-
+                healthText.text = (Mathf.CeilToInt(GM.GetPlayerHealth() * GM.CurrentPlayerBody.GetMaxHealthPlayerRaw())).ToString();
+            
             Transform marker = SR_Manager.instance.GetCompassMarker();
             if (!marker)
                 return;
             pos = marker.position;
+            supplyPointDirection.GetChild(0).LookAt(pos); //Arrow points straight at position
+
             pos.y = transform.position.y;
             supplyPointDirection.LookAt(pos);
 

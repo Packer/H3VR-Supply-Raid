@@ -470,7 +470,7 @@ namespace SupplyRaid
                 if (colbuffer[i].attachedRigidbody != null)
                 {
                     FVRFireArm component = colbuffer[i].attachedRigidbody.gameObject.GetComponent<FVRFireArm>();
-                    if (component != null)
+                    if (component != null && component.RoundType != FireArmRoundType.a69CashMoney)
                     {
                         if (!m_detectedFirearms.Contains(component))
                         {
@@ -514,7 +514,10 @@ namespace SupplyRaid
                     }
 
                     FVRFireArmMagazine component3 = colbuffer[i].attachedRigidbody.gameObject.GetComponent<FVRFireArmMagazine>();
-                    if (component3 != null && component3.FireArm == null && !m_detectedMags.Contains(component3))
+                    if (component3 != null 
+                        && component3.FireArm == null 
+                        && !m_detectedMags.Contains(component3) 
+                        && component3.RoundType != FireArmRoundType.a69CashMoney)
                     {
                         m_detectedMags.Add(component3);
                     }

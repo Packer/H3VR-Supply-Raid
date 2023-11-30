@@ -401,7 +401,7 @@ namespace SupplyRaid
                     //Spawn Locking only 3, 1 mag in, 1 mag lock, 1 for loading extra bullet in
                     ammoCount = 3;
                     if (itemCategory != null && itemCategory.ammoSpawnLockedCount >= 0)
-                        ammoCount = itemCategory.ammoLimitedCount;
+                        ammoCount = itemCategory.ammoSpawnLockedCount;
                 }
                 else if (ammoCount < 12) //TODO make this reflect something
                 {
@@ -540,8 +540,10 @@ namespace SupplyRaid
 
             gold.SetColor("_Color", goldColor);
             gold.SetColor("_DecalColor", goldColor);
+            gold.SetColor("_EmissionColor", goldColor);
 
-
+            gold.SetFloat("_EmissionWeight", 1);
+            gold.SetFloat("_Emission", 1);
             gold.SetFloat("_Mode", 0);
             gold.SetFloat("_Metal", 0.666f);
             gold.SetFloat("_Roughness", 0.5f);

@@ -146,10 +146,6 @@ namespace SupplyRaid
         Team2 = 2,
         Team3 = 3,
         Team4 = 4,
-        Team5 = 5,
-        Team6 = 6,
-        Team7 = 7,
-        Team8 = 8,
         RandomTeam = -1,         //0-4
         RandomEnemyTeam = -2,    //Only enemy teams 1-2-3 etc
     }
