@@ -27,8 +27,7 @@ namespace SupplyRaid
             instance = this;
         }
 
-        // Use this for initialization
-        void Start()
+        void StartNetworking()
         {
             if (Networking.ServerRunning())
             {
@@ -52,6 +51,14 @@ namespace SupplyRaid
             }
         }
 
+        // Use this for initialization
+        void Start()
+        {
+            if(SupplyRaidPlugin.h3mpEnabled)
+                StartNetworking();
+        }
+
+        /*
         void OnConnection()
         {
             SetupPacketTypes();
@@ -59,6 +66,7 @@ namespace SupplyRaid
             if (Networking.IsClient())
                 SR_Manager.instance.SetLocalAsClient();
         }
+        */
 
         /// <summary>
         /// When a player joins the server MID game.
@@ -201,11 +209,6 @@ namespace SupplyRaid
                     Mod.CustomPacketHandlerReceived += RequestSync_Received;
                 }
             }
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
         }
 
         //---------------------------------------------------------------

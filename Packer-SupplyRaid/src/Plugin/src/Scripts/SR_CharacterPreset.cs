@@ -34,6 +34,9 @@ namespace SupplyRaid
         [Tooltip("How many points the players get for recycling weapons")]
         public int recyclerPoints = 1;
 
+        [Tooltip("How many points the players get for recycling the golden token")]
+        public int recyclerTokens = 1;
+
         //Ammo Table
         [Tooltip("0 = False\n1 = True\n3 = Buy Once\n 4 = Pay Every Time")]
         public int modeRearming = 1;

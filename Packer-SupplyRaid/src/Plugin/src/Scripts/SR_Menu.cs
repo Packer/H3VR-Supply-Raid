@@ -280,7 +280,8 @@ namespace SupplyRaid
             factionThumbnail.sprite = faction.Thumbnail();
 
             //Network Faction - Mostly for icon displaying
-            SR_Networking.instance.GameOptions_Send();
+            if(SupplyRaidPlugin.h3mpEnabled)
+                SR_Networking.instance.GameOptions_Send();
         }
 
         public void SetFactionByName(string factionName)

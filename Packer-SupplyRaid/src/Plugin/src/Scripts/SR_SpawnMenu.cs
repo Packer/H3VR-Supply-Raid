@@ -34,7 +34,7 @@ namespace SupplyRaid
 
         void Update()
         {
-            if (!Networking.ServerRunning())
+            if (!SupplyRaidPlugin.h3mpEnabled || !Networking.ServerRunning())
                 return;
 
             if (playerCount != Networking.GetPlayerCount())

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using H3MP.Scripts;
+using SupplyRaid;
+using UnityEngine;
 
 namespace H3MP.Networking
 {
@@ -10,6 +12,14 @@ namespace H3MP.Networking
         /// </summary>
         /// <returns></returns>
         public static bool ServerRunning()
+        {
+            if (SupplyRaidPlugin.h3mpEnabled)
+                return isServerRunning();
+
+            return false;
+        }
+
+        static bool isServerRunning()
         {
             if (Mod.managerObject == null)
                 return false;
@@ -22,6 +32,14 @@ namespace H3MP.Networking
         /// </summary>
         /// <returns></returns>
         public static bool IsClient()
+        {
+            if (SupplyRaidPlugin.h3mpEnabled)
+                return isClient();
+
+            return false;
+        }
+
+        static bool isClient()
         {
             if (Mod.managerObject == null)
                 return false;
@@ -37,6 +55,15 @@ namespace H3MP.Networking
         /// <returns></returns>
         public static bool IsHost()
         {
+            if (SupplyRaidPlugin.h3mpEnabled)
+                return isHosting();
+
+            return false;
+        }
+
+        //Soft Dependency
+        static bool isHosting()
+        {
             if (Mod.managerObject == null)
                 return false;
 
@@ -47,20 +74,19 @@ namespace H3MP.Networking
 
         public static int GetPlayerCount()
         {
+            if (SupplyRaidPlugin.h3mpEnabled)
+                return GetNetworkPlayerCount();
+            return 1;
+
+        }
+
+        static int GetNetworkPlayerCount()
+        {
             return GameManager.players.Count;
         }
 
-        /// <summary>
-        /// Returns the Gamemanager player at index i, does not include the local player.
-        /// </summary>
-        /// <param name="i"></param>
-        /// <returns></returns>
-        public static PlayerManager GetPlayer(int i)
-        {
-            //Do error Checks
-            return GameManager.players[i];
-        }
 
+        /*
         /// <summary>
         /// Returns array of PlayerManagers of the current connected players (Not including the local player).
         /// </summary>
@@ -77,6 +103,7 @@ namespace H3MP.Networking
             }
             return playerArray;
         }
+        */
 
         /// <summary>
         /// Returns array of all players (Not including local player) IDs
@@ -119,6 +146,49 @@ namespace H3MP.Networking
                 id = Server.RegisterCustomPacketType(identifier);
 
             return id;
+        }
+
+        /// <summary>
+        /// Returns the Gamemanager player at index i, does not include the local player.
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public static PlayerData GetPlayer(int i)
+        {
+            //Do error Checks
+            return PlayerData.GetPlayer(i);
+        }
+    }
+
+    public class PlayerData
+    {
+        public Transform head;
+        public string username;
+        public Transform handLeft;
+        public Transform handRight;
+        public int ID;
+        public float health;
+        public int iff;
+
+        /*
+        public PlayerData(Transform playerHead, string playerName, Transform leftHand, Transform rightHand)
+        {
+            head = playerHead;
+            username = playerName;
+            handLeft = leftHand;
+            handRight = rightHand;
+        }
+        */
+
+        public static PlayerData GetPlayer(int i)
+        {
+            return new PlayerData
+            {
+                head = GameManager.players[i].head,
+                username = GameManager.players[i].username,
+                handLeft = GameManager.players[i].leftHand,
+                handRight = GameManager.players[i].rightHand,
+            };
         }
     }
 }

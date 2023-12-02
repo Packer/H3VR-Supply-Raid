@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static UnityEngine.GUI;
 
 namespace Supply_Raid_Editor
 {
@@ -58,6 +56,7 @@ namespace Supply_Raid_Editor
         public InputField duplicateMagazine;
         public InputField customMod;
         public InputField pointsRecycle;
+        public InputField tokenRecycle;
 
         [Header("Ammo Rearm")]
         public InputField rearmCost;
@@ -166,6 +165,7 @@ namespace Supply_Raid_Editor
             duplicateMagazine.text = character.duplicateMagazineCost.ToString();
             customMod.text = character.modCost.ToString();
             pointsRecycle.text = character.recyclerPoints.ToString();
+            tokenRecycle.text = character.recyclerTokens.ToString();
 
             rearmCost.text = character.rearmingCost.ToString();
             rearmDropdown.value = character.modeRearming;
@@ -242,6 +242,7 @@ namespace Supply_Raid_Editor
             character.duplicateMagazineCost = int.Parse(duplicateMagazine.text);
             character.modCost = int.Parse(customMod.text);
             character.recyclerPoints = int.Parse(pointsRecycle.text);
+            character.recyclerTokens = int.Parse(tokenRecycle.text);
 
             character.rearmingCost = int.Parse(rearmCost.text);
             character.modeRearming = rearmDropdown.value;

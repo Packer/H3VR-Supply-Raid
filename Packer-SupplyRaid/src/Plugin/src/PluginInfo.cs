@@ -4,6 +4,6 @@ namespace SupplyRaid
 	{
 		internal const string NAME = "Supply Raid";
 		internal const string GUID = "com.Packer.SupplyRaid";
-		internal const string VERSION = "1.0.3";
+		internal const string VERSION = "1.1.0";
 	}
 }

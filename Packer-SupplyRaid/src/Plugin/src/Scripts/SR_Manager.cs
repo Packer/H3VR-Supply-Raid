@@ -544,7 +544,8 @@ namespace SupplyRaid
             if (gameRunning && !ignoreKillStat)
             {
                 stats.Kills++;
-                SR_Networking.instance.UpdateStats_Send();
+                if(SupplyRaidPlugin.h3mpEnabled)
+                    SR_Networking.instance.UpdateStats_Send();
             }
 
             // Make sure the sosig is managed by us
@@ -746,7 +747,7 @@ namespace SupplyRaid
 
 
             //Tell Clients game is over!
-            if (Networking.IsHost())
+            if (SupplyRaidPlugin.h3mpEnabled && Networking.IsHost())
             {
                 gameCompleted = true;
                 SR_Networking.instance.UpdateStats_Send();

@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using H3MP.Networking;
 using FistVR;
+using H3MP.Networking;
 
 namespace SupplyRaid
 {
@@ -29,7 +29,7 @@ namespace SupplyRaid
 
         void Start()
         {
-            //v1.0.6
+            //v1.0.6 Hackjob
             Transform childArrow = Instantiate(supplyPointDirection.GetChild(0).gameObject, supplyPointDirection.GetChild(0)).transform;
             supplyPointDirection.GetChild(0).GetComponent<Image>().enabled = false;
             supplyPointDirection.GetChild(0).localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
@@ -87,7 +87,8 @@ namespace SupplyRaid
                 levelText.text = SR_Manager.GetFactionLevel().ToString();
             */
 
-            NetworkUpdate();
+            if(SupplyRaidPlugin.h3mpEnabled)
+                NetworkUpdate();
         }
 
         void NetworkUpdate()

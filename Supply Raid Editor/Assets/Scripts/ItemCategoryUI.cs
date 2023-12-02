@@ -60,6 +60,7 @@ namespace Supply_Raid_Editor
 
         public void CloseAllPages()
         {
+            lastGroupUI = null;
             objectGroupsPage.SetActive(false);
             lootTablePage.SetActive(false);
             subtractivePage.SetActive(false);
@@ -232,6 +233,7 @@ namespace Supply_Raid_Editor
 
         public void UpdateUI()
         {
+
             //Clear old UI elements
             ClearAllObjectGroups();
             ClearAllObjectIDList();
@@ -379,6 +381,9 @@ namespace Supply_Raid_Editor
                 countryOfOriginsList.Add(index);
             }
 
+            if (lastGroupUI != null)
+                OpenObjectGroup(lastGroupUI);
+
             //Tables
             SetupDropdown(tables[0], setList);
             SetupDropdown(tables[1], eraList);
@@ -509,6 +514,7 @@ namespace Supply_Raid_Editor
         public GameObject objectGroupPrefab;
         public Transform objectGroupsContent;
         public List<ObjectGroupUI> objectGroupsList = new List<ObjectGroupUI>();
+        private ObjectGroupUI lastGroupUI = null;
 
         [Header("Object IDs")]
         public GameObject objectIDPanel;
@@ -629,6 +635,9 @@ namespace Supply_Raid_Editor
             //Set as Selected
             objectGroupSelectedData = group.objectGroup;
 
+            //Reopen last group... kind of works??
+            lastGroupUI = group;
+
             objectIDPanel.SetActive(true);
         }
 
@@ -650,7 +659,7 @@ namespace Supply_Raid_Editor
 
         void CreateObjectGroupUI(ObjectGroup group)
         {
-            Debug.Log("New GoupUI");
+            //Debug.Log("New GoupUI");
             ObjectGroupUI objectGroup = Instantiate(objectGroupPrefab, objectGroupsContent).GetComponent<ObjectGroupUI>();
             objectGroup.gameObject.SetActive(true);
             objectGroup.inputName.text = group.name;

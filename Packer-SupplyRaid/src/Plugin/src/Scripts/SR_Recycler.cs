@@ -122,6 +122,7 @@ namespace SupplyRaid
             switch (itemName)
             {
                 case "CharcoalBriquette(Clone)":
+                    return SR_Manager.instance.character.recyclerTokens;
                 case "Ammo_69_CashMoney_D1(Clone)":
                     return 1;
                 case "Ammo_69_CashMoney_D5(Clone)":
