@@ -1973,6 +1973,9 @@ namespace SupplyRaid
             if (instance == null)
                 return false;
 
+            if (instance.optionFreeBuyMenu)
+                return true;
+
             if (instance.Points >= amount)
                 return true;
             else
