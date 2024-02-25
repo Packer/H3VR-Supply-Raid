@@ -215,6 +215,79 @@ namespace SupplyRaid
             //JSONExample();
             instance = this;
             SetupGameData();
+
+
+            //Load External Assets
+            StartCoroutine(SR_ModLoader.LoadSupplyRaidAssets());
+        }
+
+        public void LoadInAssets()
+        {
+            SR_Assets asset = SR_ModLoader.srAssets;
+
+            //------------------------------------------------------------------
+            // Menus
+            //------------------------------------------------------------------
+
+            //SR Menu - Disable and Replace
+            srMenu.gameObject.SetActive(false);
+            srMenu = Instantiate(asset.srMenu, srMenu.position, srMenu.rotation, srMenu.parent).transform;
+            //SR_Menu.instance = srMenu.GetComponent<SR_Menu>();
+
+            //SR Buy Menu
+            buyMenu.gameObject.SetActive(false);
+            buyMenu = Instantiate(asset.srBuyMenu, buyMenu.position, buyMenu.rotation, buyMenu.parent).transform;
+
+            //SR Ammo Spawner/Station
+            ammoStation.gameObject.SetActive(false);
+            ammoStation = Instantiate(asset.srAmmoSpawner, ammoStation.position, ammoStation.rotation, ammoStation.parent).transform;
+
+            //SR Magzine Duplicator
+            duplicator.gameObject.SetActive(false);
+            duplicator = Instantiate(asset.srMagazineDuplicator, duplicator.position, duplicator.rotation, duplicator.parent).transform;
+
+            //SR Mod Table
+            attachmentStation.gameObject.SetActive(false);
+            attachmentStation = Instantiate(asset.srModTable, attachmentStation.position, attachmentStation.rotation, attachmentStation.parent).transform;
+
+            //SR Recycler
+            recycler.gameObject.SetActive(false);
+            recycler = Instantiate(asset.srRecycler, recycler.position, recycler.rotation, recycler.parent).transform;
+
+            //SR Results Menu
+            resultsMenu.gameObject.SetActive(false);
+            resultsMenu = Instantiate(asset.srResultsMenu, resultsMenu.position, resultsMenu.rotation, resultsMenu.parent).transform;
+
+            //SR Spawn Menu
+            spawnMenu.gameObject.SetActive(false);
+            spawnMenu = Instantiate(asset.srSpawnMenu, spawnMenu.position, spawnMenu.rotation, spawnMenu.parent).transform;
+
+            //SR Spawn Station
+            spawnStation.gameObject.SetActive(false);
+            spawnStation = Instantiate(asset.srSpawnStation, spawnStation.position, spawnStation.rotation, spawnStation.parent).transform;
+
+            //------------------------------------------------------------------
+            // Gameplay
+            //------------------------------------------------------------------
+
+            //SR Compass
+            SR_Compass.instance.gameObject.SetActive(false);
+            Instantiate(
+                asset.srCompass, 
+                SR_Compass.instance.transform.position, 
+                SR_Compass.instance.transform.rotation, 
+                SR_Compass.instance.transform.parent);
+
+            //SR Capture Zone - If NOT replaced then spawn the newer one
+            if (!captureZone.replaced)
+            {
+                captureZone.gameObject.SetActive(false);
+                captureZone = Instantiate(
+                    asset.srCaptureZone,
+                    captureZone.transform.position,
+                    captureZone.transform.rotation,
+                    captureZone.transform.parent).GetComponent<SR_CaptureZone>();
+            }
         }
 
         /*
@@ -576,7 +649,7 @@ namespace SupplyRaid
                     //Spawn Loot
                     SR_ItemCategory item = itemCategories[character.lootCategories[i].GetIndex()];
                     Transform[] spawns = new Transform[] { s.transform, s.transform, s.transform, s.transform, s.transform };
-                    SR_Global.SpawnLoot(item.InitializeLootTable(), item, spawns);
+                    SR_Global.SpawnLoot(item.InitializeLootTable(), item, spawns, true);
                 }
             }
 

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1503613550, guid: bcc605c3eca03cb9d2e7221f1969bc76, type: 3}
+  m_Name: SupplyRaid
+  m_EditorClassIdentifier: 
+  srCompass: {fileID: 114696112645205352, guid: 3197df8354acb4440ac0541d289d1ab8,
+    type: 2}
+  srCaptureZone: {fileID: 114982106423545416, guid: d2978018a2b49f64cae8dfe975162353,
+    type: 2}
+  srMenu: {fileID: 114312252819119748, guid: 64bfcee5d1895a44fa2cd488b3e25828, type: 2}
+  srBuyMenu: {fileID: 114595347761463974, guid: 6dfe4a067d5cc9d4daed3e248b70f3a5,
+    type: 2}
+  srAmmoSpawner: {fileID: 114428900173201110, guid: a5ce81cbd610eec499f1aebf1c50a6fd,
+    type: 2}
+  srMagazineDuplicator: {fileID: 114309735839983772, guid: dda48fd6a08568946899ac7d9b34fb8a,
+    type: 2}
+  srModTable: {fileID: 114620656610774836, guid: d7a8bdb6dec0e454d98cf68b1a91f1f9,
+    type: 2}
+  srRecycler: {fileID: 114593035954966440, guid: 754875df84274034496410fba4c15c80,
+    type: 2}
+  srResultsMenu: {fileID: 114631238097086528, guid: 839a1e7acbe7fb245aeadd1c0912df19,
+    type: 2}
+  srSpawnMenu: {fileID: 114704828926157708, guid: 8b44a391e4b75d248889f0143420227a,
+    type: 2}
+  srSpawnStation: {fileID: 114856699304369986, guid: 4a9ec7ac8e10011499be16f854ad364e,
+    type: 2}

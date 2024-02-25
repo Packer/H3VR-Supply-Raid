@@ -9,8 +9,8 @@ namespace SupplyRaid
 {
     public class SR_CaptureZone : MonoBehaviour
     {
+        public bool replaced = false;
         public Transform zone;
-        public Text captureText;
         [HideInInspector]
         public float captureRemain = 15;
         private float captureTick = 1;
@@ -55,12 +55,13 @@ namespace SupplyRaid
                     else
                         SR_Manager.PlayTickAlmostSFX();
 
+                    
                     //Visuals
-                    if (captureText.gameObject.activeSelf == false)
-                        captureText.gameObject.SetActive(true);
+                    if (SR_Compass.instance.captureText.gameObject.activeSelf == false)
+                        SR_Compass.instance.captureText.gameObject.SetActive(true);
 
-                    captureText.text = Mathf.RoundToInt(captureRemain).ToString();
-                    //captureText.transform.parent.LookAt(GM.CurrentPlayerBody.Head);
+                    SR_Compass.instance.captureText.text = Mathf.RoundToInt(captureRemain).ToString();
+                    //SR_Compass.instance.captureText.transform.parent.LookAt(GM.CurrentPlayerBody.Head);
 
                     //Captued the point
                     if (captureRemain <= 0)
@@ -79,16 +80,16 @@ namespace SupplyRaid
 
                         captureRemain = SR_Manager.AttackSupplyPoint().captureTime;
                         captureTick = Random.Range(0, 3);
-                        captureText.gameObject.SetActive(false);
+                        SR_Compass.instance.captureText.gameObject.SetActive(false);
                     }
                 }
                 else
                 {
-                    if (captureText.gameObject.activeSelf == true)
+                    if (SR_Compass.instance.captureText.gameObject.activeSelf == true)
                     {
                         if(SR_Manager.instance.captureProtection <= 0)
                             SR_Manager.PlayFailSFX();
-                        captureText.gameObject.SetActive(false);
+                        SR_Compass.instance.captureText.gameObject.SetActive(false);
                     }
                     captureRemain = SR_Manager.AttackSupplyPoint().captureTime;
                     captureTick = Random.Range(0, 2);

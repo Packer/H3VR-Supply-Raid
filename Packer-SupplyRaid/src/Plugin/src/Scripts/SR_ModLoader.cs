@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,54 @@ namespace SupplyRaid
 {
     public class SR_ModLoader : MonoBehaviour
     {
+        public static SR_Assets srAssets;
+        public static AssetBundle srBundle;
+
+        void OnDestroy()
+        {
+            //SRScene = null;
+        }
+
+
+        public static IEnumerator LoadSupplyRaidAssets()
+        {
+            if (srBundle != null)
+                yield break;
+
+            string path = Paths.PluginPath + "/Packer-SupplyRaid/supplyraid.sr";
+
+
+            AssetBundleCreateRequest asyncBundleRequest
+                = AssetBundle.LoadFromFileAsync(path);
+
+            yield return asyncBundleRequest;
+
+            if(srBundle == null)
+                srBundle = asyncBundleRequest.assetBundle;
+
+            if (srBundle == null)
+            {
+                Debug.LogError("Failed to load Supply Raid AssetBundle");
+                yield break;
+            }
+
+            AssetBundleRequest assetRequest = srBundle.LoadAssetWithSubAssetsAsync<SR_Assets>("SupplyRaid");
+            yield return assetRequest;
+
+            if (assetRequest == null)
+            {
+                Debug.LogError("Supply Raid - Missing SR Scene");
+                yield break;
+            }
+
+            srAssets = assetRequest.asset as SR_Assets;
+
+            //--------------------------------------------------------------------------------------------------------
+
+            SR_Manager.instance.LoadInAssets();
+
+        }
+
         public static List<SR_ItemCategory> LoadItemCategories()
         {
             List<string> directories = GetItemCategoriesDirectory();
@@ -160,5 +209,6 @@ namespace SupplyRaid
         {
             return Directory.GetFiles(Paths.PluginPath, "*.cssr", SearchOption.AllDirectories).ToList();
         }
+
     }
 }

@@ -151,6 +151,11 @@ namespace SupplyRaid
             UpdateGameOptions();
         }
 
+        public void LaunchGame()
+        {
+            SR_Manager.instance.LaunchGame();
+        }
+
         public void ToggleSettingsMenu()
         {
             settingsMenu.SetActive(!settingsMenu.activeSelf);

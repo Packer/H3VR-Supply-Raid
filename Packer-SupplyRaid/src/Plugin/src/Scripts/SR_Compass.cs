@@ -8,9 +8,12 @@ namespace SupplyRaid
 {
     public class SR_Compass : MonoBehaviour
     {
+        public static SR_Compass instance;
+
         [Header("Directions")]
         public Transform supplyPointDirection;
         public Transform lastSupplyDirection;
+        public Text captureText;
 
         [Header("Setup")]
         public Transform face;  //Faces players head
@@ -26,6 +29,11 @@ namespace SupplyRaid
         public GameObject playerArrowPrefab;
         public int playerCount = 0;
         public List<Transform> playerArrows = new List<Transform>();
+
+        void Awake()
+        {
+            instance = this;
+        }
 
         void Start()
         {

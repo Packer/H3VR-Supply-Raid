@@ -14,6 +14,9 @@ namespace SupplyRaid
         private string thumbnailPath = "icon.png";
         private Sprite thumbnail;
 
+        public string category = "";
+        public string subCategory = "";
+
         [Tooltip("Magazine/Clip Min Capacity for this loot table")]
         public int minCapacity = -1;
         [Tooltip("Magazine/Clip Max Capacity for this loot table")]
@@ -21,7 +24,20 @@ namespace SupplyRaid
 
         [Tooltip("Magazine/Clip/Speed Loaders/Rounds that spawn with this itemCategory")]
         public int ammoLimitedCount = -1;
+        public int ammoLimitedCountMin = -1; //If less than min then gets set to min
+        // Loot
+        public int ammoLimitedLootCount = -1;
+        public int ammoLimitedLootCountMin = -1;
+        //-----------------------------------
         public int ammoSpawnLockedCount = -1;
+        public int ammoSpawnLockedCountMin = -1;
+        // Loot
+        public int ammoSpawnLockedLootCount = -1;
+        public int ammoSpawnLockedLootCountMin = -1;
+        //-----------------------------------
+
+        [Tooltip("Do weapons spawn with their extra attachments")]
+        public bool requiredAttachments = true;
 
         //Do we use the loot tag system
         public bool lootTagsEnabled = true;
