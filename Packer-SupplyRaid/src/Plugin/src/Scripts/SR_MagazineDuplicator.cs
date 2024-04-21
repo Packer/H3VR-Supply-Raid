@@ -24,6 +24,14 @@ namespace SupplyRaid
         private List<FVRObject.OTagEra> m_validEras = new List<FVRObject.OTagEra>();
         private List<FVRObject.OTagSet> m_validSets = new List<FVRObject.OTagSet>();
 
+        public Transform selectedBox;
+        private MeshRenderer selectedMesh;
+
+        private int costDuplicate = 0;
+        private int costUpgrade = 0;
+        private int costMagazine = 0;
+        private FVRObject magazineUpgrade;
+
         private void Start()
         {
             colbuffer = new Collider[50];
@@ -32,40 +40,19 @@ namespace SupplyRaid
         public void Button_Upgrade()
         {
             
-            if (!SR_Manager.EnoughPoints(SR_Manager.instance.character.upgradeMagazineCost))
+            if (!SR_Manager.EnoughPoints(costUpgrade)
+                || m_detectedMag == null
+                || !IM.CompatMags.ContainsKey(m_detectedMag.MagazineType))
             {
                 SR_Manager.PlayFailSFX();
                 return;
             }
-            if (m_detectedMag == null)
+
+            if (magazineUpgrade != null)
             {
-                SR_Manager.PlayFailSFX();
-                return;
-            }
-            if (!IM.CompatMags.ContainsKey(m_detectedMag.MagazineType))
-            {
-                SR_Manager.PlayFailSFX();
-                return;
-            }
-            List<FVRObject> list = IM.CompatMags[m_detectedMag.MagazineType];
-            FVRObject fvrobject = null;
-            int num = 10000;
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (!(list[i].ItemID == m_detectedMag.ObjectWrapper.ItemID))
-                {
-                    if (list[i].MagazineCapacity > m_detectedMag.m_capacity && list[i].MagazineCapacity < num)
-                    {
-                        fvrobject = list[i];
-                        num = list[i].MagazineCapacity;
-                    }
-                }
-            }
-            if (fvrobject != null)
-            {
-                SR_Manager.SpendPoints(SR_Manager.instance.character.upgradeMagazineCost);
+                SR_Manager.SpendPoints(costUpgrade);
                 Destroy(m_detectedMag.GameObject);
-                GameObject gameObject = Instantiate(fvrobject.GetGameObject(), Spawnpoint_Mag.position, Spawnpoint_Mag.rotation);
+                GameObject gameObject = Instantiate(magazineUpgrade.GetGameObject(), Spawnpoint_Mag.position, Spawnpoint_Mag.rotation);
                 SR_Manager.PlayConfirmSFX();
             }
             else
@@ -74,26 +61,18 @@ namespace SupplyRaid
 
         public void Button_Duplicate()
         {
-            if (m_detectedMag == null && m_detectedSL == null)
-            {
-                SR_Manager.PlayFailSFX();
-                return;
-            }
-            if (m_detectedMag != null && m_detectedMag.IsEnBloc)
-            {
-                SR_Manager.PlayFailSFX();
-                return;
-            }
-            if (SR_Manager.instance.character.duplicateMagazineCost < 1)
+            if (m_detectedMag == null && m_detectedSL == null
+                || m_detectedMag != null && m_detectedMag.IsEnBloc
+                || costDuplicate < 1)
             {
                 SR_Manager.PlayFailSFX();
                 return;
             }
             
-            if (SR_Manager.EnoughPoints(SR_Manager.instance.character.duplicateMagazineCost))
+            if (SR_Manager.EnoughPoints(costDuplicate))
             {
                 SR_Manager.PlayConfirmSFX();
-                SR_Manager.SpendPoints(SR_Manager.instance.character.duplicateMagazineCost);
+                SR_Manager.SpendPoints(costDuplicate);
 
                 if (m_detectedMag != null)
                 {
@@ -199,23 +178,10 @@ namespace SupplyRaid
 
         private void SetCostBasedOnMag()
         {
-            if(m_detectedFirearms.Count > 0)
+            if (m_detectedFirearms.Count > 0)
                 SetMagButtonStatus(true);
             else
                 SetMagButtonStatus(false);
-
-            /*
-            if (m_detectedMag == null && m_detectedSL == null)
-            {
-               // OCIconDupe.SetOption(TNH_ObjectConstructorIcon.IconState.Cancel, OCIconDupe.Sprite_Cancel, 0);
-                m_storedDupeCost = 0;
-            }
-            else
-            {
-                //OCIconDupe.SetOption(TNH_ObjectConstructorIcon.IconState.Accept, OCIconDupe.Sprite_Accept, 0);
-                m_storedDupeCost = 1;
-            }
-            */
 
             if (m_detectedMag != null)
             {
@@ -225,11 +191,20 @@ namespace SupplyRaid
                     return;
                 }
 
+                //Duplicate Magazine Cost Calculation
+                int powerIndex = (int)m_detectedMag.ObjectWrapper.TagFirearmRoundPower;
+                float multiplier = SR_Manager.instance.character.powerMultiplier[powerIndex];
+
+                if (SR_Manager.instance.character.perRound)
+                    costDuplicate = Mathf.CeilToInt(SR_Manager.instance.character.duplicateMagazineCost * m_detectedMag.m_capacity * multiplier);
+                else
+                    costDuplicate = Mathf.CeilToInt(SR_Manager.instance.character.duplicateMagazineCost * multiplier);
+
                 //Can duplicate Magazine
                 SetDuplicateStatus(true);
 
-                List<FVRObject> list = IM.CompatMags[m_detectedMag.MagazineType];
-                FVRObject fvrobject = null;
+
+                List <FVRObject> list = IM.CompatMags[m_detectedMag.MagazineType];
                 int num = 10000;
                 for (int i = 0; i < list.Count; i++)
                 {
@@ -237,21 +212,28 @@ namespace SupplyRaid
                     {
                         if (list[i].MagazineCapacity > m_detectedMag.m_capacity && list[i].MagazineCapacity < num)
                         {
-                            fvrobject = list[i];
+                            magazineUpgrade = list[i];
                             num = list[i].MagazineCapacity;
                         }
                     }
                 }
-                if (fvrobject != null)
+                if (magazineUpgrade != null)
                 {
+                    powerIndex = (int)magazineUpgrade.TagFirearmRoundPower;
+                    multiplier = SR_Manager.instance.character.powerMultiplier[powerIndex];
+
+                    //Update Magazine Cost Calculation
+                    if (SR_Manager.instance.character.perRound)
+                        costUpgrade = Mathf.CeilToInt(SR_Manager.instance.character.upgradeMagazineCost * m_detectedMag.m_capacity * multiplier);
+                    else
+                        costUpgrade = Mathf.CeilToInt(SR_Manager.instance.character.upgradeMagazineCost * multiplier);
+
                     SetUpgradeStatus(true);
                     m_hasUpgradeableMags = true;
-                    //OCIconUpgrade.SetOption(TNH_ObjectConstructorIcon.IconState.Accept, OCIconUpgrade.Sprite_Accept, 0);
                 }
                 else
                 {
                     SetUpgradeStatus(false);
-                    //OCIconUpgrade.SetOption(TNH_ObjectConstructorIcon.IconState.Cancel, OCIconUpgrade.Sprite_Cancel, 0);
                     m_hasUpgradeableMags = false;
                 }
             }
@@ -259,35 +241,39 @@ namespace SupplyRaid
             {
                 SetUpgradeStatus(false);
                 SetDuplicateStatus(false);
-                //OCIconUpgrade.SetOption(TNH_ObjectConstructorIcon.IconState.Cancel, OCIconUpgrade.Sprite_Cancel, 0);
                 m_hasUpgradeableMags = false;
             }
         }
 
         public void Button_SpawnMagazine()
         {
-            for (int i = 0; i < m_detectedFirearms.Count; i++)
+            if (!m_detectedFirearms[0])
             {
-                if (IM.OD.ContainsKey(m_detectedFirearms[i].ObjectWrapper.ItemID))
-                {
-                    FVRObject fvrobject = IM.OD[m_detectedFirearms[i].ObjectWrapper.ItemID];
-                    if (fvrobject.CompatibleMagazines.Count > 0)
-                    {
-                        FVRObject fvrobject3 = fvrobject.CompatibleMagazines[0];
-                        GameObject gameObject2 = fvrobject3.GetGameObject();
+                SR_Manager.PlayFailSFX();
+                return;
+            }
 
-                        if (SR_Manager.SpendPoints(SR_Manager.instance.character.newMagazineCost))
-                        {
-                            SR_Manager.PlayConfirmSFX();
-                            GameObject gameObject3 = Instantiate(gameObject2, Spawnpoint_Mag.position + Vector3.up * (float)i * 0.1f, Spawnpoint_Mag.rotation);
-                            FVRFireArmMagazine fvrfireArmMagazine = gameObject3.GetComponent<FVRFireArmMagazine>();
-                            FireArmRoundType roundType2 = fvrfireArmMagazine.RoundType;
-                            FireArmRoundClass classFromType2 = GetClassFromType(roundType2);
-                            fvrfireArmMagazine.ReloadMagWithType(classFromType2);
-                        }
-                        else
-                            SR_Manager.PlayFailSFX();
+            if (IM.OD.ContainsKey(m_detectedFirearms[0].ObjectWrapper.ItemID))
+            {
+                FVRObject fvrobject = IM.OD[m_detectedFirearms[0].ObjectWrapper.ItemID];
+                if (fvrobject.CompatibleMagazines.Count > 0)
+                {
+                    FVRObject fvrobject3 = fvrobject.CompatibleMagazines[0];
+                    GameObject gameObject2 = fvrobject3.GetGameObject();
+
+                    if (SR_Manager.SpendPoints(costMagazine))
+                    {
+                        SR_Manager.PlayConfirmSFX();
+                        GameObject gameObject3 = Instantiate(gameObject2, Spawnpoint_Mag.position + Vector3.up * 0.1f, Spawnpoint_Mag.rotation);
+                        FVRFireArmMagazine fvrfireArmMagazine = gameObject3.GetComponent<FVRFireArmMagazine>();
+                        FireArmRoundType roundType2 = fvrfireArmMagazine.RoundType;
+                        FireArmRoundClass classFromType2 = GetClassFromType(roundType2);
+                        fvrfireArmMagazine.ReloadMagWithType(classFromType2);
                     }
+                    else
+                        SR_Manager.PlayFailSFX();
+                    //Only do it for one weapon
+                    return;
                 }
             }
         }
@@ -325,14 +311,43 @@ namespace SupplyRaid
                 return;
             }
 
+            if (!magazineUpgrade)
+                return;
+
+            int powerIndex = (int)magazineUpgrade.TagFirearmRoundPower;
+            float multiplier = SR_Manager.instance.character.powerMultiplier[powerIndex];
+
+            //New Magazine Cost Calculation
+            if (SR_Manager.instance.character.perRound)
+            {
+                if (m_detectedFirearms.Count <= 0 || m_detectedFirearms[0] == null)
+                    return;
+
+                if (m_detectedFirearms[0] &&
+                    IM.OD.ContainsKey(m_detectedFirearms[0].ObjectWrapper.ItemID))
+                {
+                    FVRObject fvrobject = IM.OD[m_detectedFirearms[0].ObjectWrapper.ItemID];
+
+                    if (fvrobject == null
+                        || fvrobject.CompatibleMagazines == null
+                        || fvrobject.CompatibleMagazines.Count <= 0)
+                        return;
+                    costMagazine = Mathf.CeilToInt(SR_Manager.instance.character.newMagazineCost * fvrobject.CompatibleMagazines[0].MagazineCapacity * multiplier);
+                }
+            }
+            else
+            {
+                costMagazine = Mathf.CeilToInt(SR_Manager.instance.character.newMagazineCost * multiplier);
+            }
+
             magazineBtn.sprite = statusImages[status ? 0 : 1];
-            magazineCostText.text = SR_Manager.instance.character.newMagazineCost.ToString();
+            magazineCostText.text = costMagazine.ToString();
         }
 
         void SetUpgradeStatus(bool status)
         {
 
-            if (SR_Manager.instance.character.upgradeMagazineCost < 0)
+            if (costUpgrade < 0)
             {
                 upgradeBtn.transform.parent.gameObject.SetActive(false);
                 return;
@@ -340,18 +355,18 @@ namespace SupplyRaid
             else
             {
                 upgradeBtn.sprite = statusImages[status ? 0 : 1];
-                upgradeCostText.text = SR_Manager.instance.character.upgradeMagazineCost.ToString();
+                upgradeCostText.text = costUpgrade.ToString();
             }
         }
 
         void SetDuplicateStatus(bool status)
         {
-            if (SR_Manager.instance.character.duplicateMagazineCost < 0)
+            if (costDuplicate < 0)
                 duplicateBtn.transform.parent.gameObject.SetActive(false);
             else
             {
                 duplicateBtn.sprite = statusImages[status ? 0 : 1];
-                duplicateCostText.text = SR_Manager.instance.character.duplicateMagazineCost.ToString();
+                duplicateCostText.text = costDuplicate.ToString();
             }
 
         }

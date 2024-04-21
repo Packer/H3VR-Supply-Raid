@@ -203,9 +203,10 @@ namespace SupplyRaid
 
         public void ChangeMaxEnemies(int i)
         {
-            SR_Manager.instance.optionMaxEnemies = Mathf.Clamp(SR_Manager.instance.optionMaxEnemies + i, 6, int.MaxValue);
+            SR_Manager.instance.optionMaxEnemies = Mathf.Clamp(SR_Manager.instance.optionMaxEnemies + i, 3, int.MaxValue);
             UpdateGameOptions();
         }
+
         public void ChangeMaxSquadEnemies(int i)
         {
             SR_Manager.instance.optionMaxSquadEnemies = Mathf.Clamp(SR_Manager.instance.optionMaxSquadEnemies + i, 0, int.MaxValue);
@@ -219,9 +220,9 @@ namespace SupplyRaid
             UpdateGameOptions();
         }
 
-        public void ChangePlayerCount(int i)
+        public void ChangePlayerCount(float i)
         {
-            SR_Manager.instance.optionPlayerCount = Mathf.Clamp(SR_Manager.instance.optionPlayerCount + i, 1, 8);
+            SR_Manager.instance.optionPlayerCount = Mathf.Clamp(SR_Manager.instance.optionPlayerCount + i, 0.25f, 8f);
             UpdateGameOptions();
         }
 
@@ -233,7 +234,25 @@ namespace SupplyRaid
 
         public void ChangeHealth(int health)
         {
-            SR_Manager.instance.optionPlayerHealth = Mathf.Clamp(SR_Manager.instance.optionPlayerHealth + health, 0, 5);
+            //Change Health to 100 intervals when below 1000
+            if (health == -1000)
+            {
+                if (SR_Manager.instance.optionPlayerHealth <= 1000)
+                    health = -100;
+                else if (SR_Manager.instance.optionPlayerHealth > 10000)
+                    health = -2000;
+            }
+            else if (health == 1000)
+            {
+                if (SR_Manager.instance.optionPlayerHealth >= 10000)
+                    health = 2000;
+                else if (SR_Manager.instance.optionPlayerHealth == 1)
+                    health = 99;
+                else if(SR_Manager.instance.optionPlayerHealth < 1000)
+                    health = 100;
+            }
+
+            SR_Manager.instance.optionPlayerHealth = Mathf.Clamp(SR_Manager.instance.optionPlayerHealth + health, 1, int.MaxValue);
             UpdateGameOptions();
         }
 
@@ -260,7 +279,7 @@ namespace SupplyRaid
             if (SR_Manager.instance.character == null)
                 return;
 
-            var character = SR_Manager.instance.character;
+            SR_CharacterPreset character = SR_Manager.instance.character;
             characterName.text = character.name;
             characterDescription.text = character.description;
             characterThumbnail.sprite = character.Thumbnail();
@@ -366,16 +385,18 @@ namespace SupplyRaid
                     ? "Marathon" : SR_Manager.instance.optionCaptures.ToString() + " (" + SR_ResultsMenu.FloatToTime(SR_Manager.instance.optionCaptures * 7) + ")";
             }
 
+            int totalMaxEnemies = SR_Manager.instance.optionMaxEnemies + SR_Manager.instance.optionMaxSquadEnemies;
+
             if (maxEnemies != null)
             {
                 maxEnemies.text = SR_Manager.instance.optionMaxEnemies.ToString();
-                maxEnemies.color = Color.Lerp(Color.white, Color.red, Mathf.InverseLerp(10, 18, SR_Manager.instance.optionMaxEnemies));
+                maxEnemies.color = Color.Lerp(Color.white, Color.red, Mathf.InverseLerp(16, 24, totalMaxEnemies));
             }
 
             if (maxSquadEnemies != null)
             {
                 maxSquadEnemies.text = SR_Manager.instance.optionMaxSquadEnemies.ToString();
-                maxSquadEnemies.color = Color.Lerp(Color.white, Color.red, Mathf.InverseLerp(8, 12, SR_Manager.instance.optionMaxSquadEnemies));
+                maxSquadEnemies.color = Color.Lerp(Color.white, Color.red, Mathf.InverseLerp(16, 24, totalMaxEnemies));
             }
 
             //Capture Order
@@ -402,28 +423,32 @@ namespace SupplyRaid
             {
                 switch (SR_Manager.instance.optionPlayerHealth)
                 {
-                    case 0:
-                        healthMode.text = "One Hit";
+                    case 2500:
+                        healthMode.text = "2500 - Half Health x0.5";
                         break;
-                    case 1:
-                        healthMode.text = "Half Health x0.5";
+                    case 5000:
+                        healthMode.text = "5000 - Standard x1.0";
                         break;
-                    case 2:
-                        healthMode.text = "Standard x1.0";
+                    case 7500:
+                        healthMode.text = "7500 - Extra Health x1.5";
                         break;
-                    case 3:
-                        healthMode.text = "Extra Health x1.5";
-                        break;
-                    case 4:
-                        healthMode.text = "Double Health x2.0";
-                        break;
-                    case 5:
-                        healthMode.text = "Too Much Health";
+                    case 10000:
+                        healthMode.text = "10000 - Double Health x2.0";
                         break;
                     default:
-                        healthMode.text = "Standard";
+                        if (SR_Manager.instance.optionPlayerHealth <= 100)
+                            healthMode.text = SR_Manager.instance.optionPlayerHealth + " - One Hit";
+                        else if (SR_Manager.instance.optionPlayerHealth > 20000)
+                            healthMode.text = SR_Manager.instance.optionPlayerHealth + " - Too Much Health";
                         break;
                 }
+
+                //Standard or Below
+                if(SR_Manager.instance.optionPlayerHealth <= 5000)
+                    healthMode.color = Color.Lerp(Color.red, Color.white, Mathf.InverseLerp(0, 5000, SR_Manager.instance.optionPlayerHealth));
+                else
+                    healthMode.color = Color.Lerp(Color.white, Color.green, Mathf.InverseLerp(5000, 15000, SR_Manager.instance.optionPlayerHealth));
+
             }
 
             //Local Only
@@ -474,7 +499,6 @@ namespace SupplyRaid
             factionCategories[i].SetActive(true);
             factionMenuTitle.text = factionCategories[i].name;
         }
-
 
         void PopulateCharacters()
         {

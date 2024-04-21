@@ -61,14 +61,13 @@ namespace SupplyRaid
             face.transform.LookAt(GM.CurrentPlayerBody.Head.position);
 
             //Direction
-            directionText.text = Mathf.FloorToInt(GM.CurrentPlayerBody.Head.rotation.eulerAngles.y).ToString();
+            Quaternion pointRotation = SR_Manager.instance.optionHand ? GM.CurrentPlayerBody.RightHand.rotation : GM.CurrentPlayerBody.LeftHand.rotation;
+            directionText.text = Mathf.FloorToInt(pointRotation.eulerAngles.y).ToString();
 
             //Last SupplyPoint
-            Vector3 pos = SR_Manager.instance.GetLastSupplyPoint().position;
+            Vector3 pos = SR_Manager.LastSupplyPoint().buyMenu.position;
             pos.y = transform.position.y;
             lastSupplyDirection.LookAt(pos);
-
-            //H3MP Setup NETWORKING player points
 
             healthBar.value = GM.GetPlayerHealth();
             
@@ -87,13 +86,6 @@ namespace SupplyRaid
 
             pointsText.text = SR_Manager.instance.Points.ToString();
             capturesText.text = (SR_Manager.instance.CurrentCaptures - SR_Manager.instance.optionStartLevel).ToString();
-
-            /*
-            if(SR_Manager.instance.inEndless)
-                levelText.text = (SR_Manager.instance.CurrentFactionLevel + SR_Manager.instance.faction.levels.Length).ToString();
-            else
-                levelText.text = SR_Manager.GetFactionLevel().ToString();
-            */
 
             if(SupplyRaidPlugin.h3mpEnabled)
                 NetworkUpdate();
@@ -131,10 +123,6 @@ namespace SupplyRaid
             }
 
             playerArrows.Clear();
-
-            //DO nothing if single player
-            //if (GameManager.players.Count <= 1)
-            //    return;
             
             for (int i = 0; i < Networking.GetPlayerCount(); i++)
             {

@@ -18,14 +18,19 @@ namespace SupplyRaid
         public string factionName = "";
         [Tooltip("Points player receives per capture, endless reuses the last array position")]
         public int[] pointsLevel = new int[1];
+        public bool pointsCatchup = true;
 
         // Duplicator
         [Tooltip("Cost of a new Magazine - if -1 disable")]
-        public int newMagazineCost = 1;
+        public float newMagazineCost = 1;
         [Tooltip("Cost of upgrading a magazine - if -1 disable")]
-        public int upgradeMagazineCost = 2;
+        public float upgradeMagazineCost = 2;
         [Tooltip("Cost of Duplicating a magazine - if -1 disable")]
-        public int duplicateMagazineCost = 1;
+        public float duplicateMagazineCost = 1;
+
+        //New
+        public float[] powerMultiplier = new float[10];
+        public bool perRound = false;
 
         [Tooltip("Custom Mod Cost")]
         public int modCost = 1;
@@ -120,7 +125,6 @@ namespace SupplyRaid
                 { 
                     Debug.LogError("Supply Raid - Missing character start gear index: " + x);
                 }
-
             }
 
             //Setup Purchase Categories Indexes
@@ -249,6 +253,8 @@ namespace SupplyRaid
         private int index = -1;
         public float chance = 0.01f;
         public string itemCategory;
+        public int levelUnlock = 0;
+        public int levelLock = -1;
 
         public void SetIndex(int i)
         {

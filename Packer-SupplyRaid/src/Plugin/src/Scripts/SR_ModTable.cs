@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
+
 namespace SupplyRaid
 {
 
@@ -18,8 +21,16 @@ namespace SupplyRaid
         private FVRFireArm detectedFireArm;
         private FVRFireArm lastFireArm;
 
+        public Transform selectedBox;
+        private bool selectedBounds;
+
         [Header("Spawn Positions")]
         public Transform[] spawnPoints;
+
+        [Header("Menus")]
+        public GameObject menuAttachments;
+        public GameObject menuAdapters;
+
 
         [System.Serializable]
         public class TableButton
@@ -33,16 +44,38 @@ namespace SupplyRaid
             " grip = 8 \n recoilMitigation = 10 \n barrelExtention = 11 \n adapter = 12 \n bayonet = 13 \n projectileWeapon = 14 \n bipod = 15")]
         public TableButton[] buttons = new TableButton[16];
 
+        //Rail AdapterButtons
+        public Sprite defaultSprite;
+        public GameObject buttonPrefab;
+        protected List<FVRPointableButton> buttonList = new List<FVRPointableButton>();
+
         //Generation Table
-        private FVRObject fvrObject;
-        private List<FVRObject.OTagEra> eras = new List<FVRObject.OTagEra>();
-        private List<FVRObject.OTagFirearmMount> mounts = new List<FVRObject.OTagFirearmMount>();
+        //private FVRObject fvrObject;
+        //private List<FVRObject.OTagEra> eras = new List<FVRObject.OTagEra>();
+        private List<FVRObject.OTagEra> modernEras = new List<FVRObject.OTagEra>();
+        //private List<FVRObject.OTagFirearmMount> mounts = new List<FVRObject.OTagFirearmMount>();
         //private List<FVRObject.OTagAttachmentFeature> features = new List<FVRObject.OTagAttachmentFeature>();
+
+        private List<FVRObject> railAdapters = new List<FVRObject>();
 
         private void Start()
         {
             instance = this;
             colbuffer = new Collider[50];
+
+            //Get All Muzzle Brakes
+            modernEras.Add(FVRObject.OTagEra.PostWar);
+            modernEras.Add(FVRObject.OTagEra.Modern);
+            modernEras.Add(FVRObject.OTagEra.WW2);
+
+            //Populate Rail Adapters
+            railAdapters.AddRange(IM.Instance.ObjectDic.Values);
+            for (int i = railAdapters.Count - 1; i >= 0; i--)
+            {
+                if (railAdapters[i].TagAttachmentFeature != FVRObject.OTagAttachmentFeature.Adapter)
+                    railAdapters.RemoveAt(i);
+            }
+            GenerateButtons();
         }
 
         public void Setup()
@@ -65,6 +98,98 @@ namespace SupplyRaid
                     Scan();
                 }
             }
+
+            if (detectedFireArm && selectedBounds)
+            {
+                Transform target = detectedFireArm.PoseOverride ? detectedFireArm.PoseOverride : detectedFireArm.transform;
+                selectedBox.position = target.position;
+                selectedBox.rotation = target.rotation;
+                selectedBox.localScale = target.localScale;
+                //Debug.Log("Update Box - POS: " + selectedBox.position + " - S: " + selectedBox.localScale);
+            }
+        }
+
+        void GenerateButtons()
+        {
+            if (railAdapters.Count == 0 || !buttonPrefab)
+                return;
+
+            for (int i = 0; i < railAdapters.Count; i++)
+            {
+                if (railAdapters[i] == null)
+                    continue;
+
+                FVRObject item = railAdapters[i];
+                int index = i;
+                int cost = SR_Manager.Character().attachmentsCost[(int)FVRObject.OTagAttachmentFeature.Adapter];
+
+                FVRPointable point = GenerateButton(item, cost);
+                point.gameObject.GetComponent<Button>().onClick.AddListener(
+                    delegate { PurchaseItemID(item, cost); });
+            }
+        }
+
+        protected virtual FVRPointable GenerateButton(FVRObject itemObject, int itemCost)
+        {
+            if (itemObject == null)
+            {
+                Debug.LogError("Could not generate button with missing FVRObject");
+                return null;
+            }
+
+            FVRPointableButton btn = Instantiate(buttonPrefab, buttonPrefab.transform.parent).GetComponent<FVRPointableButton>();
+            btn.gameObject.SetActive(true);
+            if (btn.Text != null)
+                btn.Text.text = itemObject.DisplayName;
+
+            ItemSpawnerID id;
+            ManagerSingleton<IM>.Instance.SpawnerIDDic.TryGetValue(itemObject.SpawnedFromId, out id);
+            //ItemSpawnerID id = IM.GetSpawnerID(itemObject.SpawnedFromId);
+
+            if (id != null && id.Sprite != null)
+                btn.Image.sprite = id.Sprite;
+            else
+                btn.Image.sprite = defaultSprite;
+
+            buttonList.Add(btn);
+
+            //Cost Display
+            for (int x = 0; x < btn.transform.childCount; x++)
+            {
+                if (btn.transform.GetChild(x).name == "Cost")
+                {
+                    btn.transform.GetChild(x).GetComponent<Text>().text = itemCost.ToString();
+                    break;
+                }
+            }
+            return btn;
+        }
+
+        public void SelectMenu(GameObject menu)
+        {
+            menuAttachments.SetActive(false);
+            menuAdapters.SetActive(false);
+
+            SR_Manager.PlayConfirmSFX();
+            menu.SetActive(true);
+        }
+
+        public GameObject PurchaseItemID(FVRObject fvrObject, int cost)
+        {
+            if (fvrObject == null || !SR_Manager.EnoughPoints(cost))
+            {
+                //Failed Sound
+                SR_Manager.PlayFailSFX();
+                return null;
+            }
+
+            SR_Manager.SpendPoints(cost);
+            SR_Manager.PlayConfirmSFX();
+
+            GameObject prefab = fvrObject.GetGameObject();
+            GameObject newItem = Instantiate(prefab, spawnPoints[0].position, spawnPoints[0].rotation);
+
+            return newItem;
         }
 
         private void Scan()
@@ -93,18 +218,17 @@ namespace SupplyRaid
 
             if (detectedFireArm != null && IM.OD.ContainsKey(detectedFireArm.ObjectWrapper.ItemID))
             {
-                fvrObject = IM.OD[detectedFireArm.ObjectWrapper.ItemID];
-
-                //Add all of the weapon's compatible mounts
-                eras.Add(fvrObject.TagEra);
-                mounts.AddRange(fvrObject.TagFirearmMounts);
-                //features.Add(fvrobject.TagAttachmentFeature);
-
                 DisableAllButtons();
-                UpdateButtons();
+                UpdateButtons(IM.OD[detectedFireArm.ObjectWrapper.ItemID]);
+                selectedBox.gameObject.SetActive(true);
+                selectedBox.position = detectedFireArm.transform.position;
+                selectedBounds = detectedFireArm.GameObject ? true : false;
             }
             else
+            {
                 DisableAllButtons();
+                selectedBox.gameObject.SetActive(false);
+            }
         }
 
         public void BuyAttachment(int i)
@@ -126,59 +250,156 @@ namespace SupplyRaid
             SR_Manager.PlayFailSFX();
         }
 
-        void UpdateButtons()
+        void UpdateButtons(FVRObject fvrObject)
         {
-            //Table Generation
-            List<FVRObject.OTagAttachmentFeature> desiredFeature = new List<FVRObject.OTagAttachmentFeature>();
-
-            bool[] bespoke = new bool[16];
-            for (int i = 0; i < fvrObject.BespokeAttachments.Count; i++)
+            /*
+            //Bespoke
+            bool hasBespoke = false;
+            List<FVRObject> bespokeAttachments = new List<FVRObject>();
+            if (fvrObject.BespokeAttachments.Count > 0)
             {
-                bespoke[(int)fvrObject.BespokeAttachments[i].TagAttachmentFeature] = true;
+                bespokeAttachments.AddRange(fvrObject.BespokeAttachments);
+                hasBespoke = true;
             }
+            */
 
+            //Find Bespoke
+            /*
+            bool[] bespoke = new bool[buttons.Length];
+            for (int x = 0; x < bespoke.Length; x++)
+            {
+                for (int i = 0; i < fvrObject.BespokeAttachments.Count; i++)
+                {
+                    bespokeAttachments.Add(fvrObject.BespokeAttachments);
+                    
+                    Debug.Log(i + " Bepsokie re");
+                    if ((int)fvrObject.BespokeAttachments[i].TagAttachmentFeature == i)
+                    {
+                        bespoke[x] = true;
+                        hasBespoke = true;
+                        Debug.Log(i + " Bepsokie");
+                        break;
+                    }
+                    
+                }
+            }
+            */
+
+            //For each Button / Attachment Feature
             for (int i = 0; i < buttons.Length; i++)
             {
-                //Ignore None and Decorations
+                //Ignore None and disabled attachments
                 if (i == 0 || SR_Manager.instance.character.attachmentsCost[i] < 0)
                     continue;
-
-                desiredFeature.Clear();
-                desiredFeature.Add((FVRObject.OTagAttachmentFeature)i);
 
                 //Don't recalculate loot tables if its the same weapon
                 if (lastFireArm != detectedFireArm)
                 {
-                    buttons[i].attachmentTable.InitializeAttachmentTable(eras, mounts, desiredFeature);
+                    buttons[i].attachmentTable.Loot.Clear();
+                    List<FVRObject> bespokeAttachments = new List<FVRObject>();
 
-                    //Remove GLOBAL character subtractions
-                    buttons[i].attachmentTable = SR_Global.RemoveGlobalSubtractionOnTable(buttons[i].attachmentTable);
-
-                    //Only bespoke on these attachments
-                    if (bespoke[i])
+                    //-------------------------
+                    //BESPOKE
+                    //-------------------------
+                    if (detectedFireArm != null)
                     {
-                        //Fix Bespoke to specific attachments
-                        if (mounts.Contains(FVRObject.OTagFirearmMount.Bespoke))
+                        if (fvrObject.BespokeAttachments.Count > 0 || detectedFireArm.IDSpawnedFrom.Secondaries.Length > 0)
                         {
-                            List<FVRObject> removeAttachments = new List<FVRObject>();
-                            for (int y = buttons[i].attachmentTable.Loot.Count - 1; y >= 0; y--)
+                            //Debug.Log("Populating Bespoke");
+                            //Add Item Secondaries
+                            for (int s = 0; s < detectedFireArm.IDSpawnedFrom.Secondaries.Length; s++)
                             {
-                                //If Bespoke attachments for this weapon does not contain the loot table item, remove it
-                                if (!fvrObject.BespokeAttachments.Contains(buttons[i].attachmentTable.Loot[y]))
+                                if (detectedFireArm.IDSpawnedFrom.Secondaries[s] != null)
                                 {
-                                    removeAttachments.Add(buttons[i].attachmentTable.Loot[y]);
+                                    if (!bespokeAttachments.Contains(detectedFireArm.IDSpawnedFrom.Secondaries[s].MainObject))
+                                        bespokeAttachments.Add(detectedFireArm.IDSpawnedFrom.Secondaries[s].MainObject);
                                 }
                             }
 
-                            //Clear Unused attachments
-                            for (int x = removeAttachments.Count - 1; x >= 0; x--)
+                            //Add Bespoke
+                            for (int b = 0; b < fvrObject.BespokeAttachments.Count; b++)
                             {
-                                buttons[i].attachmentTable.Loot.Remove(removeAttachments[x]);
+                                if (fvrObject.BespokeAttachments[b])
+                                {
+                                    if (!bespokeAttachments.Contains(fvrObject.BespokeAttachments[b]))
+                                        bespokeAttachments.Add(fvrObject.BespokeAttachments[b]);
+                                }
+                            }
+
+                        }
+                    }
+                    //-------------------------
+                    bool isBespoke = fvrObject.TagAttachmentMount == FVRObject.OTagFirearmMount.Bespoke;
+
+                    if (fvrObject != null)
+                    {
+                        if (buttons[i].attachmentTable.Loot == null)
+                            buttons[i].attachmentTable.Loot = new List<FVRObject>();
+
+                        for (int y = 0; y < bespokeAttachments.Count; y++)
+                        {
+                            if (bespokeAttachments[y].TagAttachmentFeature == (FVRObject.OTagAttachmentFeature)i)
+                            {
+                                buttons[i].attachmentTable.Loot.Add(bespokeAttachments[y]);
+                                isBespoke = true;
                             }
                         }
                     }
-                    
+
+                    bool allowedBespoke = false;
+                    if (isBespoke)
+                    {
+                        if ((FVRObject.OTagAttachmentFeature)i == FVRObject.OTagAttachmentFeature.Suppression
+                        || isBespoke && (FVRObject.OTagAttachmentFeature)i == FVRObject.OTagAttachmentFeature.RecoilMitigation
+                        || isBespoke && (FVRObject.OTagAttachmentFeature)i == FVRObject.OTagAttachmentFeature.BarrelExtension)
+                        {   
+                            allowedBespoke = true;
+                        }
+                    }
+
+                    //Remove GLOBAL character subtractions
+                    if (!isBespoke || allowedBespoke)
+                    {
+                        //Current Era + All Modern Era's (More useful attachments)
+                        List<FVRObject.OTagEra> eras = new List<FVRObject.OTagEra>();
+                        eras.AddRange(modernEras);
+                        if(eras.Contains(fvrObject.TagEra))
+                            eras.Add(fvrObject.TagEra);
+
+                        InitializeAttachmentTable(
+                            buttons[i].attachmentTable, 
+                            eras, 
+                            fvrObject.TagFirearmMounts, 
+                            (FVRObject.OTagAttachmentFeature)i);
+                    }
+
+                    buttons[i].attachmentTable = SR_Global.RemoveGlobalSubtractionOnTable(buttons[i].attachmentTable);
                 }
+                /*
+
+                //Don't recalculate loot tables if its the same weapon
+                if (lastFireArm != detectedFireArm)
+                {
+                    //Only bespoke on these attachments
+                    if (bespoke[i])
+                    {
+                        Debug.Log("Found Bespoke " + i);
+                        for (int z = 0; z < fvrObject.BespokeAttachments.Count; z++)
+                        {
+                            if (fvrObject.BespokeAttachments[i].TagAttachmentFeature == (FVRObject.OTagAttachmentFeature)i)
+                            {
+                                buttons[i].attachmentTable.Loot.Add(fvrObject.BespokeAttachments[i]);
+                            }
+                        }
+                    }
+                    else if(!hasBespoke)
+                    {
+                        InitializeAttachmentTable(buttons[i].attachmentTable, eras, mounts, desiredFeature);
+                        //buttons[i].attachmentTable.InitializeAttachmentTable(eras, mounts, desiredFeature);
+                    }
+
+                }
+                */
 
                 //Debug.Log("Loottable size:  " + buttons[i].attachmentTable.Loot.Count);
 
@@ -191,6 +412,29 @@ namespace SupplyRaid
                 }
                 else
                     buttons[i].button.gameObject.SetActive(false);
+            }
+        }
+
+        public void InitializeAttachmentTable(LootTable table, List<FVRObject.OTagEra> eras = null, 
+            List<FVRObject.OTagFirearmMount> mounts = null, FVRObject.OTagAttachmentFeature feature = FVRObject.OTagAttachmentFeature.None)
+        {
+            table.Loot = new List<FVRObject>(ManagerSingleton<IM>.Instance.odicTagCategory[FVRObject.ObjectCategory.Attachment]);
+
+            for (int i = table.Loot.Count - 1; i >= 0; i--)
+            {
+                FVRObject fvrobject = table.Loot[i];
+                if (eras != null && !eras.Contains(fvrobject.TagEra))
+                {
+                    table.Loot.RemoveAt(i);
+                }
+                else if (mounts != null && !mounts.Contains(fvrobject.TagAttachmentMount))
+                {
+                    table.Loot.RemoveAt(i);
+                }
+                else if (fvrobject.TagAttachmentFeature != feature)
+                {
+                    table.Loot.RemoveAt(i);
+                }
             }
         }
 

@@ -298,7 +298,7 @@ namespace SupplyRaid
         //Game Options Received
         void GameOptions_Handler(int clientID, Packet packet)
         {
-            int optionPlayerCount = packet.ReadInt();
+            float optionPlayerCount = packet.ReadInt();
             float optionDifficulty = packet.ReadFloat();
             bool optionFreeBuyMenu = packet.ReadBool();
             bool optionSpawnLocking = packet.ReadBool();

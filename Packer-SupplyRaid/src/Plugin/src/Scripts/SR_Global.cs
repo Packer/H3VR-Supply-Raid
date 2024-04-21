@@ -142,6 +142,17 @@ namespace SupplyRaid
             return id;
         }
 
+        public static Vector3 GetValidNavPosition(Vector3 position, float distance)
+        {
+            UnityEngine.AI.NavMeshHit hit;
+            if (UnityEngine.AI.NavMesh.SamplePosition(position, out hit, distance, UnityEngine.AI.NavMesh.AllAreas))
+            {
+                return hit.position;
+            }
+
+            return position;
+        }
+
         public static bool ValidSosigEnemyID(SosigEnemyID id)
         {
             if (id == SosigEnemyID.None)
@@ -192,22 +203,17 @@ namespace SupplyRaid
             return table;
         }
 
-        public static bool SpawnLoot(LootTable table, SR_ItemCategory itemCategory, Transform[] spawns)
-        {
-            return SpawnLoot(table, itemCategory, spawns, false);
-        }
-
         /// <summary>
         /// Attempts to spawn input gear, otherwise returns false
         /// </summary>
         /// <returns></returns>
-        public static bool SpawnLoot(LootTable table, SR_ItemCategory itemCategory, Transform[] spawns, bool lootDrop)
+        public static bool SpawnLoot(LootTable table, SR_ItemCategory itemCategory, Transform[] spawns)
         {
             if (table == null)
                 return false;
 
-            FVRObject mainObject = null;
-            FVRObject ammoObject = null;
+            FVRObject mainObject;
+            FVRObject ammoObject;
 
             //Create one Spawn
             int itemCount = 1;
@@ -222,6 +228,20 @@ namespace SupplyRaid
             //Item Category settings
             if (itemCategory != null)
             {
+                //Max level
+                if (itemCategory.maxLevel > -1)
+                {
+                    if (itemCategory.maxLevel < SR_Manager.instance.CurrentCaptures)
+                        return false;
+                }
+
+                //Min Level
+                if (itemCategory.minLevel > -1)
+                {
+                    if (itemCategory.minLevel > SR_Manager.instance.CurrentCaptures)
+                        return false;
+                }
+
                 //Using Group ids
                 if (itemCategory.objectGroups.Count > 0)
                 {
@@ -247,7 +267,6 @@ namespace SupplyRaid
             //Using Group IDs
             if (useGroupIDs)
             {
-
                 if(useLootTags)
                     index -= table.Loot.Count - 1;
 
@@ -320,7 +339,7 @@ namespace SupplyRaid
                 FVRObject attach2 = null;
 
                 //Spawn with Required Attachments (Such as iron sights for anti material snipers)
-                if (itemCategory.requiredAttachments)
+                if (itemCategory != null && itemCategory.requiredAttachments)
                 {
                     if (mainObject.RequiredSecondaryPieces.Count > 0)
                     {
@@ -393,9 +412,8 @@ namespace SupplyRaid
                     }
                 }
 
-                //Default 4 - Limited Ammo Magazines in mind
-                int ammoCount = 4;
 
+                /*
                 //Rounds
                 if (UsesRounds(mainObject))
                 {
@@ -403,64 +421,79 @@ namespace SupplyRaid
                     if(firearm != null)
                         ammoCount = firearm.GetChamberRoundList().Count * 2;
                 }
+                */
+
+
+                //Default 4 - Limited Ammo Magazines in mind
+                int ammoCount = 0;
 
                 //Item Category ammo that will spawn, -1 = default
-                
+
                 if (SR_Manager.instance.optionSpawnLocking)
                 {
-                    //Spawn Locking only 3, 1 mag in, 1 mag lock, 1 for loading extra bullet in
-                    ammoCount = 3; //Default Value
                     if (itemCategory != null)
                     {
-                        if (!lootDrop && itemCategory.ammoSpawnLockedCount >= 0)
+                        if (itemCategory.ammoSpawnLockedCount >= 0)
                         {
-                            if (itemCategory.ammoSpawnLockedCountMin >= itemCategory.ammoSpawnLockedCount)
+                            if (itemCategory.ammoSpawnLockedCountMin <= -1)
                                 ammoCount = itemCategory.ammoSpawnLockedCount;
                             else
-                                ammoCount 
+                            {
+
+                                ammoCount
                                     = Random.Range(
                                         itemCategory.ammoSpawnLockedCountMin,
                                         itemCategory.ammoSpawnLockedCount);
-                        }
-                        //Loot
-                        else if (lootDrop && itemCategory.ammoSpawnLockedLootCount >= 0)
-                        {
-                            if (itemCategory.ammoSpawnLockedLootCountMin >= itemCategory.ammoSpawnLockedLootCount)
-                                ammoCount = itemCategory.ammoSpawnLockedLootCount;
-                            else
-                                ammoCount 
-                                    = Random.Range(
-                                        itemCategory.ammoSpawnLockedLootCountMin,
-                                        itemCategory.ammoSpawnLockedLootCount);
+                            }
                         }
                     }
+                    else
+                        ammoCount = 3; //Spawn Locking only 3, 1 mag in, 1 mag lock, 1 for loading extra bullet in
                 }
-                else if (ammoCount < 12)
+                else
                 {
-                    ammoCount = 12; //Default Value
                     if (itemCategory != null)
                     {
-                        if (!lootDrop && itemCategory.ammoLimitedCount >= 0)
+                        if (itemCategory.ammoLimitedCount >= 0)
                         {
-                            if (itemCategory.ammoLimitedCountMin <= itemCategory.ammoLimitedCount)
+                            //If no min range, default to regular count
+                            if (itemCategory.ammoLimitedCountMin <= -1)
                                 ammoCount = itemCategory.ammoLimitedCount;
-                            else
-                                ammoCount 
+                            else //Has limited min range, do random size
+                            {
+                                ammoCount
                                     = Random.Range(
                                         itemCategory.ammoLimitedCountMin,
                                         itemCategory.ammoLimitedCount);
+
+                                if (ammoObject != null)
+                                {
+                                    if (ammoObject.ClipType != FireArmClipType.None)
+                                    {
+                                        ammoCount = Random.Range(
+                                            itemCategory.ammoLimitedClipCountMin,
+                                            itemCategory.ammoLimitedClipCount);
+                                    }
+                                    else if (ammoObject.MagazineType != FireArmMagazineType.mNone)
+                                    {
+                                        ammoCount = Random.Range(
+                                            itemCategory.ammoLimitedMagazineCountMin,
+                                            itemCategory.ammoLimitedMagazineCount);
+                                    }
+                                    else if (ammoObject.CompatibleSingleRounds.Count > 0)
+                                    {
+                                        ammoCount = Random.Range(
+                                            itemCategory.ammoLimitedMagazineCountMin,
+                                            itemCategory.ammoLimitedMagazineCount);
+                                    }
+                                }
+                            }
                         }
-                        else if (lootDrop && itemCategory.ammoLimitedLootCount >= 0)
-                        {
-                            if (itemCategory.ammoLimitedLootCountMin <= itemCategory.ammoLimitedLootCount)
-                                ammoCount = itemCategory.ammoLimitedLootCount;
-                            else
-                                ammoCount 
-                                    = Random.Range(
-                                        itemCategory.ammoLimitedLootCountMin,
-                                        itemCategory.ammoLimitedLootCount);
-                        }
+                        else if (itemCategory.ammoLimitedCount == 0)
+                            ammoCount = 0;
                     }
+                    else
+                        ammoCount = 4;  //No item Category, give em 4
                 }
 
                 //Ammo
@@ -607,6 +640,56 @@ namespace SupplyRaid
 
             goldMaterial = gold;
             return gold;
+        }
+        public static Bounds GetBounds(GameObject obj)
+        {
+
+            Bounds bounds = new Bounds();
+
+            Renderer[] renderers = obj.GetComponentsInChildren<Renderer>();
+
+            if (renderers.Length > 0)
+
+            {
+
+                //Find first enabled renderer to start encapsulate from it
+
+                foreach (Renderer renderer in renderers)
+
+                {
+
+                    if (renderer.enabled)
+
+                    {
+
+                        bounds = renderer.bounds;
+
+                        break;
+
+                    }
+
+                }
+
+                //Encapsulate for all renderers
+
+                foreach (Renderer renderer in renderers)
+
+                {
+
+                    if (renderer.enabled)
+
+                    {
+
+                        bounds.Encapsulate(renderer.bounds);
+
+                    }
+
+                }
+
+            }
+
+            return bounds;
+
         }
 
         public static List<FVRObject> GetLowestCapacity(List<FVRObject> ammo, int minCapacity)

@@ -33,7 +33,7 @@ namespace SupplyRaid
         [Tooltip("NOT IMPLEMENTED: Used for determining what the next supply point might be.")]
         public SupplySizeEnum supplySize = SupplySizeEnum.Medium;
 
-        [Tooltip("Force next supply points to be randomly selected from this list")]
+        [Tooltip("Leave empty for random supply points, list Forces next supply points to be randomly selected from this list")]
         public SR_SupplyPoint[] nextSupplyPoints;
 
         [Tooltip("Player Spawn/Respawn point")]

@@ -85,9 +85,6 @@ namespace SupplyRaid
                 ignoreFail = true;
             }
 
-            if(ignoreFail)
-                SR_Manager.PlayPointsGainSFX();
-
             if (this.weapons.Count <= 0)
             {
                 if(!ignoreFail)
@@ -97,9 +94,11 @@ namespace SupplyRaid
             if (this.weapons[0] != null)
             {
                 Destroy(this.weapons[0].gameObject);
+                ignoreFail = true;
             }
             this.weapons.Clear();
-            SR_Manager.PlayPointsGainSFX();
+            if (ignoreFail)
+                SR_Manager.PlayPointsGainSFX();
             SR_Manager.instance.Points += SR_Manager.instance.character.recyclerPoints;
         }
 

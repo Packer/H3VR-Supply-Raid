@@ -22,18 +22,27 @@ namespace SupplyRaid
         [Tooltip("Magazine/Clip Max Capacity for this loot table")]
         public int maxCapacity = -1;
 
+        [Tooltip("Min Level before this category can be spawned")]
+        public int minLevel = -1;
+        [Tooltip("Inclusive Max Level this category is available for")]
+        public int maxLevel = -1;
+
         [Tooltip("Magazine/Clip/Speed Loaders/Rounds that spawn with this itemCategory")]
         public int ammoLimitedCount = -1;
         public int ammoLimitedCountMin = -1; //If less than min then gets set to min
-        // Loot
-        public int ammoLimitedLootCount = -1;
-        public int ammoLimitedLootCountMin = -1;
+
+        public int ammoLimitedMagazineCount = -1;
+        public int ammoLimitedMagazineCountMin = -1;
+
+        public int ammoLimitedClipCount = -1;
+        public int ammoLimitedClipCountMin = -1;
+
+        public int ammoLimitedRoundCount = -1;
+        public int ammoLimitedRoundCountMin = -1;
+
         //-----------------------------------
         public int ammoSpawnLockedCount = -1;
         public int ammoSpawnLockedCountMin = -1;
-        // Loot
-        public int ammoSpawnLockedLootCount = -1;
-        public int ammoSpawnLockedLootCountMin = -1;
         //-----------------------------------
 
         [Tooltip("Do weapons spawn with their extra attachments")]
@@ -41,6 +50,9 @@ namespace SupplyRaid
 
         //Do we use the loot tag system
         public bool lootTagsEnabled = true;
+
+        //Get Loot relevent to player from loot drops
+        public bool lootTagsGetQuickbelt = false;
 
         [Header("Manual Setup Table")]
         //Groups of objects that get spawned if selected

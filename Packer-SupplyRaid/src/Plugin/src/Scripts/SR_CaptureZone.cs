@@ -29,6 +29,9 @@ namespace SupplyRaid
 
         void Update()
         {
+            if (!SR_Compass.instance)
+                return;
+
             if (SR_Manager.instance.gameRunning && SR_Manager.instance.optionCaptureZone == true)
                 CaptureZoneScan();
             else
@@ -55,12 +58,20 @@ namespace SupplyRaid
                     else
                         SR_Manager.PlayTickAlmostSFX();
 
-                    
                     //Visuals
                     if (SR_Compass.instance.captureText.gameObject.activeSelf == false)
+                    {
                         SR_Compass.instance.captureText.gameObject.SetActive(true);
+                        //BGM
+                        if (SupplyRaidPlugin.bgmEnabled)
+                        {
+                            BGM.SetHoldMusic(SR_Manager.instance.CurrentCaptures);
+                        }
 
-                    SR_Compass.instance.captureText.text = Mathf.RoundToInt(captureRemain).ToString();
+                    }
+
+                    if(SR_Compass.instance)
+                        SR_Compass.instance.captureText.text = Mathf.RoundToInt(captureRemain).ToString();
                     //SR_Compass.instance.captureText.transform.parent.LookAt(GM.CurrentPlayerBody.Head);
 
                     //Captued the point
@@ -80,16 +91,25 @@ namespace SupplyRaid
 
                         captureRemain = SR_Manager.AttackSupplyPoint().captureTime;
                         captureTick = Random.Range(0, 3);
-                        SR_Compass.instance.captureText.gameObject.SetActive(false);
+                        if (SR_Compass.instance)
+                            SR_Compass.instance.captureText.gameObject.SetActive(false);
                     }
                 }
                 else
                 {
-                    if (SR_Compass.instance.captureText.gameObject.activeSelf == true)
+                    if (SR_Compass.instance && SR_Compass.instance.captureText.gameObject.activeSelf == true)
                     {
-                        if(SR_Manager.instance.captureProtection <= 0)
+                        if (SR_Manager.instance.captureProtection <= 0)
+                        {
                             SR_Manager.PlayFailSFX();
-                        SR_Compass.instance.captureText.gameObject.SetActive(false);
+                            //BGM
+                            if (SupplyRaidPlugin.bgmEnabled)
+                            {
+                                BGM.SetHoldMusic(SR_Manager.instance.CurrentCaptures);
+                            }
+                        }
+                        if (SR_Compass.instance)
+                            SR_Compass.instance.captureText.gameObject.SetActive(false);
                     }
                     captureRemain = SR_Manager.AttackSupplyPoint().captureTime;
                     captureTick = Random.Range(0, 2);

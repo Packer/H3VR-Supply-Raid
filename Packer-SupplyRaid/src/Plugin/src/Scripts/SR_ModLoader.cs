@@ -12,6 +12,7 @@ namespace SupplyRaid
     {
         public static SR_Assets srAssets;
         public static AssetBundle srBundle;
+        public static bool assetsLoading = false;
 
         void OnDestroy()
         {
@@ -21,8 +22,10 @@ namespace SupplyRaid
 
         public static IEnumerator LoadSupplyRaidAssets()
         {
-            if (srBundle != null)
+            if (srBundle != null || assetsLoading)
                 yield break;
+
+            assetsLoading = true;
 
             string path = Paths.PluginPath + "/Packer-SupplyRaid/supplyraid.sr";
 
@@ -55,7 +58,7 @@ namespace SupplyRaid
             //--------------------------------------------------------------------------------------------------------
 
             SR_Manager.instance.LoadInAssets();
-
+            assetsLoading = false;
         }
 
         public static List<SR_ItemCategory> LoadItemCategories()
