@@ -209,7 +209,7 @@ namespace SupplyRaid
         /// <returns></returns>
         public static bool SpawnLoot(LootTable table, SR_ItemCategory itemCategory, Transform[] spawns)
         {
-            if (table == null)
+            if (table == null || table.Loot.Count == 0)
                 return false;
 
             FVRObject mainObject;
@@ -468,23 +468,28 @@ namespace SupplyRaid
 
                                 if (ammoObject != null)
                                 {
-                                    if (ammoObject.ClipType != FireArmClipType.None)
+                                    switch (GetAmmoContainerType(ammoObject))
                                     {
-                                        ammoCount = Random.Range(
-                                            itemCategory.ammoLimitedClipCountMin,
-                                            itemCategory.ammoLimitedClipCount);
-                                    }
-                                    else if (ammoObject.MagazineType != FireArmMagazineType.mNone)
-                                    {
-                                        ammoCount = Random.Range(
-                                            itemCategory.ammoLimitedMagazineCountMin,
-                                            itemCategory.ammoLimitedMagazineCount);
-                                    }
-                                    else if (ammoObject.CompatibleSingleRounds.Count > 0)
-                                    {
-                                        ammoCount = Random.Range(
-                                            itemCategory.ammoLimitedMagazineCountMin,
-                                            itemCategory.ammoLimitedMagazineCount);
+                                        case AmmoContainerType.Round:
+                                            ammoCount = Random.Range(
+                                                itemCategory.ammoLimitedMagazineCountMin,
+                                                itemCategory.ammoLimitedMagazineCount);
+                                            break;
+                                        case AmmoContainerType.Magazine:
+                                            ammoCount = Random.Range(
+                                                itemCategory.ammoLimitedMagazineCountMin,
+                                                itemCategory.ammoLimitedMagazineCount);
+                                            break;
+                                        case AmmoContainerType.Clip:
+                                            ammoCount = Random.Range(
+                                                itemCategory.ammoLimitedClipCountMin,
+                                                itemCategory.ammoLimitedClipCount);
+                                            break;
+                                        case AmmoContainerType.SpeedLoader:
+                                            ammoCount = Random.Range(
+                                                itemCategory.ammoLimitedSpeedLoaderCountMin,
+                                                itemCategory.ammoLimitedSpeedLoaderCount);
+                                            break;
                                     }
                                 }
                             }
@@ -538,6 +543,32 @@ namespace SupplyRaid
                 return true;
 
             return false;   //Default to magazine
+        }
+
+        public static AmmoContainerType GetAmmoContainerType(FVRObject o)
+        {
+            if (o.CompatibleMagazines.Count > 0
+                || o.Category == FVRObject.ObjectCategory.Firearm && o.MagazineType != 0)
+            {
+                return AmmoContainerType.Magazine;
+            }
+
+            if (o.CompatibleClips.Count > 0)
+            {
+                return AmmoContainerType.Clip;
+            }
+
+            if (o.CompatibleSpeedLoaders.Count > 0)
+            {
+                return AmmoContainerType.SpeedLoader;
+            }
+
+            if (o.CompatibleSingleRounds.Count > 0)
+            {
+                return AmmoContainerType.Round;
+            }
+            
+            return AmmoContainerType.None;
         }
 
         public static FVRObject GetLowestCapacityAmmoObject(FVRObject o, List<FVRObject.OTagEra> eras = null, int Min = -1, int Max = -1, List<FVRObject.OTagSet> sets = null)
@@ -963,5 +994,14 @@ namespace SupplyRaid
         DragonsBreathe = 25,
         Random = 26,
         Special = 27,
+    }
+
+    public enum AmmoContainerType
+    {
+        None = -1,
+        Round = 0,
+        Magazine = 1,
+        Clip = 2,
+        SpeedLoader = 3,
     }
 }

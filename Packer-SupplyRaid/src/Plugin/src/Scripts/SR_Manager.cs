@@ -205,7 +205,7 @@ namespace SupplyRaid
             set
             {
                 if (optionFreeBuyMenu)
-                    points = 999;
+                    points = 99999;
                 else
                     points = Mathf.Clamp(value, 0, int.MaxValue);
 
@@ -220,12 +220,13 @@ namespace SupplyRaid
         // Use this for initialization
         void Awake()
         {
-            //JSONExample();
-            instance = this;
-            SetupGameData();
-
             //Load External Assets
             StartCoroutine(SR_ModLoader.LoadSupplyRaidAssets());
+
+            //JSONExample();
+            instance = this;
+            //SetupGameData();
+
         }
 
         public void LoadInAssets()
@@ -334,7 +335,7 @@ namespace SupplyRaid
         }
         */
 
-        void SetupGameData()
+        public void SetupGameData()
         {
             itemCategories = SR_ModLoader.LoadItemCategories();
             factions = SR_ModLoader.LoadFactions();
@@ -345,9 +346,11 @@ namespace SupplyRaid
             //Characters
             for (int i = 0; i < characters.Count; i++)
             {
-                if(characters[i] != null)
+                if (characters[i] != null)
                     characters[i].SetupCharacterPreset(itemCategories);
             }
+
+            SR_Menu.instance.Setup();
         }
 
         void Start()

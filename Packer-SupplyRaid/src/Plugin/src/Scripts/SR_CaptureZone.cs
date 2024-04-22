@@ -59,7 +59,7 @@ namespace SupplyRaid
                         SR_Manager.PlayTickAlmostSFX();
 
                     //Visuals
-                    if (SR_Compass.instance.captureText.gameObject.activeSelf == false)
+                    if (SR_Compass.instance && SR_Compass.instance.captureText.gameObject.activeSelf == false)
                     {
                         SR_Compass.instance.captureText.gameObject.SetActive(true);
                         //BGM

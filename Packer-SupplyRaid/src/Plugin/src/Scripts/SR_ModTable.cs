@@ -301,7 +301,7 @@ namespace SupplyRaid
                     //-------------------------
                     //BESPOKE
                     //-------------------------
-                    if (detectedFireArm != null)
+                    if (detectedFireArm != null && fvrObject != null)
                     {
                         if (fvrObject.BespokeAttachments.Count > 0 || detectedFireArm.IDSpawnedFrom.Secondaries.Length > 0)
                         {
@@ -329,7 +329,7 @@ namespace SupplyRaid
                         }
                     }
                     //-------------------------
-                    bool isBespoke = fvrObject.TagAttachmentMount == FVRObject.OTagFirearmMount.Bespoke;
+                    bool isBespoke = fvrObject ? fvrObject.TagAttachmentMount == FVRObject.OTagFirearmMount.Bespoke : false;
 
                     if (fvrObject != null)
                     {

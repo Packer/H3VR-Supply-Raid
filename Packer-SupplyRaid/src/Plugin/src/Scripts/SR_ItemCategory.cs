@@ -37,6 +37,9 @@ namespace SupplyRaid
         public int ammoLimitedClipCount = -1;
         public int ammoLimitedClipCountMin = -1;
 
+        public int ammoLimitedSpeedLoaderCount = -1;
+        public int ammoLimitedSpeedLoaderCountMin = -1;
+
         public int ammoLimitedRoundCount = -1;
         public int ammoLimitedRoundCountMin = -1;
 
@@ -52,7 +55,7 @@ namespace SupplyRaid
         public bool lootTagsEnabled = true;
 
         //Get Loot relevent to player from loot drops
-        public bool lootTagsGetQuickbelt = false;
+        public bool lootTagsFromQuickbelt = false;
 
         [Header("Manual Setup Table")]
         //Groups of objects that get spawned if selected
@@ -140,24 +143,156 @@ namespace SupplyRaid
             ClearMissingObjectIDs();
 
             LootTable table = new LootTable();
-            table.Initialize(
-                type,
-                eras.Count > 0 ? eras : null,
-                sizes.Count > 0 ? sizes : null,
-                actions.Count > 0 ? actions : null,
-                modes.Count > 0 ? modes : null,
-                excludeModes.Count > 0 ? excludeModes : null,
-                feedoptions.Count > 0 ? feedoptions : null,
-                mounts.Count > 0 ? mounts : null,
-                roundPowers.Count > 0 ? roundPowers : null,
-                features.Count > 0 ? features : null,
-                meleeStyles.Count > 0 ? meleeStyles : null,
-                meleeHandedness.Count > 0 ? meleeHandedness : null,
-                powerupTypes.Count > 0 ? powerupTypes : null,
-                thrownTypes.Count > 0 ? thrownTypes : null,
-                minCapacity,
-                maxCapacity);
 
+            if (lootTagsFromQuickbelt)
+            {
+                //Gather all possible loot here
+                FVRQuickBeltSlot[] slots = MonoBehaviour.FindObjectsOfType<FVRQuickBeltSlot>();
+
+                List<FVRObject> lootPool = new List<FVRObject>();
+
+                for (int i = 0; i < slots.Length; i++)
+                {
+                    if (slots[i].CurObject != null)
+                    {
+                        FVRObject item = slots[i].CurObject.ObjectWrapper;
+
+                        //If not in Round Powers
+                        if (roundPowers != null 
+                            && roundPowers.Count > 0
+                            && !roundPowers.Contains(slots[i].CurObject.ObjectWrapper.TagFirearmRoundPower))
+                            continue;
+
+                        FVRObject ammo = null;
+                        if (item)
+                            ammo = item.GetRandomAmmoObject(item, null, minCapacity, maxCapacity, null);
+
+                        if (ammo != null)
+                        {
+                            int ammoCount = 0;
+                            if (SR_Manager.instance.optionSpawnLocking)
+                            {
+                                if (ammoSpawnLockedCountMin >= 0)
+                                    ammoCount = Random.Range(ammoSpawnLockedCountMin, ammoSpawnLockedCount);
+                                else if (ammoSpawnLockedCount >= 0)
+                                    ammoCount = ammoSpawnLockedCount;
+                            }
+                            else
+                            {
+                                if (ammoLimitedCountMin >= 0)
+                                    ammoCount = Random.Range(ammoLimitedCountMin, ammoLimitedCount);
+                                else if (ammoLimitedCount >= 0)
+                                    ammoCount = ammoLimitedCount;
+                            }
+
+                            switch (SR_Global.GetAmmoContainerType(ammo))
+                            {
+                                case AmmoContainerType.Round:
+                                    if (ammoLimitedRoundCountMin >= 0)
+                                        ammoCount = Random.Range(ammoLimitedRoundCountMin, ammoLimitedRoundCount);
+                                    else if (ammoLimitedRoundCount >= 0)
+                                        ammoCount = ammoLimitedRoundCount;
+                                    break;
+                                case AmmoContainerType.Magazine:
+
+                                    if (ammoLimitedMagazineCountMin >= 0)
+                                        ammoCount = Random.Range(ammoLimitedMagazineCountMin, ammoLimitedMagazineCount);
+                                    else if (ammoLimitedMagazineCount >= 0)
+                                        ammoCount = ammoLimitedMagazineCount;
+                                    break;
+                                case AmmoContainerType.Clip:
+
+                                    if (ammoLimitedClipCountMin >= 0)
+                                        ammoCount = Random.Range(ammoLimitedClipCountMin, ammoLimitedClipCount);
+                                    else if (ammoLimitedClipCount >= 0)
+                                        ammoCount = ammoLimitedClipCount;
+                                    break;
+                                case AmmoContainerType.SpeedLoader:
+                                    if (ammoLimitedSpeedLoaderCountMin >= 0)
+                                        ammoCount = Random.Range(ammoLimitedSpeedLoaderCountMin, ammoLimitedSpeedLoaderCount);
+                                    else if (ammoLimitedSpeedLoaderCount >= 0)
+                                        ammoCount = ammoLimitedSpeedLoaderCount;
+                                    break;
+                            }
+
+                            for (int y = 0; y < ammoCount; y++)
+                            {
+                                lootPool.Add(ammo);
+                            }
+                        }
+                        /*
+                        switch (SR_Global.GetAmmoContainerType(item))
+                        {
+                            case AmmoContainerType.Magazine:
+
+                                List<FVRObject> mags = new List<FVRObject>();
+                                for (int z = 0; z < item.CompatibleMagazines.Count; z++)
+                                {
+                                    if (item.CompatibleMagazines[z].MagazineCapacity > minCapacity
+                                        && item.CompatibleMagazines[z].MagazineCapacity <= maxCapacity)
+                                    {
+                                        mags.Add(item.CompatibleMagazines[z]);
+                                    }
+                                }
+
+                                if(mags.Count > 0)
+                                    table.Loot.Add(mags[Random.Range(0, mags.Count)]);
+                                break;
+                            case AmmoContainerType.Clip:
+
+                                List<FVRObject> clips = new List<FVRObject>();
+                                for (int z = 0; z < item.CompatibleClips.Count; z++)
+                                {
+                                    if (item.CompatibleClips[z].MagazineCapacity > minCapacity
+                                        && item.CompatibleClips[z].MagazineCapacity <= maxCapacity)
+                                    {
+                                        clips.Add(item.CompatibleClips[z]);
+                                    }
+                                }
+
+                                if (clips.Count > 0)
+                                    table.Loot.Add(clips[Random.Range(0, clips.Count)]);
+                                break;
+                            case AmmoContainerType.SpeedLoader:
+                                break;
+                            case AmmoContainerType.Round:
+                                table.Loot.Add(item.CompatibleSingleRounds[Random.Range(0, item.CompatibleSingleRounds.Count)]);
+                                break;
+                            case AmmoContainerType.None:
+                            default:
+                                break;
+                        }
+                        */
+                    }
+                }
+
+                //Add to table
+                if (lootPool.Count > 0)
+                    table.Loot.Add(lootPool[Random.Range(0, lootPool.Count)]);
+                else
+                    Debug.Log("Loot Pool was empty");
+                //table.Loot.AddRange();
+            }
+            else
+            {
+                table.Initialize(
+                    type,
+                    eras.Count > 0 ? eras : null,
+                    sizes.Count > 0 ? sizes : null,
+                    actions.Count > 0 ? actions : null,
+                    modes.Count > 0 ? modes : null,
+                    excludeModes.Count > 0 ? excludeModes : null,
+                    feedoptions.Count > 0 ? feedoptions : null,
+                    mounts.Count > 0 ? mounts : null,
+                    roundPowers.Count > 0 ? roundPowers : null,
+                    features.Count > 0 ? features : null,
+                    meleeStyles.Count > 0 ? meleeStyles : null,
+                    meleeHandedness.Count > 0 ? meleeHandedness : null,
+                    powerupTypes.Count > 0 ? powerupTypes : null,
+                    thrownTypes.Count > 0 ? thrownTypes : null,
+                    minCapacity,
+                    maxCapacity);
+            }
 
             //Min Year
             if (firstYearMin != -1)

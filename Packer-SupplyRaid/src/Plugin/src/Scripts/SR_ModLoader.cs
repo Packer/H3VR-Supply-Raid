@@ -59,6 +59,8 @@ namespace SupplyRaid
 
             SR_Manager.instance.LoadInAssets();
             assetsLoading = false;
+
+            SR_Manager.instance.SetupGameData();
         }
 
         public static List<SR_ItemCategory> LoadItemCategories()

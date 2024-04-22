@@ -68,7 +68,7 @@ namespace SupplyRaid
             instance = this;
         }
 
-        void Start()
+        public void Setup()
         {
             SetOptions();
             PopulateCharacters();
