@@ -51,6 +51,9 @@ namespace SupplyRaid
         [Tooltip("Do weapons spawn with their extra attachments")]
         public bool requiredAttachments = true;
 
+        //How many of the same item spawns in the category
+        public int spawnCount = 1;
+
         //Do we use the loot tag system
         public bool lootTagsEnabled = true;
 
@@ -148,6 +151,8 @@ namespace SupplyRaid
             {
                 //Gather all possible loot here
                 FVRQuickBeltSlot[] slots = MonoBehaviour.FindObjectsOfType<FVRQuickBeltSlot>();
+                FVRViveHand[] hands = MonoBehaviour.FindObjectsOfType<FVRViveHand>();
+                //Do hand stuff here
 
                 List<FVRObject> lootPool = new List<FVRObject>();
 
@@ -220,57 +225,12 @@ namespace SupplyRaid
                                 lootPool.Add(ammo);
                             }
                         }
-                        /*
-                        switch (SR_Global.GetAmmoContainerType(item))
-                        {
-                            case AmmoContainerType.Magazine:
-
-                                List<FVRObject> mags = new List<FVRObject>();
-                                for (int z = 0; z < item.CompatibleMagazines.Count; z++)
-                                {
-                                    if (item.CompatibleMagazines[z].MagazineCapacity > minCapacity
-                                        && item.CompatibleMagazines[z].MagazineCapacity <= maxCapacity)
-                                    {
-                                        mags.Add(item.CompatibleMagazines[z]);
-                                    }
-                                }
-
-                                if(mags.Count > 0)
-                                    table.Loot.Add(mags[Random.Range(0, mags.Count)]);
-                                break;
-                            case AmmoContainerType.Clip:
-
-                                List<FVRObject> clips = new List<FVRObject>();
-                                for (int z = 0; z < item.CompatibleClips.Count; z++)
-                                {
-                                    if (item.CompatibleClips[z].MagazineCapacity > minCapacity
-                                        && item.CompatibleClips[z].MagazineCapacity <= maxCapacity)
-                                    {
-                                        clips.Add(item.CompatibleClips[z]);
-                                    }
-                                }
-
-                                if (clips.Count > 0)
-                                    table.Loot.Add(clips[Random.Range(0, clips.Count)]);
-                                break;
-                            case AmmoContainerType.SpeedLoader:
-                                break;
-                            case AmmoContainerType.Round:
-                                table.Loot.Add(item.CompatibleSingleRounds[Random.Range(0, item.CompatibleSingleRounds.Count)]);
-                                break;
-                            case AmmoContainerType.None:
-                            default:
-                                break;
-                        }
-                        */
                     }
                 }
 
                 //Add to table
                 if (lootPool.Count > 0)
                     table.Loot.Add(lootPool[Random.Range(0, lootPool.Count)]);
-                else
-                    Debug.Log("Loot Pool was empty");
                 //table.Loot.AddRange();
             }
             else

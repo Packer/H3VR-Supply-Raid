@@ -35,6 +35,10 @@ namespace SupplyRaid
         public GameObject settingsMenu;
         public GameObject settingsPrefab;
 
+        [Header("Extraction")]
+        public Text countDownText;
+        public GameObject countDownCanvas;
+
         [Header("Side Menus")]
         [SerializeField] GameObject categoryContentPrefab;  //Content container for Characters/Factions
 
@@ -62,6 +66,9 @@ namespace SupplyRaid
 
         [Header("Networking")]
         public GameObject[] clientObjects;
+
+        [Header("Audio - Extraction")]
+        public AudioClip audioExtractionTick;     //Clock Ticking
 
         void Awake()
         {
@@ -440,6 +447,8 @@ namespace SupplyRaid
                             healthMode.text = SR_Manager.instance.optionPlayerHealth + " - One Hit";
                         else if (SR_Manager.instance.optionPlayerHealth > 20000)
                             healthMode.text = SR_Manager.instance.optionPlayerHealth + " - Too Much Health";
+                        else
+                            healthMode.text = SR_Manager.instance.optionPlayerHealth.ToString();
                         break;
                 }
 

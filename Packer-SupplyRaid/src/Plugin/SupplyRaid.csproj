@@ -30,9 +30,6 @@
       <Reference Include="MMHOOK_Assembly-CSharp">
         <HintPath>..\libs\MMHOOK_Assembly-CSharp.dll</HintPath>
       </Reference>
-      <Reference Include="PTNHBGML">
-        <HintPath>..\libs\PTNHBGML.dll</HintPath>
-      </Reference>
       <Reference Include="Sodalite">
         <HintPath>..\libs\Sodalite.dll</HintPath>
       </Reference>

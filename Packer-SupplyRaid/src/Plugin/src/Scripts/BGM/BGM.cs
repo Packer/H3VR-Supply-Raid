@@ -22,10 +22,12 @@ namespace SupplyRaid
             //BGM_Interface.QueueTake(situation);
         }
 
+        /*
         public static void QueueTake(TNHBGLoader.Soundtrack.TrackSet set)
         {
             //BGM_Interface.QueueTake(set);
         }
+        */
 
         public static void SpawnPanel(Vector3 position, Quaternion rotation)
         {

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SceneFile: {fileID: 102900000, guid: a44170b433a5dbe4eadf171aa2f0585d, type: 3}
   SceneName: Supply Raid Example
-  GameMode: sandbox
+  GameMode: supplyraid
   DisplayMode: sandbox
   Thumbnail: {fileID: 2800000, guid: faa5af54481d5a74085e3764f0b080ba, type: 3}
   Author: Packer

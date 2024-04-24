@@ -72,6 +72,8 @@ namespace SupplyRaid
 
                 spawnPoints[0].position += Vector3.up * 0.25f;
             }
+
+            GetComponent<SR_FVRPhysicalObject>().enabled = false;
         }
     }
 }

@@ -240,7 +240,12 @@ namespace SupplyRaid
                 return;
             }
 
-            if (SR_Global.SpawnLoot(buttons[i].attachmentTable, null, spawnPoints))
+            bool forceSecondary = false;
+
+            if (i == 1) //Iron Sights
+                forceSecondary = true;
+
+            if (SR_Global.SpawnLoot(buttons[i].attachmentTable, null, spawnPoints, forceSecondary))
             {
                 SR_Manager.SpendPoints(SR_Manager.instance.character.attachmentsCost[i]);
                 SR_Manager.PlayConfirmSFX();
@@ -252,39 +257,6 @@ namespace SupplyRaid
 
         void UpdateButtons(FVRObject fvrObject)
         {
-            /*
-            //Bespoke
-            bool hasBespoke = false;
-            List<FVRObject> bespokeAttachments = new List<FVRObject>();
-            if (fvrObject.BespokeAttachments.Count > 0)
-            {
-                bespokeAttachments.AddRange(fvrObject.BespokeAttachments);
-                hasBespoke = true;
-            }
-            */
-
-            //Find Bespoke
-            /*
-            bool[] bespoke = new bool[buttons.Length];
-            for (int x = 0; x < bespoke.Length; x++)
-            {
-                for (int i = 0; i < fvrObject.BespokeAttachments.Count; i++)
-                {
-                    bespokeAttachments.Add(fvrObject.BespokeAttachments);
-                    
-                    Debug.Log(i + " Bepsokie re");
-                    if ((int)fvrObject.BespokeAttachments[i].TagAttachmentFeature == i)
-                    {
-                        bespoke[x] = true;
-                        hasBespoke = true;
-                        Debug.Log(i + " Bepsokie");
-                        break;
-                    }
-                    
-                }
-            }
-            */
-
             //For each Button / Attachment Feature
             for (int i = 0; i < buttons.Length; i++)
             {
@@ -303,7 +275,10 @@ namespace SupplyRaid
                     //-------------------------
                     if (detectedFireArm != null && fvrObject != null)
                     {
-                        if (fvrObject.BespokeAttachments.Count > 0 || detectedFireArm.IDSpawnedFrom.Secondaries.Length > 0)
+                        if (fvrObject.BespokeAttachments != null && fvrObject.BespokeAttachments.Count > 0 
+                            || detectedFireArm.IDSpawnedFrom != null 
+                            && detectedFireArm.IDSpawnedFrom.Secondaries != null
+                            && detectedFireArm.IDSpawnedFrom.Secondaries.Length > 0)
                         {
                             //Debug.Log("Populating Bespoke");
                             //Add Item Secondaries

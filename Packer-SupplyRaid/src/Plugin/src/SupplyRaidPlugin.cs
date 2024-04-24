@@ -1,5 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Bootstrap;
+using Atlas;
+using Atlas.Loaders;
 
 namespace SupplyRaid
 {
@@ -7,6 +9,7 @@ namespace SupplyRaid
 	[BepInProcess("h3vr.exe")]
 	[BepInDependency("VIP.TommySoucy.H3MP", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("dll.potatoes.ptnhbgml", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(AtlasConstants.Guid, AtlasConstants.Version)]
     public class SupplyRaidPlugin : BaseUnityPlugin
 	{
 		private readonly Hooks _hooks;
@@ -21,7 +24,8 @@ namespace SupplyRaid
 
 		private void Awake()
 		{
-			h3mpEnabled = Chainloader.PluginInfos.ContainsKey("VIP.TommySoucy.H3MP");
+            AtlasPlugin.Loaders["supplyraid"] = new SandboxLoader();
+            h3mpEnabled = Chainloader.PluginInfos.ContainsKey("VIP.TommySoucy.H3MP");
 			bgmEnabled = Chainloader.PluginInfos.ContainsKey("dll.potatoes.ptnhbgml");
         }
 

@@ -8,7 +8,7 @@ Material:
   m_PrefabInternal: {fileID: 0}
   m_Name: Handle
   m_Shader: {fileID: 4800000, guid: 12c5a1911ed698d45920f1c6fa4d6d57, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -118,7 +118,7 @@ Material:
     - _DissolveGlowWeight: 1
     - _DissolveTexUV: 0
     - _DstBlend: 0
-    - _Emission: 0
+    - _Emission: 1
     - _EmissionWeight: 1
     - _EnableInstancing: 0
     - _ForwardRenderingOptions: 0

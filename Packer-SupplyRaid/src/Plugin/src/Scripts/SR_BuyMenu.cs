@@ -84,6 +84,12 @@ namespace SupplyRaid
         public void SpawnLootButton(int i)
         {
             //Debug.Log("Press button " + i + "  - " + lootCategories[i].name);
+            if (i > lootTables.Length || i > purchaseCategories.Count)
+            {
+                SR_Manager.PlayFailSFX();
+                return;
+            }
+
 
             if (SR_Manager.EnoughPoints(purchaseCategories[i].cost))
             {

@@ -363,7 +363,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4148636540679272}
-  - component: {fileID: 114041267112277550}
+  - component: {fileID: 114827208148627518}
   - component: {fileID: 65206633649479256}
   - component: {fileID: 54790822505643144}
   - component: {fileID: 114856699304369986}
@@ -397,7 +397,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1863301444957248}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.3000002}
+  m_LocalPosition: {x: 4.25, y: 0, z: -3.8000002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4869539008057134}
@@ -921,186 +921,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: -0.9, z: 0}
---- !u!114 &114041267112277550
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1863301444957248}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 235085818, guid: 61df6207064b6df9f1154d3f48a90696, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ControlType: 0
-  IsSimpleInteract: 0
-  HandlingGrabSound: 2
-  HandlingReleaseSound: 2
-  PoseOverride: {fileID: 4486863564452236}
-  QBPoseOverride: {fileID: 0}
-  PoseOverride_Touch: {fileID: 4486863564452236}
-  UseGrabPointChild: 1
-  UseGripRotInterp: 1
-  PositionInterpSpeed: 1
-  RotationInterpSpeed: 1
-  m_grabPointTransform: {fileID: 0}
-  m_pos_interp_tick: 0
-  m_rot_interp_tick: 0
-  EndInteractionIfDistant: 0
-  EndInteractionDistance: 0.25
-  m_hasTriggeredUpSinceBegin: 0
-  triggerCooldown: 0.5
-  m_hand: {fileID: 0}
-  UXGeo_Hover: {fileID: 0}
-  UXGeo_Held: {fileID: 0}
-  UseFilteredHandTransform: 0
-  UseFilteredHandPosition: 0
-  UseFilteredHandRotation: 0
-  UseSecondStepRotationFiltering: 0
-  SecondStepFilteredRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_isHovered: 0
-  m_isHeld: 0
-  m_colliders: []
-  ObjectWrapper: {fileID: 0}
-  SpawnLockable: 0
-  Harnessable: 0
-  HandlingReleaseIntoSlotSound: 1
-  m_isSpawnLock: 0
-  m_isHardnessed: 0
-  Size: 5
-  QBSlotType: 0
-  DoesReleaseOverrideVelocity: 1
-  DoesReleaseAddVelocity: 0
-  ThrowVelMultiplier: 1
-  ThrowAngMultiplier: 1
-  MoveIntensity: 1
-  RotIntensity: 1
-  AttachedRotationMultiplier: 60
-  AttachedPositionMultiplier: 9000
-  AttachedRotationFudge: 10000
-  AttachedPositionFudge: 10000
-  UsesGravity: 0
-  DependantRBs: []
-  DistantGrabbable: 0
-  IsDebug: 0
-  IsAltHeld: 0
-  IsKinematicLocked: 1
-  DoesQuickbeltSlotFollowHead: 0
-  IsInWater: 0
-  m_timeHeld: 0
-  m_isSaveLoadable: 1
-  m_storedCOMLocal: {x: 0, y: 0, z: 0}
-  AttachmentMounts: []
-  AttachmentsList: []
-  m_quickbeltSlot: {fileID: 0}
-  m_timeSinceInQuickbelt: 10
-  Slots: []
-  m_altGrip: {fileID: 0}
-  savedGrip: {fileID: 0}
-  IsAltToAltTransfer: 0
-  m_bipod: {fileID: 0}
-  m_isPivotLocked: 0
-  m_pivotLockedPos: {x: 0, y: 0, z: 0}
-  m_pivotLockedRot: {x: 0, y: 0, z: 0, w: 1}
-  CollisionSound:
-    Clips: []
-    ColSoundCooldown: 0.65
-    ColSoundVolume: 0.1
-    m_hasCollisionSound: 0
-    m_audioCollision: {fileID: 0}
-    m_colSoundTick: 1
-  m_IDSpawnedFrom: {fileID: 0}
-  IsPickUpLocked: 0
-  m_doesDirectParent: 1
-  OverridesObjectToHand: 0
-  audioImpactController: {fileID: 0}
-  m_hasImpactController: 0
-  MP:
-    m_obj: {fileID: 0}
-    IsMeleeWeapon: 0
-    IgnoreRBs: []
-    HandPoint: {fileID: 0}
-    EndPoint: {fileID: 0}
-    BaseDamageBCP: {x: 0, y: 0, z: 0}
-    HighDamageBCP: {x: 0, y: 0, z: 0}
-    StabDamageBCP: {x: 0, y: 0, z: 0}
-    TearDamageBCP: {x: 0, y: 0, z: 0}
-    HighDamageColliders: []
-    HighDamageVectors: []
-    DoesCyclePosePoints: 0
-    PosePoints: []
-    m_poseIndex: 0
-    IsThrownDisposable: 0
-    m_isCountingDownToDispose: 0
-    m_isThrownAutoAim: 0
-    m_countDownToDestroy: 10
-    ThrownDetectMask:
-      serializedVersion: 2
-      m_Bits: 0
-    StartThrownDisposalTickdownOnSpawn: 0
-    IsLongThrowable: 0
-    IsThrowableDirInverted: 1
-    CanNewStab: 0
-    ForceStab: 0
-    BladeLength: 1
-    MassWhileStabbed: 10
-    StabDirection: {fileID: 0}
-    StabAngularThreshold: 20
-    StabColliders: []
-    StabVelocityRequirement: 1
-    CanTearOut: 0
-    TearOutVelThreshold: 3
-    m_isJointedToObject: 0
-    m_stabJoint: {fileID: 0}
-    m_stabTargetRB: {fileID: 0}
-    m_initialStabPointWorld: {x: 0, y: 0, z: 0}
-    m_initialStabPointLocal: {x: 0, y: 0, z: 0}
-    m_relativeStabDir: {x: 0, y: 0, z: 0}
-    m_stabbedLink: {fileID: 0}
-    m_initialPosOfStabbedThingLocal: {x: 0, y: 0, z: 0}
-    CanNewLodge: 0
-    LodgeDepth: 0.04
-    MassWhileLodged: 10
-    LodgeDirections: []
-    LodgeColliders: []
-    LodgeVelocityRequirement: 4
-    DeLodgeVelocityRequirement: 1
-    m_isLodgedToObject: 0
-    m_lodgeJoint: {fileID: 0}
-    m_lodgeTargetRB: {fileID: 0}
-    m_initialLodgeNormal: {x: 0, y: 0, z: 0}
-    UsesSweepTesting: 0
-    UsesSweepDebug: 0
-    TestCols: []
-    SweepTransformStart: {fileID: 0}
-    SweepTransformEnd: {fileID: 0}
-    LM_DamageTest:
-      serializedVersion: 2
-      m_Bits: 0
-    m_isReadyToAim: 0
-    m_lastHandPoint: {x: 0, y: 0, z: 0}
-    m_lastEndPoint: {x: 0, y: 0, z: 0}
-    handPointVelocity: {x: 0, y: 0, z: 0}
-    endPointVelocity: {x: 0, y: 0, z: 0}
-    m_pointDistance: 0
-    m_lastangFlick: 0
-    m_lastangFlickLinear: 0
-    m_SweepPointStart: {x: 0, y: 0, z: 0}
-    m_SweepPointEnd: {x: 0, y: 0, z: 0}
-    m_lastSweepPointStart: {x: 0, y: 0, z: 0}
-    m_lastSweepPointEnd: {x: 0, y: 0, z: 0}
-    m_timeSinceLastDamageDone: 0
-    timeSinceStateChange: 10
-    stabDistantPoint: {x: 1, y: 1, z: 1}
-    stabInsidePoint: {x: 1, y: 1, z: 1}
-    m_initialMass: 0
-    m_initRot: 0
-  CheckDestroyTick: 1
-  fakeHandPosWorld: {x: 0, y: 0, z: 0}
-  fakeHandVelWorld: {x: 0, y: 0, z: 0}
-  m_timeSinceFakeVelWorldTransfered: 1
-  m_isVisible: 1
-  m_containedObjects: []
 --- !u!114 &114179144816072780
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1286,6 +1106,186 @@ MonoBehaviour:
   RepeatTime: 0.2
   m_timeSincePress: 1
   nextScaleTick: 0
+--- !u!114 &114827208148627518
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1863301444957248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -235910473, guid: bcc605c3eca03cb9d2e7221f1969bc76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ControlType: 0
+  IsSimpleInteract: 0
+  HandlingGrabSound: 2
+  HandlingReleaseSound: 2
+  PoseOverride: {fileID: 4486863564452236}
+  QBPoseOverride: {fileID: 0}
+  PoseOverride_Touch: {fileID: 4486863564452236}
+  UseGrabPointChild: 1
+  UseGripRotInterp: 1
+  PositionInterpSpeed: 1
+  RotationInterpSpeed: 1
+  m_grabPointTransform: {fileID: 0}
+  m_pos_interp_tick: 0
+  m_rot_interp_tick: 0
+  EndInteractionIfDistant: 0
+  EndInteractionDistance: 0.25
+  m_hasTriggeredUpSinceBegin: 0
+  triggerCooldown: 0.5
+  m_hand: {fileID: 0}
+  UXGeo_Hover: {fileID: 0}
+  UXGeo_Held: {fileID: 0}
+  UseFilteredHandTransform: 0
+  UseFilteredHandPosition: 0
+  UseFilteredHandRotation: 0
+  UseSecondStepRotationFiltering: 0
+  SecondStepFilteredRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_isHovered: 0
+  m_isHeld: 0
+  m_colliders: []
+  ObjectWrapper: {fileID: 0}
+  SpawnLockable: 0
+  Harnessable: 0
+  HandlingReleaseIntoSlotSound: 1
+  m_isSpawnLock: 0
+  m_isHardnessed: 0
+  Size: 5
+  QBSlotType: 2
+  DoesReleaseOverrideVelocity: 1
+  DoesReleaseAddVelocity: 0
+  ThrowVelMultiplier: 1
+  ThrowAngMultiplier: 1
+  MoveIntensity: 1
+  RotIntensity: 1
+  AttachedRotationMultiplier: 60
+  AttachedPositionMultiplier: 9000
+  AttachedRotationFudge: 10000
+  AttachedPositionFudge: 10000
+  UsesGravity: 0
+  DependantRBs: []
+  DistantGrabbable: 0
+  IsDebug: 0
+  IsAltHeld: 0
+  IsKinematicLocked: 1
+  DoesQuickbeltSlotFollowHead: 0
+  IsInWater: 0
+  m_timeHeld: 0
+  m_isSaveLoadable: 1
+  m_storedCOMLocal: {x: 0, y: 0, z: 0}
+  AttachmentMounts: []
+  AttachmentsList: []
+  m_quickbeltSlot: {fileID: 0}
+  m_timeSinceInQuickbelt: 10
+  Slots: []
+  m_altGrip: {fileID: 0}
+  savedGrip: {fileID: 0}
+  IsAltToAltTransfer: 0
+  m_bipod: {fileID: 0}
+  m_isPivotLocked: 0
+  m_pivotLockedPos: {x: 0, y: 0, z: 0}
+  m_pivotLockedRot: {x: 0, y: 0, z: 0, w: 1}
+  CollisionSound:
+    Clips: []
+    ColSoundCooldown: 0.65
+    ColSoundVolume: 0.1
+    m_hasCollisionSound: 0
+    m_audioCollision: {fileID: 0}
+    m_colSoundTick: 1
+  m_IDSpawnedFrom: {fileID: 0}
+  IsPickUpLocked: 0
+  m_doesDirectParent: 1
+  OverridesObjectToHand: 0
+  audioImpactController: {fileID: 0}
+  m_hasImpactController: 0
+  MP:
+    m_obj: {fileID: 0}
+    IsMeleeWeapon: 0
+    IgnoreRBs: []
+    HandPoint: {fileID: 0}
+    EndPoint: {fileID: 0}
+    BaseDamageBCP: {x: 0, y: 0, z: 0}
+    HighDamageBCP: {x: 0, y: 0, z: 0}
+    StabDamageBCP: {x: 0, y: 0, z: 0}
+    TearDamageBCP: {x: 0, y: 0, z: 0}
+    HighDamageColliders: []
+    HighDamageVectors: []
+    DoesCyclePosePoints: 0
+    PosePoints: []
+    m_poseIndex: 0
+    IsThrownDisposable: 0
+    m_isCountingDownToDispose: 0
+    m_isThrownAutoAim: 0
+    m_countDownToDestroy: 10
+    ThrownDetectMask:
+      serializedVersion: 2
+      m_Bits: 0
+    StartThrownDisposalTickdownOnSpawn: 0
+    IsLongThrowable: 0
+    IsThrowableDirInverted: 1
+    CanNewStab: 0
+    ForceStab: 0
+    BladeLength: 1
+    MassWhileStabbed: 10
+    StabDirection: {fileID: 0}
+    StabAngularThreshold: 20
+    StabColliders: []
+    StabVelocityRequirement: 1
+    CanTearOut: 0
+    TearOutVelThreshold: 3
+    m_isJointedToObject: 0
+    m_stabJoint: {fileID: 0}
+    m_stabTargetRB: {fileID: 0}
+    m_initialStabPointWorld: {x: 0, y: 0, z: 0}
+    m_initialStabPointLocal: {x: 0, y: 0, z: 0}
+    m_relativeStabDir: {x: 0, y: 0, z: 0}
+    m_stabbedLink: {fileID: 0}
+    m_initialPosOfStabbedThingLocal: {x: 0, y: 0, z: 0}
+    CanNewLodge: 0
+    LodgeDepth: 0.04
+    MassWhileLodged: 10
+    LodgeDirections: []
+    LodgeColliders: []
+    LodgeVelocityRequirement: 4
+    DeLodgeVelocityRequirement: 1
+    m_isLodgedToObject: 0
+    m_lodgeJoint: {fileID: 0}
+    m_lodgeTargetRB: {fileID: 0}
+    m_initialLodgeNormal: {x: 0, y: 0, z: 0}
+    UsesSweepTesting: 0
+    UsesSweepDebug: 0
+    TestCols: []
+    SweepTransformStart: {fileID: 0}
+    SweepTransformEnd: {fileID: 0}
+    LM_DamageTest:
+      serializedVersion: 2
+      m_Bits: 0
+    m_isReadyToAim: 0
+    m_lastHandPoint: {x: 0, y: 0, z: 0}
+    m_lastEndPoint: {x: 0, y: 0, z: 0}
+    handPointVelocity: {x: 0, y: 0, z: 0}
+    endPointVelocity: {x: 0, y: 0, z: 0}
+    m_pointDistance: 0
+    m_lastangFlick: 0
+    m_lastangFlickLinear: 0
+    m_SweepPointStart: {x: 0, y: 0, z: 0}
+    m_SweepPointEnd: {x: 0, y: 0, z: 0}
+    m_lastSweepPointStart: {x: 0, y: 0, z: 0}
+    m_lastSweepPointEnd: {x: 0, y: 0, z: 0}
+    m_timeSinceLastDamageDone: 0
+    timeSinceStateChange: 10
+    stabDistantPoint: {x: 1, y: 1, z: 1}
+    stabInsidePoint: {x: 1, y: 1, z: 1}
+    m_initialMass: 0
+    m_initRot: 0
+  CheckDestroyTick: 1
+  fakeHandPosWorld: {x: 0, y: 0, z: 0}
+  fakeHandVelWorld: {x: 0, y: 0, z: 0}
+  m_timeSinceFakeVelWorldTransfered: 1
+  m_isVisible: 1
+  m_containedObjects: []
 --- !u!114 &114845922606764354
 MonoBehaviour:
   m_ObjectHideFlags: 1

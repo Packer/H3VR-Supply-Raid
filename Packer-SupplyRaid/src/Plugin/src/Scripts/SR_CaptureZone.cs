@@ -22,6 +22,8 @@ namespace SupplyRaid
         //public AudioClip audioFail;
         private Bounds bounds;
 
+        private float guardCaptureTime = 0;
+
         void Start()
         {
             gameObject.SetActive(false);
@@ -52,9 +54,55 @@ namespace SupplyRaid
 
                     captureTick = 1;
 
+                    //Guard Capture Zone if alerted to player
+                    if (guardCaptureTime < Time.time)
+                    {
+                        guardCaptureTime = Time.time + Random.Range(2, 10);
+
+                        //Sosig Alertness (If somewhat aware, make them more aware)
+                        for (int i = 0; i < SR_Manager.instance.defenderSosigs.Count; i++)
+                        {
+                            Sosig sosig = SR_Manager.instance.defenderSosigs[i];
+
+                            if (sosig.m_alertnessLevel < 0.25f)
+                                continue;
+
+                            Transform capturePoint = SR_Manager.AttackSupplyPoint().captureZone;
+                            float x = capturePoint.localScale.x / 2;
+                            float z = capturePoint.localScale.z / 2;
+                            Vector3 guardPoint = capturePoint.position + new Vector3(Random.Range(-x, x), 0 , Random.Range(-z, z));
+
+                            sosig.CommandGuardPoint(guardPoint, false);
+                            /*
+                            sosig.m_pathToPoint = transform.position;
+                            sosig.SetGuardInvestigateDistanceThreshold(10);
+                            sosig.CoverSearchRange = 10;
+
+                            sosig.SetCurrentOrder(Sosig.SosigOrder.GuardPoint);
+                            sosig.m_guardPoint = transform.position;
+                            sosig.m_guardDominantDirection = transform.rotation.eulerAngles;
+                            */
+                            /*
+                            //SR_Manager.instance.sosigAlertness = 0;
+
+                            if (SR_Manager.instance.defenderSosigs[i].m_alertnessLevel >= 0)
+                            {
+                                SR_Manager.instance.defenderSosigs[i].m_alertnessLevel += 1.05f;
+                            }
+
+                            if (SR_Manager.instance.defenderSosigs[i].m_alertnessLevel >= 1
+                                && !SR_Global.IsSosigInCombat(SR_Manager.instance.defenderSosigs[i]))
+                            {
+                            }
+                            */
+                        }
+                    }
+
                     //Count Down Sounds
                     if (captureRemain > 5)
+                    {
                         SR_Manager.PlayTickSFX();
+                    }
                     else
                         SR_Manager.PlayTickAlmostSFX();
 

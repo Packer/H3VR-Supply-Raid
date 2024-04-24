@@ -63,6 +63,8 @@ namespace SupplyRaid
         public int forceCaptureOrder = -1;
         [Tooltip("Forced Starting Points, -1 = Use Character Points, 0,1,2...etc = Map specific starting points")]
         public int forceStartPointsOverride = -1;
+        [Tooltip("Forces Patrol Sosigs to spawn on rabbitholes instead of their patrol waypoints")]
+        public bool forcePatrolInitialSpawnOnRabbitHoles = false;
 
         [Header("Gameplay")]
         private int points = 0;
@@ -146,7 +148,7 @@ namespace SupplyRaid
         [HideInInspector]
         public TNH_SosiggunShakeReloading shakeReloading = TNH_SosiggunShakeReloading.Off;
         private readonly List<Sosig> sosigs = new List<Sosig>();
-        private readonly List<Sosig> defenderSosigs = new List<Sosig>();
+        public readonly List<Sosig> defenderSosigs = new List<Sosig>();
         private readonly List<Sosig> squadSosigs = new List<Sosig>();
 
         //For ease of modifacation
@@ -1446,8 +1448,12 @@ namespace SupplyRaid
                     {
                         if (i < count)
                         {
-                            newPos = AttackSupplyPoint().patrolPaths[pathID].patrolPoints[patrolPoint].position
-                                + GetSquaredPosition(x, z, d);
+                            if (forcePatrolInitialSpawnOnRabbitHoles)
+                                newPos = AttackSupplyPoint().GetRandomSosigSpawn().position;
+                            else
+                                newPos = AttackSupplyPoint().patrolPaths[pathID].patrolPoints[patrolPoint].position
+                                    + GetSquaredPosition(x, z, d);
+
                             SpawnPatrolSosig(
                                 newPos,
                                 AttackSupplyPoint().patrolPaths[pathID].patrolPoints[patrolPoint].rotation,
@@ -2254,6 +2260,12 @@ namespace SupplyRaid
         {
             if (instance != null)
                 instance.globalAudio.PlayOneShot(instance.audioTickAlmost);
+        }
+
+        public static void PlayExtractionTickSFX()
+        {
+            if (instance != null && SR_Menu.instance.audioExtractionTick)
+                instance.globalAudio.PlayOneShot(SR_Menu.instance.audioExtractionTick);
         }
 
         //----------------------------------------------------------------------

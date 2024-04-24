@@ -13,6 +13,8 @@ namespace SupplyRaid
         public static SR_Assets srAssets;
         public static AssetBundle srBundle;
         public static bool assetsLoading = false;
+        public static bool loadedAssets = false;
+        public static float timeout = 0;
 
         void OnDestroy()
         {
@@ -22,38 +24,54 @@ namespace SupplyRaid
 
         public static IEnumerator LoadSupplyRaidAssets()
         {
-            if (srBundle != null || assetsLoading)
+            if (assetsLoading || timeout > Time.time)
                 yield break;
+
+            /*
+            //Already loaded assets, just load
+            if (loadedAssets)
+            {
+                SR_Manager.instance.LoadInAssets();
+                assetsLoading = false;
+
+                SR_Manager.instance.SetupGameData();
+                yield break;
+            }
+            */
 
             assetsLoading = true;
 
             string path = Paths.PluginPath + "/Packer-SupplyRaid/supplyraid.sr";
 
-
-            AssetBundleCreateRequest asyncBundleRequest
-                = AssetBundle.LoadFromFileAsync(path);
-
-            yield return asyncBundleRequest;
-
-            if(srBundle == null)
-                srBundle = asyncBundleRequest.assetBundle;
-
-            if (srBundle == null)
+            if (!loadedAssets)
             {
-                Debug.LogError("Failed to load Supply Raid AssetBundle");
-                yield break;
+                AssetBundleCreateRequest asyncBundleRequest
+                    = AssetBundle.LoadFromFileAsync(path);
+
+                yield return asyncBundleRequest;
+                AssetBundle localAssetBundle = asyncBundleRequest.assetBundle;
+
+                if (localAssetBundle == null)
+                {
+                    Debug.LogError("Failed to load Supply Raid AssetBundle");
+                    yield break;
+                }
+
+                srBundle = localAssetBundle;
             }
+
 
             AssetBundleRequest assetRequest = srBundle.LoadAssetWithSubAssetsAsync<SR_Assets>("SupplyRaid");
             yield return assetRequest;
 
             if (assetRequest == null)
             {
-                Debug.LogError("Supply Raid - Missing SR Scene");
+                Debug.LogError("Supply Raid - Missing SR Assets");
                 yield break;
             }
 
             srAssets = assetRequest.asset as SR_Assets;
+            loadedAssets = true;
 
             //--------------------------------------------------------------------------------------------------------
 
@@ -61,6 +79,7 @@ namespace SupplyRaid
             assetsLoading = false;
 
             SR_Manager.instance.SetupGameData();
+            timeout = Time.time + 10f;
         }
 
         public static List<SR_ItemCategory> LoadItemCategories()
