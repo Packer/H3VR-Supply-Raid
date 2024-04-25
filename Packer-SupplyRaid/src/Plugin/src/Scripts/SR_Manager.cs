@@ -142,6 +142,7 @@ namespace SupplyRaid
         public SosigSettings sosigSniper = new SosigSettings();
         public SosigSettings sosigPatrol = new SosigSettings();
         public SosigSettings sosigSquad = new SosigSettings();
+        private float sosigSpawnTick = 0.9f;
 
         private LayerMask enviromentLayer;
 
@@ -759,7 +760,7 @@ namespace SupplyRaid
 
 
             // Wait a little bit after before checking Complete
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(sosigSpawnTick);
 
             //No left alive
             if (defenderSosigs.Count <= 0 && captureProtection <= 0)
@@ -1202,16 +1203,37 @@ namespace SupplyRaid
             }
 
             //Squad Move To Supply Point
-            SR_SupplyPoint target = null;
+            Transform target = null;
+
             if (currentLevel.squadBehaviour == SquadBehaviour.CaptureSupplyPoint)
-                target = AttackSupplyPoint();
+                target = AttackSupplyPoint().squadPoint;
+            else if (currentLevel.squadBehaviour == SquadBehaviour.HuntPlayer)
+            {
+                spawnPoint = AttackSupplyPoint();
+
+                if (SupplyRaidPlugin.h3mpEnabled && Networking.ServerRunning())
+                {
+                    //Multiplayer
+                    int playerID = Random.Range(0, Networking.GetPlayerCount());
+
+                    if(playerID == Networking.GetPlayerCount())
+                        target = GM.CurrentPlayerBody.Head;
+                    else
+                        target = Networking.GetPlayer(playerID).head;
+                }
+                else
+                {
+                    //Single Player
+                    target = GM.CurrentPlayerBody.Head;
+                }
+            }
             else
             {
                 //Random Supply Point
                 while (true)
                 {
                     //Debug.Log("Spawn Squads Sosigs While");
-                    target = supplyPoints[Random.Range(0, supplyPoints.Count)];
+                    target = supplyPoints[Random.Range(0, supplyPoints.Count)].squadPoint;
 
                     //If not Player or Defender Supplypoint
                     if (target != spawnPoint || target == null)
@@ -1231,14 +1253,14 @@ namespace SupplyRaid
             _spawnOptions.IFF = iff;
 
             //Slight delay to allow other spawns
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(sosigSpawnTick);
             for (int i = 0; i < groupSize; i++)
             {
                 if (!gameRunning)
                     yield break;
 
                 SpawnSquadSosig(spawnPoint, target, currentLevel);
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(sosigSpawnTick);
             }
 
             //Remove spawned group
@@ -1279,7 +1301,7 @@ namespace SupplyRaid
                 {
                     Transform spot = AttackSupplyPoint().GetRandomSniperSpawn();
                     SpawnSniperSosig(spot, spot.position, spot.rotation, currentLevel);
-                    yield return new WaitForSeconds(1f);
+                    yield return new WaitForSeconds(sosigSpawnTick);
 
                     /*
                     //While we haven't filled all the spots
@@ -1291,7 +1313,7 @@ namespace SupplyRaid
                         if ((usedSpots.Count >= AttackSupplyPoint().sniperPoints.Count))
                         {
                             usedSpots.Clear();
-                            yield return new WaitForSeconds(1f);
+                            yield return new WaitForSeconds(sosigSpawnTick);
                         }
 
                         //Already in use, continue
@@ -1303,7 +1325,7 @@ namespace SupplyRaid
                             usedSpots.Add(spot);
                             SpawnSniperSosig(spot.position, spot.rotation, currentLevel);
 
-                            yield return new WaitForSeconds(1f);
+                            yield return new WaitForSeconds(sosigSpawnTick);
                             break;
                         }
                     }
@@ -1311,11 +1333,25 @@ namespace SupplyRaid
                 }
             }
 
-            yield return new WaitForSeconds(1f);
+            //Boss Setup
+            if (currentLevel.bossCount > 0 && currentLevel.bossPool.Count() > 0)
+            {
+                yield return new WaitForSeconds(sosigSpawnTick);
+
+                int bossCount = Mathf.CeilToInt(currentLevel.bossCount);
+
+                for (int i = 0; i < bossCount; i++)
+                {
+                    Transform spot = AttackSupplyPoint().GetBossSpawn();
+                    SpawnGuardSosig(spot.position, spot.rotation, currentLevel);
+                    yield return new WaitForSeconds(sosigSpawnTick);
+                }
+            }
 
             //Guard Setup
             if (currentLevel.guardCount > 0 && currentLevel.guardPool.Count() > 0)
             {
+                yield return new WaitForSeconds(sosigSpawnTick);
                 //List<Transform> usedSpots = new List<Transform>();
 
                 int guardCount = Mathf.CeilToInt(currentLevel.guardCount * optionPlayerCount);
@@ -1323,7 +1359,7 @@ namespace SupplyRaid
                 {
                     Transform spot = AttackSupplyPoint().GetRandomGuardSpawn();
                     SpawnGuardSosig(spot.position, spot.rotation, currentLevel);
-                    yield return new WaitForSeconds(1f);
+                    yield return new WaitForSeconds(sosigSpawnTick);
 
 
                     /*
@@ -1361,7 +1397,7 @@ namespace SupplyRaid
                 }
             }
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(sosigSpawnTick);
 
             if (currentLevel.patrolPool.Count() <= 0)
                 yield break;
@@ -1462,7 +1498,7 @@ namespace SupplyRaid
 
                             enemiesTotal--;
 
-                            yield return new WaitForSeconds(1f);
+                            yield return new WaitForSeconds(sosigSpawnTick);
 
                             //Stop if nothing is running or we hit the enemy cap
                             if (!gameRunning || currentDefenders >= optionMaxEnemies)
@@ -1836,7 +1872,7 @@ namespace SupplyRaid
             sosigPatrols.Add(sosig);
         }
 
-        void SpawnSquadSosig(SR_SupplyPoint spawnSupply, SR_SupplyPoint target, FactionLevel currentLevel)
+        void SpawnSquadSosig(SR_SupplyPoint spawnSupply, Transform target, FactionLevel currentLevel)
         {
             //Error Check
             if (spawnSupply == null || spawnSupply.squadPoint == null || currentLevel == null)
@@ -1859,10 +1895,10 @@ namespace SupplyRaid
             currentSquad++;
 
             //Randomize in the sosig Squad Waypoint scale
-            sosig.m_pathToPoint = target.squadPoint.position + new Vector3(
-                Random.Range(-target.squadPoint.lossyScale.x, target.squadPoint.lossyScale.x) / 2,
+            sosig.m_pathToPoint = target.position + new Vector3(
+                Random.Range(-target.lossyScale.x, target.lossyScale.x) / 2,
                 0,
-                Random.Range(-target.squadPoint.lossyScale.z, target.squadPoint.lossyScale.z) / 2);
+                Random.Range(-target.lossyScale.z, target.lossyScale.z) / 2);
 
             List<Vector3> pathPoints = new List<Vector3>
             {
@@ -1872,7 +1908,7 @@ namespace SupplyRaid
 
             List<Vector3> pathDirs = new List<Vector3>
             {
-                target.squadPoint.rotation.eulerAngles,
+                target.rotation.eulerAngles,
                 sosigSpawn.rotation.eulerAngles,
             };
 

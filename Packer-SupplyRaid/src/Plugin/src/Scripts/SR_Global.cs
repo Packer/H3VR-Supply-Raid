@@ -234,7 +234,6 @@ namespace SupplyRaid
         {
             if (table == null || table.Loot.Count == 0)
                 return false;
-
             FVRObject mainObject;
             FVRObject ammoObject;
 
@@ -253,7 +252,7 @@ namespace SupplyRaid
             //Item Category settings
             if (itemCategory != null)
             {
-                if(itemCategory.spawnCount > 1)
+                if (itemCategory.spawnCount > 1)
                     spawnCount = itemCategory.spawnCount;
 
                 //Max level
@@ -295,7 +294,7 @@ namespace SupplyRaid
             //Using Group IDs
             if (useGroupIDs)
             {
-                if(useLootTags)
+                if (useLootTags)
                     index -= table.Loot.Count - 1;
 
                 //Get Random Group
@@ -450,6 +449,8 @@ namespace SupplyRaid
                     }
                 }
 
+                //Default 4 - Limited Ammo Magazines in mind
+                int ammoCount = GetCategoryAmmoTypeCount(mainObject, itemCategory);
 
                 /*
                 //Rounds
@@ -462,8 +463,8 @@ namespace SupplyRaid
                 */
 
 
-                //Default 4 - Limited Ammo Magazines in mind
-                int ammoCount;
+
+                /*
                 int lockedDefaultCount = 3; //Spawn Locked Ammo, 1 mag in, 1 mag lock, 1 for loading extra round in
                 int limitedAmmoDefault = 4; //Limited Ammo, 1 in, 3 Reserve
 
@@ -497,33 +498,7 @@ namespace SupplyRaid
 
                         if (mainObject != null)
                         {
-                            switch (GetAmmoContainerType(mainObject))
-                            {
-                                case AmmoContainerType.Round:
-                                    ammoCount = GetAmmoCount(
-                                        ammoCount, 
-                                        itemCategory.ammoLimitedRoundCountMin, 
-                                        itemCategory.ammoLimitedRoundCount);
-                                    break;
-                                case AmmoContainerType.Magazine:
-                                    ammoCount = GetAmmoCount(
-                                        ammoCount,
-                                        itemCategory.ammoLimitedMagazineCountMin,
-                                        itemCategory.ammoLimitedMagazineCount);
-                                    break;
-                                case AmmoContainerType.Clip:
-                                    ammoCount = GetAmmoCount(
-                                        ammoCount,
-                                        itemCategory.ammoLimitedClipCountMin,
-                                        itemCategory.ammoLimitedClipCount);
-                                    break;
-                                case AmmoContainerType.SpeedLoader:
-                                    ammoCount = GetAmmoCount(
-                                        ammoCount,
-                                        itemCategory.ammoLimitedSpeedLoaderCountMin,
-                                        itemCategory.ammoLimitedSpeedLoaderCount);
-                                    break;
-                            }
+                            ammoCount = GetCategoryAmmoTypeCount(mainObject, itemCategory);
                         }
                         else if (ammoCount > 0)
                         {
@@ -540,6 +515,7 @@ namespace SupplyRaid
                     else
                         ammoCount = limitedAmmoDefault;  //No item Category, give em 4
                 }
+                */
 
                 //Ammo
                 if (ammoObject != null && ammoObject.GetGameObject() != null)
@@ -575,21 +551,6 @@ namespace SupplyRaid
             return spawnedObject;
         }
 
-        public static int GetAmmoCount(int ammoCount, int min, int max)
-        {
-            if (max > -1)
-            {
-                //Random Range
-                if (min > -1)
-                {
-                    ammoCount = Random.Range(min, max);
-                }
-                else //Set Count
-                    ammoCount = max;
-            }
-
-            return ammoCount;
-        }
 
         /// <summary>
         /// returns true if uses rounds instead of clips or magazines
@@ -607,6 +568,89 @@ namespace SupplyRaid
             return false;   //Default to magazine
         }
 
+
+        public static int GetAmmoCount(int ammoCount, int min = -1, int max = -1)
+        {
+            if (max > -1)
+            {
+                //Random Range
+                if (min > -1)
+                    ammoCount = Random.Range(min, max);
+                else //Set Count
+                    ammoCount = max;
+            }
+
+            return ammoCount;
+        }
+
+        public static int GetCategoryAmmoTypeCount(FVRObject mainObject, SR_ItemCategory itemCategory)
+        {
+            int ammoCount = 0;
+
+            if (itemCategory == null)
+            {
+                if (SR_Manager.instance.optionSpawnLocking)
+                    return 3;
+                else
+                    return 4;
+            }
+            else
+            {
+                //Default Limited
+                ammoCount = GetAmmoCount(
+                    4,
+                    itemCategory.ammoLimitedCountMin,
+                    itemCategory.ammoLimitedCount);
+
+            }
+
+            //Default Spawnlocking to ammo Spawn Locked
+            if (SR_Manager.instance.optionSpawnLocking)
+            {
+                return GetAmmoCount(
+                    3,
+                    itemCategory.ammoSpawnLockedCountMin, 
+                    itemCategory.ammoSpawnLockedCount);
+            }
+
+            if (mainObject.CompatibleMagazines.Count > 0
+                || mainObject.Category == FVRObject.ObjectCategory.Firearm && mainObject.MagazineType != FireArmMagazineType.mNone)
+            {
+                return GetAmmoCount(
+                        ammoCount,
+                        itemCategory.ammoLimitedMagazineCountMin,
+                        itemCategory.ammoLimitedMagazineCount);
+            }
+
+            if (mainObject.CompatibleClips.Count > 0
+                || mainObject.Category == FVRObject.ObjectCategory.Firearm && mainObject.ClipType != FireArmClipType.None)
+            {
+                return GetAmmoCount(
+                        ammoCount,
+                        itemCategory.ammoLimitedClipCountMin,
+                        itemCategory.ammoLimitedClipCount);
+            }
+
+            if (mainObject.CompatibleSpeedLoaders.Count > 0)
+            {
+                return GetAmmoCount(
+                        ammoCount,
+                        itemCategory.ammoLimitedSpeedLoaderCountMin,
+                        itemCategory.ammoLimitedSpeedLoaderCount);
+            }
+
+            if (mainObject.CompatibleSingleRounds.Count > 0)
+            {
+                return GetAmmoCount(
+                    ammoCount,
+                    itemCategory.ammoLimitedRoundCountMin,
+                    itemCategory.ammoLimitedRoundCount);
+            }
+
+            return ammoCount;
+        }
+
+        /*
         public static AmmoContainerType GetAmmoContainerType(FVRObject o)
         {
             if (o.CompatibleMagazines.Count > 0
@@ -632,16 +676,17 @@ namespace SupplyRaid
             
             return AmmoContainerType.None;
         }
+        */
 
         public static List<FVRObject> RemoveTags(List<FVRObject> mags, List<FVRObject.OTagEra> eras = null, int Min = -1, int Max = -1, List<FVRObject.OTagSet> sets = null)
         {
             for (int i = mags.Count - 1; i >= 0; i--)
             {
-                if (Min > -1 && mags[i].MaxCapacityRelated < Min)
+                if (Min > -1 && mags[i].MagazineCapacity < Min)
                 {
                     mags.RemoveAt(i);
                 }
-                else if (Max > -1 && mags[i].MinCapacityRelated > Max)
+                else if (Max > -1 && mags[i].MagazineCapacity > Max)
                 {
                     mags.RemoveAt(i);
                 }
@@ -658,69 +703,85 @@ namespace SupplyRaid
             return mags;
         }
 
-        public static FVRObject GetLowestCapacityAmmoObject(FVRObject o, List<FVRObject.OTagEra> eras = null, int Min = -1, int Max = -1, List<FVRObject.OTagSet> sets = null)
+        public static FVRObject GetLowestCapacityAmmoObject(
+            FVRObject o, List<FVRObject.OTagEra> eras = null, int Min = -1, int Max = -1, List<FVRObject.OTagSet> sets = null)
         {
             o = IM.OD[o.ItemID];
 
             //MAGAZINES
-            if (o.CompatibleMagazines.Count > 0 || o.MagazineType != FireArmMagazineType.mNone)
+            if (o.MagazineType != FireArmMagazineType.mNone)
             {
-                List<FVRObject> ammoCollection = GetLowestCapacity(o.CompatibleMagazines, Min);
+                //List<FVRObject> ammoCollection = o.CompatibleMagazines == null ? new List<FVRObject>() : o.CompatibleMagazines;
 
                 //Populate Magazines
                 List<FVRObject> mags = new List<FVRObject>(ManagerSingleton<IM>.Instance.odicTagCategory[FVRObject.ObjectCategory.Magazine]);
                 for (int i = mags.Count - 1; i >= 0; i--)
                 {
                     if (mags[i].MagazineType != o.MagazineType)
-                    {
                         mags.RemoveAt(i);
-                    }
                 }
-                mags = RemoveTags(mags, eras, Min, Max, sets);
 
+                /*
+                //add Compatible Magazines to Mag Collection
                 for (int i = 0; i < ammoCollection.Count; i++)
                 {
                     if (!mags.Contains(ammoCollection[i]))
                         mags.Add(ammoCollection[i]);
                 }
+                */
 
+                if (mags.Count == 0)
+                {
+                    Debug.Log("No Mags");
+                    return null;
+                }
+
+                mags = GetLowestCapacity(mags, Min);
                 return mags[Random.Range(0, mags.Count)];
             }
 
             //CLIPS
-            if (o.CompatibleClips.Count > 0 || o.ClipType != FireArmClipType.None)
+            if (o.CompatibleClips != null && o.CompatibleClips.Count > 0 
+                || o.ClipType != FireArmClipType.None)
             {
-                List<FVRObject> ammoCollection = GetLowestCapacity(o.CompatibleClips, Min);
+                
+                //List<FVRObject> ammoCollection = o.CompatibleClips == null ? new List<FVRObject>() : o.CompatibleClips;
 
                 //Populate Clips
                 List<FVRObject> clips = new List<FVRObject>(ManagerSingleton<IM>.Instance.odicTagCategory[FVRObject.ObjectCategory.Clip]);
                 for (int i = clips.Count - 1; i >= 0; i--)
                 {
                     if (clips[i].ClipType != o.ClipType)
-                    {
                         clips.RemoveAt(i);
-                    }
                 }
-                clips = RemoveTags(clips, eras, Min, Max, sets);
 
+                /*
                 for (int i = 0; i < ammoCollection.Count; i++)
                 {
                     if (!clips.Contains(ammoCollection[i]))
                         clips.Add(ammoCollection[i]);
                 }
+                */
 
+                if (clips.Count == 0)
+                {
+                    Debug.Log("No Clips");
+                    return null;
+                }
+
+                clips = GetLowestCapacity(clips, Min);
                 return clips[Random.Range(0, clips.Count)];
             }
 
             //Speed Loaders
-            if (o.CompatibleSpeedLoaders.Count > 0)
+            if (o.CompatibleSpeedLoaders != null && o.CompatibleSpeedLoaders.Count > 0)
             {
                 List<FVRObject> ammoCollection = GetLowestCapacity(o.CompatibleSpeedLoaders, Min);
                 return ammoCollection[Random.Range(0, ammoCollection.Count)];
             }
 
             //Single Rounds
-            if (o.CompatibleSingleRounds.Count > 0)
+            if (o.CompatibleSingleRounds != null && o.CompatibleSingleRounds.Count > 0)
             {
                 if ((eras == null || eras.Count < 1) && (sets == null || sets.Count < 1))
                 {

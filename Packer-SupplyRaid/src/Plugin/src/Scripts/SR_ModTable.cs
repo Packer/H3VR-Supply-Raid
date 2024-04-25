@@ -300,7 +300,6 @@ namespace SupplyRaid
                                         bespokeAttachments.Add(fvrObject.BespokeAttachments[b]);
                                 }
                             }
-
                         }
                     }
                     //-------------------------

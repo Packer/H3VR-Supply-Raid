@@ -90,6 +90,13 @@ namespace SupplyRaid
         public float enemySpawnTimer = 1;           //How often enemies spawn through the rabbit hole system
 
         [Space]
+        [Header("Bosses")]
+        //GUARDS
+        [Tooltip("The minimum size for Bosses Groups")]
+        public int bossCount = 0;
+        [Tooltip("The sosig ID pool for stationary bosses")]
+        public SosigPool bossPool;
+
         [Header("Guards")]
         //GUARDS
         [Tooltip("The minimum size for Gaurds Groups")]
@@ -137,6 +144,7 @@ namespace SupplyRaid
     {
         CaptureSupplyPoint = 0,
         RandomSupplyPoint = 1,
+        HuntPlayer = 2,
     }
 
     public enum TeamEnum

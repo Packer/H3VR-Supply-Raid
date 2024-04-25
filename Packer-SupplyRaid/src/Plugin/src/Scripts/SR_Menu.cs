@@ -28,6 +28,7 @@ namespace SupplyRaid
 
         public GameObject linearOption;
         public GameObject lauchGameButton;
+        public GameObject clientRefreshButton;
 
         public float optionDifficulty = 1f;
 
@@ -121,6 +122,7 @@ namespace SupplyRaid
 
             if (Networking.IsClient())
             {
+                clientRefreshButton.SetActive(true);
                 lauchGameButton.SetActive(SR_Manager.instance.gameServerRunning);
                 UpdateGameOptions();
             }
@@ -625,6 +627,12 @@ namespace SupplyRaid
                 categoryButton.name = createdCategories[i];
                 categoryButton.SetActive(true);
             }
+        }
+
+        public void ClientRequestSync()
+        {
+            if(SupplyRaidPlugin.h3mpEnabled)
+                SR_Networking.instance.RequestSync_Send();
         }
     }
 }

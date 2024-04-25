@@ -119,6 +119,11 @@ namespace SupplyRaid
             return sniperPoints[Random.Range(0, sniperPoints.Count - 1)];
         }
 
+        public Transform GetBossSpawn()
+        {
+            return squadPoint;
+        }
+
         public Transform GetRandomGuardSpawn()
         {
             int guardCount = guardPoints.Count;

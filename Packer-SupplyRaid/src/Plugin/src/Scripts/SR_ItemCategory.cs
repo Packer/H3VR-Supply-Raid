@@ -140,6 +140,41 @@ namespace SupplyRaid
             }
         }
 
+        public void GetItemAmmo(FVRObject item, List<FVRObject> lootPool)
+        {
+            FVRObject ammo = null;
+            if (item)
+                ammo = item.GetRandomAmmoObject(item, null, minCapacity, maxCapacity, null);
+
+            if (ammo == null)
+                return;
+            
+            /*
+            int ammoCount = 0;
+            if (SR_Manager.instance.optionSpawnLocking)
+            {
+                if (ammoSpawnLockedCountMin >= 0)
+                    ammoCount = Random.Range(ammoSpawnLockedCountMin, ammoSpawnLockedCount);
+                else if (ammoSpawnLockedCount >= 0)
+                    ammoCount = ammoSpawnLockedCount;
+            }
+            else
+            {
+                if (ammoLimitedCountMin >= 0)
+                    ammoCount = Random.Range(ammoLimitedCountMin, ammoLimitedCount);
+                else if (ammoLimitedCount >= 0)
+                    ammoCount = ammoLimitedCount;
+            }
+            */
+            int ammoCount = SR_Global.GetCategoryAmmoTypeCount(item, this);
+
+            for (int y = 0; y < ammoCount; y++)
+            {
+                lootPool.Add(ammo);
+            }
+            
+        }
+
         public LootTable InitializeLootTable()
         {
             //Remove Unloaded Mods
@@ -149,12 +184,23 @@ namespace SupplyRaid
 
             if (lootTagsFromQuickbelt)
             {
+                List<FVRObject> lootPool = new List<FVRObject>();
+
+                //Gather Hand Items
+                FVRViveHand[] hands = MonoBehaviour.FindObjectsOfType<FVRViveHand>();
+
+                for (int i = 0; i < hands.Length; i++)
+                {
+                    if (hands[i].CurrentInteractable != null)
+                    {
+                        FVRPhysicalObject fvrPhysical = hands[i].CurrentInteractable.transform.root.GetComponent<FVRPhysicalObject>();
+                        if(fvrPhysical != null)
+                            GetItemAmmo(fvrPhysical.ObjectWrapper, lootPool);
+                    }
+                }
+
                 //Gather all possible loot here
                 FVRQuickBeltSlot[] slots = MonoBehaviour.FindObjectsOfType<FVRQuickBeltSlot>();
-                FVRViveHand[] hands = MonoBehaviour.FindObjectsOfType<FVRViveHand>();
-                //Do hand stuff here
-
-                List<FVRObject> lootPool = new List<FVRObject>();
 
                 for (int i = 0; i < slots.Length; i++)
                 {
@@ -163,68 +209,12 @@ namespace SupplyRaid
                         FVRObject item = slots[i].CurObject.ObjectWrapper;
 
                         //If not in Round Powers
-                        if (roundPowers != null 
+                        if (roundPowers != null
                             && roundPowers.Count > 0
                             && !roundPowers.Contains(slots[i].CurObject.ObjectWrapper.TagFirearmRoundPower))
                             continue;
 
-                        FVRObject ammo = null;
-                        if (item)
-                            ammo = item.GetRandomAmmoObject(item, null, minCapacity, maxCapacity, null);
-
-                        if (ammo != null)
-                        {
-                            int ammoCount = 0;
-                            if (SR_Manager.instance.optionSpawnLocking)
-                            {
-                                if (ammoSpawnLockedCountMin >= 0)
-                                    ammoCount = Random.Range(ammoSpawnLockedCountMin, ammoSpawnLockedCount);
-                                else if (ammoSpawnLockedCount >= 0)
-                                    ammoCount = ammoSpawnLockedCount;
-                            }
-                            else
-                            {
-                                if (ammoLimitedCountMin >= 0)
-                                    ammoCount = Random.Range(ammoLimitedCountMin, ammoLimitedCount);
-                                else if (ammoLimitedCount >= 0)
-                                    ammoCount = ammoLimitedCount;
-                            }
-
-                            switch (SR_Global.GetAmmoContainerType(ammo))
-                            {
-                                case AmmoContainerType.Round:
-                                    if (ammoLimitedRoundCountMin >= 0)
-                                        ammoCount = Random.Range(ammoLimitedRoundCountMin, ammoLimitedRoundCount);
-                                    else if (ammoLimitedRoundCount >= 0)
-                                        ammoCount = ammoLimitedRoundCount;
-                                    break;
-                                case AmmoContainerType.Magazine:
-
-                                    if (ammoLimitedMagazineCountMin >= 0)
-                                        ammoCount = Random.Range(ammoLimitedMagazineCountMin, ammoLimitedMagazineCount);
-                                    else if (ammoLimitedMagazineCount >= 0)
-                                        ammoCount = ammoLimitedMagazineCount;
-                                    break;
-                                case AmmoContainerType.Clip:
-
-                                    if (ammoLimitedClipCountMin >= 0)
-                                        ammoCount = Random.Range(ammoLimitedClipCountMin, ammoLimitedClipCount);
-                                    else if (ammoLimitedClipCount >= 0)
-                                        ammoCount = ammoLimitedClipCount;
-                                    break;
-                                case AmmoContainerType.SpeedLoader:
-                                    if (ammoLimitedSpeedLoaderCountMin >= 0)
-                                        ammoCount = Random.Range(ammoLimitedSpeedLoaderCountMin, ammoLimitedSpeedLoaderCount);
-                                    else if (ammoLimitedSpeedLoaderCount >= 0)
-                                        ammoCount = ammoLimitedSpeedLoaderCount;
-                                    break;
-                            }
-
-                            for (int y = 0; y < ammoCount; y++)
-                            {
-                                lootPool.Add(ammo);
-                            }
-                        }
+                        GetItemAmmo(item, lootPool);
                     }
                 }
 
