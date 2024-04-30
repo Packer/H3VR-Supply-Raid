@@ -272,7 +272,7 @@ namespace SupplyRaid
                 return;
 
             Packet packet = new Packet(gameOptions_ID);
-            packet.Write(SR_Manager.instance.optionPlayerCount);
+            packet.Write(SR_Manager.instance.profileplayerCount);
             packet.Write(SR_Manager.instance.optionDifficulty);
             packet.Write(SR_Manager.instance.optionFreeBuyMenu);
             packet.Write(SR_Manager.instance.optionSpawnLocking);

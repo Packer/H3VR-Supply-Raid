@@ -234,5 +234,110 @@ namespace SupplyRaid
             return Directory.GetFiles(Paths.PluginPath, "*.cssr", SearchOption.AllDirectories).ToList();
         }
 
+
+        public static List<SR_Profile> profiles = new List<SR_Profile>();
+
+        public static bool SaveProfile(string saveName)
+        {
+            if (SR_Manager.profile == null)
+                return false;
+
+            //Error Check
+            SR_Manager.profile.name = CleanFileName(saveName);
+            if (SR_Manager.profile.name == "Profile")
+                return false;
+
+            bool status = false;
+            string path = Paths.PluginPath + "\\Packer-SupplyRaid\\";
+            string fileName = path + saveName + ".prosr";
+
+            try
+            {
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+            }
+            catch (Exception ex)
+            {
+                FistVR.SM.PlayGlobalUISound(FistVR.SM.GlobalUISound.Error, FistVR.GM.CurrentPlayerBody.transform.position);
+                Debug.Log("Supply Raid: Failed Saving Profile - " + ex.Message);
+                return false;
+            }
+
+            try
+            {
+                if (!File.Exists(fileName))
+                {
+                    FileStream newFile = File.Create(fileName);
+                    //File.SetAttributes(fileName, FileAttributes.Normal);
+                    newFile.Close();
+                }
+
+                Debug.Log("Supply Raid: Writing to " + fileName);
+                using (StreamWriter writer = new StreamWriter(fileName, false))
+                {
+                    string json = JsonUtility.ToJson(SR_Manager.profile, true);
+                    writer.Write(json);
+                    writer.Close();
+
+                }
+                status = true;
+            }
+            catch (Exception ex)
+            {
+                FistVR.SM.PlayGlobalUISound(FistVR.SM.GlobalUISound.Error, FistVR.GM.CurrentPlayerBody.transform.position);
+                Debug.LogError("Supply Raid: Failed Saving Profile - " + ex.Message);
+                status = false;
+            }
+
+            return status;
+        }
+
+        private static string CleanFileName(string fileName)
+        {
+            return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty));
+        }
+
+        public static List<SR_Profile> LoadProfiles()
+        {
+            //Clear old Profiles incase
+            profiles.Clear();
+
+            List<string> directories = Directory.GetFiles(Paths.PluginPath, "*.prosr", SearchOption.AllDirectories).ToList();
+
+            if (directories.Count == 0)
+            {
+                Debug.LogError("Supply Raid: No profiles were found!");
+                return null;
+            }
+
+            //Load up each of our categories
+            for (int i = 0; i < directories.Count; i++)
+            {
+                try
+                {
+                    SR_Profile newProfile;
+                    //Load each Category via the Directory
+                    using (StreamReader streamReader = new StreamReader(directories[i]))
+                    {
+                        string json = streamReader.ReadToEnd();
+
+                        newProfile = JsonUtility.FromJson<SR_Profile>(json);
+
+                        //Add to our item category pool
+                        profiles.Add(newProfile);
+                        Debug.Log("Supply Raid: Loaded External Profile - " + newProfile.name);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    FistVR.SM.PlayGlobalUISound(FistVR.SM.GlobalUISound.Error, FistVR.GM.CurrentPlayerBody.transform.position);
+                    Debug.Log(ex.Message);
+                    return null;
+                }
+            }
+            return profiles;
+        }
     }
 }

@@ -4054,9 +4054,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: -1
+  value: -1
   thumbnail: {fileID: 0}
   button: {fileID: 0}
-  spawner: {fileID: 0}
   text: {fileID: 0}
   go: {fileID: 1148077118904208}
 --- !u!114 &114093016388335990
@@ -7656,9 +7656,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: -1
+  value: -1
   thumbnail: {fileID: 0}
   button: {fileID: 0}
-  spawner: {fileID: 0}
   text: {fileID: 0}
   go: {fileID: 1148077118904208}
 --- !u!114 &114539676388923984
@@ -8182,9 +8182,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: -1
+  value: -1
   thumbnail: {fileID: 114805066156418284}
   button: {fileID: 114628789299678614}
-  spawner: {fileID: 0}
   text: {fileID: 114758736071021684}
   go: {fileID: 0}
 --- !u!114 &114621691890838986
@@ -8603,9 +8603,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: -1
+  value: -1
   thumbnail: {fileID: 0}
   button: {fileID: 0}
-  spawner: {fileID: 0}
   text: {fileID: 0}
   go: {fileID: 1148077118904208}
 --- !u!114 &114661373502450344
@@ -10852,9 +10852,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: -1
+  value: -1
   thumbnail: {fileID: 0}
   button: {fileID: 0}
-  spawner: {fileID: 0}
   text: {fileID: 0}
   go: {fileID: 1148077118904208}
 --- !u!114 &114985772228416816

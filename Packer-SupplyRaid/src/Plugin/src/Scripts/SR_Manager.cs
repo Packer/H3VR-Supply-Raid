@@ -18,10 +18,11 @@ namespace SupplyRaid
             set { currentCaptures = value; }
             get { return currentCaptures; }
         }
+        public static SR_Profile profile = new SR_Profile();
 
         //[Header("Default Settings")]
         [Tooltip("Multiplier for multiplayer or harder games"), HideInInspector]
-        public float optionPlayerCount = 1;
+        public float profileplayerCount = 1;
         [Tooltip("Default 1 = Normal, 0.5 = Easier, 2 = Double enemy Stats"), Range(0.5f, 2), HideInInspector]
         public float optionDifficulty = 1f;
         [Tooltip("Players currency enabled or disabled"), HideInInspector]
@@ -83,7 +84,7 @@ namespace SupplyRaid
         public bool gameCompleted = false;
         [HideInInspector]
         public bool inEndless = false;
-        public ObstacleAvoidanceType avoidanceQuailty = ObstacleAvoidanceType.MedQualityObstacleAvoidance;
+        public ObstacleAvoidanceType avoidanceQuailty = ObstacleAvoidanceType.LowQualityObstacleAvoidance;
 
         [Header("Supply Points")]
         [HideInInspector, Tooltip("The next supply point that is being attacked by the player")]
@@ -107,6 +108,7 @@ namespace SupplyRaid
         List<int> squadGroups = new List<int>();
         List<int> squadIFFs = new List<int>();
         private float squadRespawnTimer = 0;
+        private float squadDelayTimer = 0;
 
         [Header("World Transforms")]
         public Transform srMenu;
@@ -143,6 +145,7 @@ namespace SupplyRaid
         public SosigSettings sosigPatrol = new SosigSettings();
         public SosigSettings sosigSquad = new SosigSettings();
         private float sosigSpawnTick = 0.9f;
+        public float squadSpawnTimerMultiplier = 1;
 
         private LayerMask enviromentLayer;
 
@@ -354,6 +357,7 @@ namespace SupplyRaid
             }
 
             SR_Menu.instance.Setup();
+            SR_BuyMenu.instance.Setup();
         }
 
         void Start()
@@ -404,7 +408,8 @@ namespace SupplyRaid
 
                 stats.GameTime += Time.deltaTime;
                 UpdateRabbithole();
-                UpdateSquadSpawner();
+                if(squadDelayTimer <= Time.time)
+                    UpdateSquadSpawner();
                 UpdateSosigs();
             }
         }
@@ -744,7 +749,6 @@ namespace SupplyRaid
             if (squadSosigs.Contains(sosig))
                 squadSosigs.Remove(sosig);
 
-
             if (sosigGuards.Contains(sosig))
                 sosigGuards.Remove(sosig);
 
@@ -1033,6 +1037,9 @@ namespace SupplyRaid
                 //Debug.Log("Supply Raid: Post Clear + Points");
             }
 
+            //Squad Delay
+            squadDelayTimer = GetFactionLevel().squadDelayTimer * squadSpawnTimerMultiplier;
+
             //Give player points
             if (gameRunning)
             {
@@ -1289,14 +1296,14 @@ namespace SupplyRaid
             _spawnOptions.IFF = teamID;
 
             //Enemy Level Count
-            int enemyCount = Mathf.CeilToInt(currentLevel.enemiesTotal * optionPlayerCount);
+            int enemyCount = Mathf.CeilToInt(currentLevel.enemiesTotal * profile.playerCount);
 
             //Sniper Setup
             if (currentLevel.sniperCount > 0 && currentLevel.sniperPool.Count() > 0)
             {
                 //List<Transform> usedSpots = new List<Transform>();
 
-                int sniperCount = Mathf.CeilToInt(currentLevel.sniperCount * optionPlayerCount);
+                int sniperCount = Mathf.CeilToInt(currentLevel.sniperCount * profile.playerCount);
                 for (int i = 0; i < sniperCount; i++)
                 {
                     Transform spot = AttackSupplyPoint().GetRandomSniperSpawn();
@@ -1354,7 +1361,7 @@ namespace SupplyRaid
                 yield return new WaitForSeconds(sosigSpawnTick);
                 //List<Transform> usedSpots = new List<Transform>();
 
-                int guardCount = Mathf.CeilToInt(currentLevel.guardCount * optionPlayerCount);
+                int guardCount = Mathf.CeilToInt(currentLevel.guardCount * profile.playerCount);
                 for (int i = 0; i < guardCount; i++)
                 {
                     Transform spot = AttackSupplyPoint().GetRandomGuardSpawn();
@@ -1521,6 +1528,7 @@ namespace SupplyRaid
                 return;
             else
                 sosigSightMultiplierLast = sosigSightMultiplier;
+
 
             //Guards
             for (int i = 0; i < sosigGuards.Count; i++)
@@ -2065,6 +2073,25 @@ namespace SupplyRaid
         // Static
         //----------------------------------------------------------------------
 
+        public static void RefundPoints(Transform spawnPoint)
+        {
+            int count = 0;
+            while (instance.Points > 0)
+            {
+                string item = SR_Global.GetHighestValueCashMoney(instance.Points);
+
+                //Error Check
+                if (item == "")
+                    break;
+
+                instance.Points -= SR_Global.GetRoundValue(item);
+                FVRObject mainObject;
+                IM.OD.TryGetValue(item, out mainObject);
+                instance.StartCoroutine(SR_Global.WaitandCreate(mainObject.GetGameObject(), count * 0.25f, spawnPoint));
+                count++;
+            }
+        }
+
         /// <summary>
         /// Returns Sosig Faction thats currently selected
         /// </summary>
@@ -2228,19 +2255,19 @@ namespace SupplyRaid
             bool itemSpawner, bool captureZone, int order, int captures, bool respawn, int maxEnemies, int maxSquadEnemies,
             string factionID)
         {
-            optionPlayerCount = playerCount;
-            optionDifficulty = difficulty;
-            optionFreeBuyMenu = freeBuyMenu;
-            optionSpawnLocking = spawnLocking;
-            optionStartLevel = startLevel;
-            optionPlayerHealth = playerHealth;
-            optionItemSpawner = itemSpawner;
-            optionCaptureZone = captureZone;
-            optionCaptureOrder = order;
-            optionCaptures = captures;
-            optionRespawn = respawn;
-            optionMaxEnemies = maxEnemies;
-            optionMaxSquadEnemies = maxSquadEnemies;
+            profile.playerCount = playerCount;
+            profile.difficulty = difficulty;
+            profile.freeBuyMenu = freeBuyMenu;
+            profile.spawnLocking = spawnLocking;
+            profile.startLevel = startLevel;
+            profile.playerHealth = playerHealth;
+            profile.itemSpawner = itemSpawner;
+            profile.captureZone = captureZone;
+            profile.captureOrder = order;
+            profile.captures = captures;
+            profile.respawn = respawn;
+            profile.maxEnemies = maxEnemies;
+            profile.maxSquadEnemies = maxSquadEnemies;
 
             SR_Menu.instance.SetFactionByName(factionID);
             //instance.factionID = factionID;

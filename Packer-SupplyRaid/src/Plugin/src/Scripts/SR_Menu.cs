@@ -231,7 +231,7 @@ namespace SupplyRaid
 
         public void ChangePlayerCount(float i)
         {
-            SR_Manager.instance.optionPlayerCount = Mathf.Clamp(SR_Manager.instance.optionPlayerCount + i, 0.25f, 8f);
+            SR_Manager.instance.profileplayerCount = Mathf.Clamp(SR_Manager.instance.profileplayerCount + i, 0.25f, 8f);
             UpdateGameOptions();
         }
 
@@ -366,8 +366,8 @@ namespace SupplyRaid
 
             if (playerCountText != null)
             {
-                playerCountText.text = SR_Manager.instance.optionPlayerCount.ToString();
-                playerCountText.color = Color.Lerp(Color.white, Color.red, Mathf.InverseLerp(1, 4, SR_Manager.instance.optionPlayerCount));
+                playerCountText.text = SR_Manager.instance.profileplayerCount.ToString();
+                playerCountText.color = Color.Lerp(Color.white, Color.red, Mathf.InverseLerp(1, 4, SR_Manager.instance.profileplayerCount));
             }
 
             if(freeBuyMenu != null)

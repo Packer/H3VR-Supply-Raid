@@ -14,8 +14,8 @@ namespace SupplyRaid
         private string thumbnailPath = "icon.png";
         private Sprite thumbnail;
 
+        [Tooltip("The category that this item shows up in, otherwise defaults to type")]
         public string category = "";
-        public string subCategory = "";
 
         [Tooltip("Magazine/Clip Min Capacity for this loot table")]
         public int minCapacity = -1;

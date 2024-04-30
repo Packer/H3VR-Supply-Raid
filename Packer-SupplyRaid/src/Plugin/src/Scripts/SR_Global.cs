@@ -677,6 +677,69 @@ namespace SupplyRaid
             return AmmoContainerType.None;
         }
         */
+        public static int GetRoundValue(string itemID)
+        {
+            switch (itemID)
+            {
+                case "Cartridge69CashMoneyD1":
+                    return 1;
+                case "Cartridge69CashMoneyD5":
+                    return 5;
+                case "Cartridge69CashMoneyD10":
+                    return 10;
+                case "Cartridge69CashMoneyD25":
+                    return 25;
+                case "Cartridge69CashMoneyD100":
+                    return 100;
+                case "Cartridge69CashMoneyD1000":
+                    return 1000;
+                default:
+                    return 0;
+            }
+        }
+
+        public static string GetHighestValueCashMoney(int cash)
+        {
+            if (cash >= 1000)
+                return "Cartridge69CashMoneyD1000";
+            else if (cash >= 100)
+                return "Cartridge69CashMoneyD100";
+            else if (cash >= 25)
+                return "Cartridge69CashMoneyD25";
+            else if (cash >= 10)
+                return "Cartridge69CashMoneyD10";
+            else if (cash >= 5)
+                return "Cartridge69CashMoneyD5";
+            else if (cash >= 1)
+                return "Cartridge69CashMoneyD1";
+
+            return "";
+        }
+
+        public void RefundPoints(Transform spawnPoint)
+        {
+            int count = 0;
+            while (SR_Manager.instance.Points > 0)
+            {
+                string item = GetHighestValueCashMoney(SR_Manager.instance.Points);
+
+                //Error Check
+                if (item == "")
+                    break;
+
+                SR_Manager.instance.Points -= GetRoundValue(item);
+                FVRObject mainObject;
+                IM.OD.TryGetValue(item, out mainObject);
+                StartCoroutine(SR_Global.WaitandCreate(mainObject.GetGameObject(), count * 0.25f, spawnPoint));
+                count++;
+            }
+        }
+
+        public static IEnumerator WaitandCreate(GameObject prefab, float waitTime, Transform spawnPoint)
+        {
+            yield return new WaitForSeconds(waitTime);
+            Instantiate(prefab, spawnPoint.position + Vector3.up * 0.05f, spawnPoint.rotation);
+        }
 
         public static List<FVRObject> RemoveTags(List<FVRObject> mags, List<FVRObject.OTagEra> eras = null, int Min = -1, int Max = -1, List<FVRObject.OTagSet> sets = null)
         {

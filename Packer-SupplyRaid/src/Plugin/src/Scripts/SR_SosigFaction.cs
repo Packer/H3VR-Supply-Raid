@@ -88,6 +88,7 @@ namespace SupplyRaid
         public bool infiniteEnemies = false;        //If true, enemies will spawn up to onscreen or Total (Whatever is lowest)
         public bool infiniteSquadEnemies = false;   //If true, enemies will spawn up to onscreen or Total (Whatever is lowest)
         public float enemySpawnTimer = 1;           //How often enemies spawn through the rabbit hole system
+        public float squadDelayTimer = 1;           //How long before squads start spawning
 
         [Space]
         [Header("Bosses")]

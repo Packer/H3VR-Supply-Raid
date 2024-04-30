@@ -29,6 +29,14 @@ public static class SceneViewSlowCamera
                 case KeyCode.I:
                     cam.pivot += cam.camera.transform.forward * Time.deltaTime * moveSpeed;
                     break;
+                    
+                case KeyCode.O:
+                    moveSpeed += 0.1f;
+                    break;
+                    
+                case KeyCode.U:
+                    moveSpeed -= 0.1f;
+                    break;
 
                 case KeyCode.K:
                     cam.pivot -= cam.camera.transform.forward * Time.deltaTime * moveSpeed;

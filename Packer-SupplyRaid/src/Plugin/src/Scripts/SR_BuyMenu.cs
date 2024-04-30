@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
+using System.Linq;
+using BepInEx;
 
 namespace SupplyRaid
 {
     public class SR_BuyMenu : MonoBehaviour
     {
+        public static SR_BuyMenu instance;
+
         [Header("Spawn Points")]
         [SerializeField] Transform[] spawnPoints;
 
@@ -14,17 +19,30 @@ namespace SupplyRaid
         private List<SR_PurchaseCategory> purchaseCategories = new List<SR_PurchaseCategory>();
         private LootTable[] lootTables;
 
-        [Header("Loot Buttons")]
-        [SerializeField] Transform[] tabContent;
-        [HideInInspector] public SR_GenericButton[] buttons;
-        [SerializeField] GameObject buttonPrefab;
+        //[Header("Loot Buttons")]
+        //[HideInInspector] public SR_GenericButton[] buttons;
         //[SerializeField] AudioClip[] audioClips = new AudioClip[3];
         //[SerializeField] AudioSource audioSource;
 
+        [Header("Prefabs")]
+        [SerializeField] GameObject buttonTabPrefab;    //Tab Button
+        [SerializeField] GameObject buttonContainerPrefab;       //Tab Container
+        [SerializeField] GameObject buyButtonPrefab;    //Buy Button
+
+        [Header("Tabs")]
+        [SerializeField] Transform tabContainer;        //Tab Container that holds Buttons
+        [SerializeField] BuyMenuContainer[] tabContainers;  //Tab Menus that open
+        //[SerializeField] SR_GenericButton[] tabButtons; //Loaded Buttons in Tabs
+
         public Text pointDisplay;
 
+        void Awake()
+        {
+            instance = this;
+        }
+
         // Use this for initialization
-        void Start()
+        public void Setup()
         {
             if (SR_Manager.instance != null)
             {
@@ -54,6 +72,18 @@ namespace SupplyRaid
             GenerateButtons();
         }
 
+        public void OpenMenu(int index)
+        {
+            for (int x = 0; x < tabContainers.Length; x++)
+            {
+                //Top menus
+                if (tabContainers[x].container)
+                    tabContainers[x].container.SetActive(false);
+            }
+            tabContainers[index].container.SetActive(true);
+            SR_Manager.PlayConfirmSFX();
+        }
+
         private void UpdatePoints(int i)
         {
             if(SR_Manager.instance != null)
@@ -62,22 +92,67 @@ namespace SupplyRaid
 
         private void GenerateButtons()
         {
-            buttons = new SR_GenericButton[purchaseCategories.Count];
-
+            //Setup Categories
+            List<string> loadedCategories = new List<string>();
             for (int i = 0; i < purchaseCategories.Count; i++)
             {
-                SR_GenericButton newButton = Instantiate(buttonPrefab, tabContent[(int)purchaseCategories[i].ItemCategory().type]).GetComponent<SR_GenericButton>();
-                newButton.gameObject.SetActive(true);
+                if (!loadedCategories.Contains(purchaseCategories[i].ItemCategory().category))
+                    loadedCategories.Add(purchaseCategories[i].ItemCategory().category);
+            }
 
-                buttons[i] = newButton;
-                newButton.button = newButton.GetComponent<Button>();
-                newButton.index = i;
-                newButton.spawner = this;
-                newButton.thumbnail.sprite = purchaseCategories[i].ItemCategory().Thumbnail();
-                newButton.text.text = purchaseCategories[i].cost.ToString();
-                newButton.name = purchaseCategories[i].ItemCategory().name;
+            //Generate Tabs and Containers
+            tabContainers = new BuyMenuContainer[loadedCategories.Count];
 
-                //Debug.Log("Button ID is " + i);
+            for (int i = 0; i < tabContainers.Length; i++)
+            {
+                tabContainers[i] = new BuyMenuContainer();
+
+                //Setup Category
+                tabContainers[i].name = loadedCategories[i];
+
+                //Setup Container
+                tabContainers[i].container = Instantiate(buttonContainerPrefab, buttonContainerPrefab.transform.parent);
+                tabContainers[i].container.SetActive(false);
+
+                //Setup Tab Button
+                tabContainers[i].tabButton = Instantiate(buttonTabPrefab, tabContainer).GetComponent<SR_GenericButton>();
+                tabContainers[i].tabButton.gameObject.SetActive(true);
+                tabContainers[i].tabButton.index = i;
+
+                //Setup Icon
+                if (tabContainers[i].name != "")
+                {
+                    string[] directories = Directory.GetFiles(Paths.PluginPath, ("*" + tabContainers[i].name + ".png"), SearchOption.AllDirectories);
+                    if (directories.Length > 0 && directories[0] != "")
+                    {
+                        Sprite icon = SR_Global.LoadSprite(directories[0]);
+                        tabContainers[i].tabButton.thumbnail.sprite = icon;
+                    }
+                }
+                else
+                    Debug.LogError("Supply Raid - No Icon found for category " + tabContainers[i].name);
+            }
+
+            //Populate Tabs with Buy Buttons
+            for (int i = 0; i < purchaseCategories.Count; i++)
+            {
+                //Populate all menus
+                for (int x = 0; x < tabContainers.Length; x++)
+                {
+                    //Found Correct Tab
+                    if (purchaseCategories[i].ItemCategory().category == tabContainers[x].name)
+                    {
+                        SR_GenericButton newBtn = Instantiate(buyButtonPrefab, tabContainers[x].container.transform).GetComponent<SR_GenericButton>();
+                        newBtn.gameObject.SetActive(true);
+                        newBtn.index = i;   //Purchase Category Index not Tab
+
+                        newBtn.thumbnail.sprite = purchaseCategories[i].ItemCategory().Thumbnail();
+                        newBtn.text.text = purchaseCategories[i].cost.ToString();
+                        newBtn.name = purchaseCategories[i].ItemCategory().name;
+
+                        break;
+                    }
+                }
             }
         }
 
@@ -123,6 +198,7 @@ namespace SupplyRaid
             }
         }
 
+        /*
         public void SetTab(int exception)
         {
             for (int i = 0; i < tabContent.Length; i++)
@@ -133,6 +209,7 @@ namespace SupplyRaid
                     tabContent[i].gameObject.SetActive(true);
             }
         }
+        */
 
         public void SpawnObjectAtPlace(FVRObject obj, Vector3 pos, Quaternion rotation)
         {
@@ -168,27 +245,14 @@ namespace SupplyRaid
                 }
             }
         }
+    }
 
-        public static List<FVRObject> GetLowestCapacity(List<FVRObject> ammo, int minCapacity)
-        {
-            List<FVRObject> collected = new List<FVRObject>();
-
-            //Get Lowest Capacity possible
-            int lowest = int.MaxValue;
-            for (int i = 0; i < ammo.Count; i++)
-            {
-                if(ammo[i].MagazineCapacity < lowest && ammo[i].MagazineCapacity >= minCapacity)
-                    lowest = ammo[i].MagazineCapacity;
-            }
-
-            //Collect all lowest capacity
-            for (int i = 0; i < ammo.Count; i++)
-            {
-                if (ammo[i].MagazineCapacity == lowest)
-                    collected.Add(ammo[i]);
-            }
-
-            return collected;
-        }
+    [System.Serializable]
+    public class BuyMenuContainer
+    {
+        public string name;
+        public SR_GenericButton tabButton;
+        public SR_GenericButton[] buttons;
+        public GameObject container;
     }
 }

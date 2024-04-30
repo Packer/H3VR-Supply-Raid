@@ -10,11 +10,12 @@ namespace SupplyRaid
 	public class SR_GenericButton : MonoBehaviour
 	{
 		public int index = -1;
+        public int value = -1;
 		public Image thumbnail;
 		public Button button;
-        public SR_BuyMenu spawner;
         public Text text;
         public GameObject go;
+
 
         public void SelectCharacter()
         {
@@ -68,9 +69,14 @@ namespace SupplyRaid
             SR_Menu.instance.UpdateFaction();
         }
 
+        public void OpenBuyMenu()
+        {
+            SR_BuyMenu.instance.OpenMenu(index);
+        }
+
         public void BuyLoot()
         {
-            spawner.SpawnLootButton(index);
+            SR_BuyMenu.instance.SpawnLootButton(index);
         }
 
         public void SpawnAtPlayer()
