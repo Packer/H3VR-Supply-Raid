@@ -27,7 +27,7 @@ namespace SupplyRaid
             if (SR_Manager.instance == null || gameObject.activeSelf == false)
                 return;
 
-            if (!SR_Manager.instance.optionRespawn && SR_Manager.instance.optionCaptures <= 0)
+            if (!SR_Manager.profile.respawn && SR_Manager.profile.captures <= 0)
             {
                 objectiveComplete.text = "ENDED";
                 objectiveComplete.color = Color.grey;
@@ -47,7 +47,7 @@ namespace SupplyRaid
             else
                 level.text = SR_Manager.instance.CurrentFactionLevel.ToString();
             */
-            captures.text = (SR_Manager.instance.CurrentCaptures - SR_Manager.instance.optionStartLevel).ToString();
+            captures.text = (SR_Manager.instance.CurrentCaptures - SR_Manager.profile.startLevel).ToString();
             kills.text = SR_Manager.instance.stats.Kills.ToString();
 
             if(score)

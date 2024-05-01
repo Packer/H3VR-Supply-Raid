@@ -18,39 +18,8 @@ namespace SupplyRaid
             set { currentCaptures = value; }
             get { return currentCaptures; }
         }
+        [Header("Game Data")]
         public static SR_Profile profile = new SR_Profile();
-
-        //[Header("Default Settings")]
-        [Tooltip("Multiplier for multiplayer or harder games"), HideInInspector]
-        public float profileplayerCount = 1;
-        [Tooltip("Default 1 = Normal, 0.5 = Easier, 2 = Double enemy Stats"), Range(0.5f, 2), HideInInspector]
-        public float optionDifficulty = 1f;
-        [Tooltip("Players currency enabled or disabled"), HideInInspector]
-        public bool optionFreeBuyMenu = false;
-        [Tooltip("false = Limited Ammo / true = spawn locking"), HideInInspector]
-        public bool optionSpawnLocking = true;
-        [Tooltip("What level do we start on? Gain all points from those prev levels"), HideInInspector]
-        public int optionStartLevel = 0;
-        //[Tooltip("One Hit = 0, Half = 1, Standard = 2, Extra = 3, Double = 4, Too Much HP = 5"), Range(0, 4), HideInInspector]
-        public int optionPlayerHealth = 5000;
-        [Tooltip("Item Spawner"), HideInInspector]
-        public bool optionItemSpawner = false;
-        [Tooltip("Is the capture Zone being used"), HideInInspector]
-        public bool optionCaptureZone = true;
-        [Tooltip("Right Hand = True, Left Hand = False"), HideInInspector]
-        public bool optionHand = false;
-        [Tooltip("Do we do the supply points in Array Order, \n0 = Random Order\n1 = Random\n2 = Ordered"), HideInInspector]
-        public int optionCaptureOrder = 0;
-        [Tooltip("How many captures until the game completes, 0 = Infinite, 1+ = Number of Captures"), HideInInspector]
-        public int optionCaptures = 5;
-        [Tooltip("Can the players respawn after dying?"), HideInInspector]
-        public bool optionRespawn = true;
-        [Tooltip("How many allowed to be alive at a time"), HideInInspector]
-        public int optionMaxEnemies = 12;
-        [Tooltip("How many allowed to be alive at a time"), HideInInspector]
-        public int optionMaxSquadEnemies = 8;
-
-        [Header("Game Stats")]
         public Stats stats = new Stats();
 
         [Header("Game Options")]
@@ -205,12 +174,14 @@ namespace SupplyRaid
         public AudioClip audioTickAlmost;    //Clock Ticking last 5 seconds
         public AudioClip audioCaptureComplete;     //Capture complete
         public AudioClip audioFailCapture;
+        private static float audioTimeout = 0;
+        private static float audioTimeDelay = 0.03f;
 
         public int Points
         {
             set
             {
-                if (optionFreeBuyMenu)
+                if (profile.freeBuyMenu)
                     points = 99999;
                 else
                     points = Mathf.Clamp(value, 0, int.MaxValue);
@@ -233,6 +204,8 @@ namespace SupplyRaid
             instance = this;
             //SetupGameData();
 
+            //Profile
+            profile = new SR_Profile();
         }
 
         public void LoadInAssets()
@@ -304,8 +277,8 @@ namespace SupplyRaid
                     captureZone.transform.parent).GetComponent<SR_CaptureZone>();
             }
             */
-            
-            optionPlayerHealth = 5000;
+
+            profile.playerHealth = 5000;
         }
 
         /*
@@ -431,28 +404,28 @@ namespace SupplyRaid
             GM.CurrentSceneSettings.SosigKillEvent += CurrentSceneSettingsOnSosigKillEvent;
 
             //Item locking
-            GM.CurrentSceneSettings.IsSpawnLockingEnabled = optionSpawnLocking;
+            GM.CurrentSceneSettings.IsSpawnLockingEnabled = profile.spawnLocking;
 
             //Health
-            GM.CurrentPlayerBody.SetHealthThreshold(optionPlayerHealth);
+            GM.CurrentPlayerBody.SetHealthThreshold(profile.playerHealth);
 
             //Capture Zones
-            if (optionCaptureZone)
-                captureZone.gameObject.SetActive(optionCaptureZone);
+            if (profile.captureZone)
+                captureZone.gameObject.SetActive(profile.captureZone);
 
             //Item Spawner
-            itemSpawner.gameObject.SetActive(optionItemSpawner);
+            itemSpawner.gameObject.SetActive(profile.itemSpawner);
 
             //Free Buy
-            if (optionFreeBuyMenu)
+            if (profile.freeBuyMenu)
                 Points = 99999;
             //Game Started
             else if (forceStartPointsOverride >= 0)
                 Points = forceStartPointsOverride;
             //Starting Points
-            else if (optionStartLevel > 0)
+            else if (profile.startLevel > 0)
             {
-                CatchupPoints(optionStartLevel);
+                CatchupPoints(profile.startLevel);
             }
             else //Default level 0 Character Points
             {
@@ -477,7 +450,7 @@ namespace SupplyRaid
             SetupSupplyPoints();
 
             //Set our next level
-            CurrentCaptures = optionStartLevel;
+            CurrentCaptures = profile.startLevel;
             SetLevel_Server();
 
             gameRunning = true;
@@ -524,13 +497,13 @@ namespace SupplyRaid
 
             //Apply Forced capture Order
             if (forceCaptureOrder != -1)
-                optionCaptureOrder = forceCaptureOrder;
+                profile.captureOrder = forceCaptureOrder;
 
             //-------------------------------------------------------
             //Setup Supply Order
             //-------------------------------------------------------
 
-            if (optionCaptureOrder == 0) //RANDOM ORDER
+            if (profile.captureOrder == 0) //RANDOM ORDER
             {
                 //Random Order
                 while (true)
@@ -546,7 +519,7 @@ namespace SupplyRaid
                         break;
                 }
             }
-            else if (optionCaptureOrder == 1) //RANDOM
+            else if (profile.captureOrder == 1) //RANDOM
             {
                 playerSupplyID = Random.Range(0, supplyPoints.Count);
                 attackSupplyID = Random.Range(0, supplyPoints.Count);
@@ -554,7 +527,7 @@ namespace SupplyRaid
                 //Debug.LogError("Supply Points Count: " + supplyPoints.Count);
                 //Debug.LogError("Player: " + playerSupplyID + " - Attack: " + attackSupplyID);
             }
-            else if (optionCaptureOrder == 2) //ORDERED
+            else if (profile.captureOrder == 2) //ORDERED
             {
                 //Ordered
                 for (int i = 0; i < supplyPoints.Count; i++)
@@ -600,7 +573,7 @@ namespace SupplyRaid
             //-------------------------------------------------------
             //FIRST ATTACK POINTS
             //-------------------------------------------------------
-            if (optionCaptureOrder == 1) //RANDOM
+            if (profile.captureOrder == 1) //RANDOM
             {
                 while (playerSupplyID == attackSupplyID)
                 {
@@ -719,8 +692,65 @@ namespace SupplyRaid
             {
                 stats.Deaths++;
 
+                if (profile.itemsDrop > 0)
+                {
+                    //Debug.Log("Player Died");
+                    //Hand Items
+                    FVRPhysicalObject[] hands = GM.CurrentPlayerBody.transform.GetComponentsInChildren<FVRPhysicalObject>();
+
+                    for (int i = 0; i < hands.Length; i++)
+                    {
+                        if (hands[i] != null && !character.dropProtectionObjectIDs.Contains(hands[i].ObjectWrapper.ItemID))
+                        {
+                            if (hands[i].ObjectWrapper
+                                && character.dropProtectionObjectIDs.Contains(hands[i].ObjectWrapper.ItemID))
+                                continue;
+
+                            int random = Random.Range(0, 101);
+                            if (random <= profile.itemsDrop)
+                            {
+                                hands[i].ForceBreakInteraction();
+                                hands[i].ClearQuickbeltState();
+                                //hands[i].transform.parent = null;
+                            }
+                        }
+                    }
+
+                    //All Quick belt slots into backpacks
+                    for (int i = 0; i < GM.CurrentPlayerBody.QBSlots_Internal.Count; i++)
+                    {
+                        //Debug.Log("QB: " + i);
+                        FVRPhysicalObject phy = GM.CurrentPlayerBody.QBSlots_Internal[i].CurObject;
+
+                        if (phy == null)
+                            continue;
+
+                        if (phy.ObjectWrapper
+                            && character.dropProtectionObjectIDs.Contains(phy.ObjectWrapper.ItemID))
+                            continue;
+
+                        int random = Random.Range(0, 101);
+                        //Debug.Log("Rand: " + random);
+                        if (random <= profile.itemsDrop)
+                        {
+                            phy.ClearQuickbeltState();
+                        }
+                        else if (phy.Slots != null && phy.Slots.Length > 0)
+                        {
+                            for (int x = 0; x < phy.Slots.Length; x++)
+                            {
+                                if (phy.Slots[x].CurObject != null)
+                                {
+                                    if(Random.Range(0, 101) <= profile.itemsDrop)
+                                        phy.Slots[x].CurObject.ClearQuickbeltState();
+                                }
+                            }
+                        }
+                    }
+                }
+
                 //If respawning not enabled
-                if (!optionRespawn)
+                if (!profile.respawn)
                 {
                     stats.ObjectiveComplete = false;
                     if(ObjectiveEvent != null)
@@ -728,6 +758,7 @@ namespace SupplyRaid
 
                     if (!isClient)
                         CompleteGame();
+
                 }
             }
         }
@@ -796,7 +827,7 @@ namespace SupplyRaid
                 endlessLevel++;
 
             //Game Complete?
-            if (optionCaptures > 0 && CurrentCaptures - optionStartLevel >= optionCaptures)
+            if (profile.captures > 0 && CurrentCaptures - profile.startLevel >= profile.captures)
             {
                 stats.ObjectiveComplete = true;
                 if(ObjectiveEvent != null)
@@ -1072,7 +1103,7 @@ namespace SupplyRaid
 
                 }
                 */
-                if (optionCaptureOrder == 1) //Random
+                if (profile.captureOrder == 1) //Random
                 {
                     while (playerSupplyID == attackSupplyID)
                     {
@@ -1153,7 +1184,7 @@ namespace SupplyRaid
         {
             //Setup sizes and safty check
             int minSquad = Mathf.Clamp(currentLevel.squadSizeMin, 0, int.MaxValue);
-            int maxSquad = Mathf.Clamp(currentLevel.squadSizeMax, 1, optionMaxSquadEnemies);
+            int maxSquad = Mathf.Clamp(currentLevel.squadSizeMax, 1, profile.maxSquadEnemies);
 
             if (maxSquad < minSquad)
                 maxSquad = minSquad;
@@ -1508,7 +1539,7 @@ namespace SupplyRaid
                             yield return new WaitForSeconds(sosigSpawnTick);
 
                             //Stop if nothing is running or we hit the enemy cap
-                            if (!gameRunning || currentDefenders >= optionMaxEnemies)
+                            if (!gameRunning || currentDefenders >= profile.maxEnemies)
                             {
                                 remainDefenders = enemiesTotal;
                                 //Debug.Log("Remaining Enemies: " + remainEnemies);
@@ -1562,7 +1593,7 @@ namespace SupplyRaid
 
             bool infiniteEnemies = GetFactionLevel().infiniteEnemies;
 
-            if (infiniteEnemies && optionCaptureZone == false)
+            if (infiniteEnemies && profile.captureZone == false)
                 infiniteEnemies = false;
 
             //No more spawning enemies
@@ -1575,10 +1606,10 @@ namespace SupplyRaid
                 //Check once a second
                 rabbitHoleTimer = GetFactionLevel().enemySpawnTimer;
 
-                int maxEnemies = optionMaxEnemies;  //Max On Screen Enemies
+                int maxEnemies = profile.maxEnemies;  //Max On Screen Enemies
 
                 //Infinite Enemies limitations
-                if (infiniteEnemies && GetFactionLevel().enemiesTotal < optionMaxEnemies)
+                if (infiniteEnemies && GetFactionLevel().enemiesTotal < profile.maxEnemies)
                     maxEnemies = GetFactionLevel().enemiesTotal; //Max Extra Enemies in infinite mode
 
                 //If a enemy slot has freed up
@@ -1612,7 +1643,7 @@ namespace SupplyRaid
                 squadRespawnTimer = GetFactionLevel().enemySpawnTimer;
 
                 //Enough room to spawn more - Max Onscreen - Current alive = remaining
-                if (squadGroups[0] > optionMaxSquadEnemies - currentSquad)
+                if (squadGroups[0] > profile.maxSquadEnemies - currentSquad)
                 {
                     //Not enough space to spawn next group
                     return;
@@ -2073,25 +2104,6 @@ namespace SupplyRaid
         // Static
         //----------------------------------------------------------------------
 
-        public static void RefundPoints(Transform spawnPoint)
-        {
-            int count = 0;
-            while (instance.Points > 0)
-            {
-                string item = SR_Global.GetHighestValueCashMoney(instance.Points);
-
-                //Error Check
-                if (item == "")
-                    break;
-
-                instance.Points -= SR_Global.GetRoundValue(item);
-                FVRObject mainObject;
-                IM.OD.TryGetValue(item, out mainObject);
-                instance.StartCoroutine(SR_Global.WaitandCreate(mainObject.GetGameObject(), count * 0.25f, spawnPoint));
-                count++;
-            }
-        }
-
         /// <summary>
         /// Returns Sosig Faction thats currently selected
         /// </summary>
@@ -2177,7 +2189,7 @@ namespace SupplyRaid
         {
             if (instance != null)
             {
-                if (instance.optionFreeBuyMenu)
+                if (profile.freeBuyMenu)
                     return true;
 
                 if (instance.Points >= amount)
@@ -2197,7 +2209,7 @@ namespace SupplyRaid
             if (instance == null)
                 return false;
 
-            if (instance.optionFreeBuyMenu)
+            if (profile.freeBuyMenu)
                 return true;
 
             if (instance.Points >= amount)
@@ -2252,7 +2264,7 @@ namespace SupplyRaid
 
         public void Network_GameOptions(
             float playerCount, float difficulty, bool freeBuyMenu, bool spawnLocking, int startLevel, int playerHealth,
-            bool itemSpawner, bool captureZone, int order, int captures, bool respawn, int maxEnemies, int maxSquadEnemies,
+            bool itemSpawner, bool captureZone, int order, int captures, bool respawn, int itemsDrop, int maxEnemies, int maxSquadEnemies,
             string factionID)
         {
             profile.playerCount = playerCount;
@@ -2266,6 +2278,7 @@ namespace SupplyRaid
             profile.captureOrder = order;
             profile.captures = captures;
             profile.respawn = respawn;
+            profile.itemsDrop = itemsDrop;
             profile.maxEnemies = maxEnemies;
             profile.maxSquadEnemies = maxSquadEnemies;
 
@@ -2282,14 +2295,20 @@ namespace SupplyRaid
         //----------------------------------------------------------------------
         public static void PlayConfirmSFX()
         {
-            if (instance != null)
+            if (audioTimeout <= Time.time && instance != null)
+            {
+                audioTimeout = Time.time + audioTimeDelay;
                 instance.globalAudio.PlayOneShot(instance.audioConfirm);
+            }
         }
 
         public static void PlayFailSFX()
         {
-            if (instance != null)
+            if (audioTimeout <= Time.time && instance != null)
+            {
+                audioTimeout = Time.time + audioTimeDelay;
                 instance.globalAudio.PlayOneShot(instance.audioFail);
+            }
         }
 
         public static void PlayErrorSFX()
@@ -2300,35 +2319,48 @@ namespace SupplyRaid
         public static void PlayCompleteSFX()
         {
             if (instance != null)
+            {
                 instance.globalAudio.PlayOneShot(instance.audioCaptureComplete);
+            }
         }
         public static void PlayRearmSFX()
         {
             if (instance != null)
+            {
                 instance.globalAudio.PlayOneShot(instance.audioRearm);
+            }
         }
 
         public static void PlayPointsGainSFX()
         {
             if (instance != null)
+            {
                 instance.globalAudio.PlayOneShot(instance.audioPointsGain);
+            }
         }
 
         public static void PlayTickSFX()
         {
             if (instance != null)
+            {
                 instance.globalAudio.PlayOneShot(instance.audioTick);
+            }
         }
+
         public static void PlayTickAlmostSFX()
         {
             if (instance != null)
+            {
                 instance.globalAudio.PlayOneShot(instance.audioTickAlmost);
+            }
         }
 
         public static void PlayExtractionTickSFX()
         {
             if (instance != null && SR_Menu.instance.audioExtractionTick)
+            {
                 instance.globalAudio.PlayOneShot(SR_Menu.instance.audioExtractionTick);
+            }
         }
 
         //----------------------------------------------------------------------

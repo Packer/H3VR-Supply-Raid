@@ -34,7 +34,7 @@ namespace SupplyRaid
             if (!SR_Compass.instance)
                 return;
 
-            if (SR_Manager.instance.gameRunning && SR_Manager.instance.optionCaptureZone == true)
+            if (SR_Manager.instance.gameRunning && SR_Manager.profile.captureZone == true)
                 CaptureZoneScan();
             else
                 gameObject.SetActive(false);

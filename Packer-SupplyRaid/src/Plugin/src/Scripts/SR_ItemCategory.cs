@@ -187,15 +187,13 @@ namespace SupplyRaid
                 List<FVRObject> lootPool = new List<FVRObject>();
 
                 //Gather Hand Items
-                FVRViveHand[] hands = MonoBehaviour.FindObjectsOfType<FVRViveHand>();
+                FVRPhysicalObject[] hands = GM.CurrentPlayerBody.transform.GetComponentsInChildren<FVRPhysicalObject>();
 
                 for (int i = 0; i < hands.Length; i++)
                 {
-                    if (hands[i].CurrentInteractable != null)
+                    if (hands[i] != null)
                     {
-                        FVRPhysicalObject fvrPhysical = hands[i].CurrentInteractable.transform.root.GetComponent<FVRPhysicalObject>();
-                        if(fvrPhysical != null)
-                            GetItemAmmo(fvrPhysical.ObjectWrapper, lootPool);
+                        GetItemAmmo(hands[i].ObjectWrapper, lootPool);
                     }
                 }
 

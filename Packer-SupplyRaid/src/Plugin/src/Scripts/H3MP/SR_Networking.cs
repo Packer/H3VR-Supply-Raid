@@ -272,19 +272,20 @@ namespace SupplyRaid
                 return;
 
             Packet packet = new Packet(gameOptions_ID);
-            packet.Write(SR_Manager.instance.profileplayerCount);
-            packet.Write(SR_Manager.instance.optionDifficulty);
-            packet.Write(SR_Manager.instance.optionFreeBuyMenu);
-            packet.Write(SR_Manager.instance.optionSpawnLocking);
-            packet.Write(SR_Manager.instance.optionStartLevel);
-            packet.Write(SR_Manager.instance.optionPlayerHealth);
-            packet.Write(SR_Manager.instance.optionItemSpawner);
-            packet.Write(SR_Manager.instance.optionCaptureZone);
-            packet.Write(SR_Manager.instance.optionCaptureOrder);
-            packet.Write(SR_Manager.instance.optionCaptures);
-            packet.Write(SR_Manager.instance.optionRespawn);
-            packet.Write(SR_Manager.instance.optionMaxEnemies);
-            packet.Write(SR_Manager.instance.optionMaxSquadEnemies);
+            packet.Write(SR_Manager.profile.playerCount);
+            packet.Write(SR_Manager.profile.difficulty);
+            packet.Write(SR_Manager.profile.freeBuyMenu);
+            packet.Write(SR_Manager.profile.spawnLocking);
+            packet.Write(SR_Manager.profile.startLevel);
+            packet.Write(SR_Manager.profile.playerHealth);
+            packet.Write(SR_Manager.profile.itemSpawner);
+            packet.Write(SR_Manager.profile.captureZone);
+            packet.Write(SR_Manager.profile.captureOrder);
+            packet.Write(SR_Manager.profile.captures);
+            packet.Write(SR_Manager.profile.respawn);
+            packet.Write(SR_Manager.profile.itemsDrop);
+            packet.Write(SR_Manager.profile.maxEnemies);
+            packet.Write(SR_Manager.profile.maxSquadEnemies);
 
             string faction = "";
             if (SR_Manager.Faction() != null)
@@ -309,12 +310,13 @@ namespace SupplyRaid
             int optionOrder = packet.ReadInt();
             int optionCaptures = packet.ReadInt();
             bool optionRespawn = packet.ReadBool();
+            int optionItemsDrop = packet.ReadInt();
             int optionMaxEnemies = packet.ReadInt();
             int optionSquadMaxEnemies = packet.ReadInt();
             string factionID = packet.ReadString();
 
             SR_Manager.instance.Network_GameOptions(optionPlayerCount, optionDifficulty, optionFreeBuyMenu, optionSpawnLocking, optionStartLevel,
-                optionPlayerHealth, optionItemSpawner, optionCaptureZone, optionOrder, optionCaptures, optionRespawn, optionMaxEnemies, optionSquadMaxEnemies, factionID);
+                optionPlayerHealth, optionItemSpawner, optionCaptureZone, optionOrder, optionCaptures, optionRespawn, optionItemsDrop, optionMaxEnemies, optionSquadMaxEnemies, factionID);
         }
 
         //Captured Send ----------------------------------------------

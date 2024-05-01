@@ -114,8 +114,8 @@ namespace SupplyRaid
 
         void OnFinalSupplyPoint()
         {
-            if(SR_Manager.instance.optionCaptures > 0 &&
-                SR_Manager.instance.CurrentCaptures >= SR_Manager.instance.optionCaptures - 1)
+            if(SR_Manager.profile.captures > 0 &&
+                SR_Manager.instance.CurrentCaptures >= SR_Manager.profile.captures - 1)
                 SetGameObjects();
         }
 
@@ -130,14 +130,14 @@ namespace SupplyRaid
                 case GameStateEnum.ObjectiveFail:
                     if (SR_Manager.instance.stats.ObjectiveComplete == false)
                     {
-                        if(SR_Manager.instance.optionCaptures > 0)
+                        if(SR_Manager.profile.captures > 0)
                             SetGameObjects();
                     }
                     break;
                 case GameStateEnum.ObjectiveEnd:
                     if (SR_Manager.instance.stats.ObjectiveComplete == false)
                     {
-                        if (SR_Manager.instance.optionCaptures <= 0)
+                        if (SR_Manager.profile.captures <= 0)
                             SetGameObjects();
                     }
                     break;

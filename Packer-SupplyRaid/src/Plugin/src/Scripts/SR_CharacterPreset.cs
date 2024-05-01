@@ -74,16 +74,17 @@ namespace SupplyRaid
         [Tooltip("Cost of each attachment - 16 Attachment Types, if set to -1 disable")]
         public int[] attachmentsCost = new int[16];
 
-
         public List<string> startGearCategories = new List<string>();
         [Tooltip("(REQUIRED) What buy categories are available to this character")]
         public List<SR_PurchaseCategory> purchaseCategories = new List<SR_PurchaseCategory>();
-
         
         public List<SR_LootCategory> lootCategories = new List<SR_LootCategory>();
 
         [Tooltip("Globally Removes these ObjectIDs from ALL system including Attachments and Ammo types")]
         public List<string> subtractionObjectIDs = new List<string>();
+
+        [Tooltip("These objectIDs won't drop off the player")]
+        public List<string> dropProtectionObjectIDs = new List<string>();
 
         //PRIVATE after we create the functions
         [Tooltip("Preview image of the character when selected")]

@@ -217,6 +217,7 @@ namespace SupplyRaid
                         }
                     }
                 }
+
                 if (magazineUpgrade != null)
                 {
                     powerIndex = (int)magazineUpgrade.TagFirearmRoundPower;
@@ -228,8 +229,16 @@ namespace SupplyRaid
                     else
                         costUpgrade = Mathf.CeilToInt(SR_Manager.instance.character.upgradeMagazineCost * multiplier);
 
-                    SetUpgradeStatus(true);
-                    m_hasUpgradeableMags = true;
+                    if (magazineUpgrade.ItemID == m_detectedMag.ObjectWrapper.ItemID)
+                    {
+                        SetUpgradeStatus(false);
+                        m_hasUpgradeableMags = false;
+                    }
+                    else
+                    {
+                        SetUpgradeStatus(true);
+                        m_hasUpgradeableMags = true;
+                    }
                 }
                 else
                 {

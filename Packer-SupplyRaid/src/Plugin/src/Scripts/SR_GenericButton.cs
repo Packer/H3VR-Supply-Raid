@@ -1,7 +1,5 @@
 ﻿using FistVR;
 using H3MP.Networking;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -140,6 +138,11 @@ namespace SupplyRaid
                 //Debug.Log("Setting Via Button");
                 SR_AmmoSpawner.instance.SetAmmoType((AmmoEnum)index);
             }
+        }
+
+        public void SelectProfile()
+        {
+            SR_Menu.instance.SetProfile(text.text);
         }
     }
 }

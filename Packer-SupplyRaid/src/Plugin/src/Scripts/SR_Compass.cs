@@ -52,7 +52,7 @@ namespace SupplyRaid
                 return;
 
             //GM.CurrentPlayerBody.transform.position;
-            if (!SR_Manager.instance.optionHand)
+            if (!SR_Manager.profile.hand)
                 transform.position = GM.CurrentPlayerBody.LeftHand.position - GM.CurrentPlayerBody.LeftHand.forward * distance;
             else
                 transform.position = GM.CurrentPlayerBody.RightHand.position - GM.CurrentPlayerBody.RightHand.forward * distance;
@@ -61,7 +61,7 @@ namespace SupplyRaid
             face.transform.LookAt(GM.CurrentPlayerBody.Head.position);
 
             //Direction
-            Quaternion pointRotation = SR_Manager.instance.optionHand ? GM.CurrentPlayerBody.RightHand.rotation : GM.CurrentPlayerBody.LeftHand.rotation;
+            Quaternion pointRotation = SR_Manager.profile.hand ? GM.CurrentPlayerBody.RightHand.rotation : GM.CurrentPlayerBody.LeftHand.rotation;
             directionText.text = Mathf.FloorToInt(pointRotation.eulerAngles.y).ToString();
 
             //Last SupplyPoint
@@ -85,7 +85,7 @@ namespace SupplyRaid
             supplyPointDirection.LookAt(pos);
 
             pointsText.text = SR_Manager.instance.Points.ToString();
-            capturesText.text = (SR_Manager.instance.CurrentCaptures - SR_Manager.instance.optionStartLevel).ToString();
+            capturesText.text = (SR_Manager.instance.CurrentCaptures - SR_Manager.profile.startLevel).ToString();
 
             if(SupplyRaidPlugin.h3mpEnabled)
                 NetworkUpdate();

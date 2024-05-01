@@ -200,6 +200,16 @@ namespace SupplyRaid
             }
         }
 
+        public static bool IsFVRObjectInDropProtection(FVRObject fvr)
+        {
+            if (fvr == null)
+                return false;
+            if (SR_Manager.Character().dropProtectionObjectIDs.Contains(fvr.ItemID))
+                return true;
+
+            return true;
+        }
+
         public static LootTable RemoveGlobalSubtractionOnTable(LootTable table)
         {
             //Collect items
@@ -413,7 +423,7 @@ namespace SupplyRaid
                 int mainSpawn = spawnCount;
 
                 //If single fire disposible weapon, create several.
-                if (!SR_Manager.instance.optionSpawnLocking && !mainObject.UsesRoundTypeFlag
+                if (!SR_Manager.profile.spawnLocking && !mainObject.UsesRoundTypeFlag
                     && mainObject.TagFirearmFeedOption.Contains(FVRObject.OTagFirearmFeedOption.None)
                     && mainObject.TagFirearmFiringModes.Contains(FVRObject.OTagFirearmFiringMode.SingleFire))
                 {
@@ -589,7 +599,7 @@ namespace SupplyRaid
 
             if (itemCategory == null)
             {
-                if (SR_Manager.instance.optionSpawnLocking)
+                if (SR_Manager.profile.spawnLocking)
                     return 3;
                 else
                     return 4;
@@ -605,7 +615,7 @@ namespace SupplyRaid
             }
 
             //Default Spawnlocking to ammo Spawn Locked
-            if (SR_Manager.instance.optionSpawnLocking)
+            if (SR_Manager.profile.spawnLocking)
             {
                 return GetAmmoCount(
                     3,
@@ -716,29 +726,15 @@ namespace SupplyRaid
             return "";
         }
 
-        public void RefundPoints(Transform spawnPoint)
-        {
-            int count = 0;
-            while (SR_Manager.instance.Points > 0)
-            {
-                string item = GetHighestValueCashMoney(SR_Manager.instance.Points);
-
-                //Error Check
-                if (item == "")
-                    break;
-
-                SR_Manager.instance.Points -= GetRoundValue(item);
-                FVRObject mainObject;
-                IM.OD.TryGetValue(item, out mainObject);
-                StartCoroutine(SR_Global.WaitandCreate(mainObject.GetGameObject(), count * 0.25f, spawnPoint));
-                count++;
-            }
-        }
-
         public static IEnumerator WaitandCreate(GameObject prefab, float waitTime, Transform spawnPoint)
         {
             yield return new WaitForSeconds(waitTime);
-            Instantiate(prefab, spawnPoint.position + Vector3.up * 0.05f, spawnPoint.rotation);
+            Instantiate(
+                prefab, 
+                spawnPoint.position 
+                    + (Vector3.up * 0.05f) 
+                    + (new Vector3(Random.Range(-0.001f, 0.001f), Random.Range(-0.001f, 0.001f), Random.Range(-0.001f, 0.001f))), 
+                spawnPoint.rotation);
         }
 
         public static List<FVRObject> RemoveTags(List<FVRObject> mags, List<FVRObject.OTagEra> eras = null, int Min = -1, int Max = -1, List<FVRObject.OTagSet> sets = null)

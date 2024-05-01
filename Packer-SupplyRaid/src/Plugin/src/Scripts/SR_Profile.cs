@@ -22,7 +22,12 @@ namespace SupplyRaid
         public bool spawnLocking = true;
 
         public bool respawn = true;
+        [Tooltip("None = 0,  100 = 100% Dropped ")]
+        public int itemsDrop = 0;
         public int playerHealth = 5000;
         public bool hand = false;
+
+        public string character = "";
+        public string faction = "";
     }
 }

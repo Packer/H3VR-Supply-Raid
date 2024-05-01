@@ -8,6 +8,11 @@ namespace SupplyRaid
         public void RefundPoints(Transform spawnPoint)
         {
             int count = 0;
+            if (SR_Manager.profile.freeBuyMenu)
+                return;
+
+            SR_Manager.PlayConfirmSFX();
+
             while (SR_Manager.instance.Points > 0)
             {
                 string item = SR_Global.GetHighestValueCashMoney(SR_Manager.instance.Points);

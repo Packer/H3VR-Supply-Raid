@@ -83,6 +83,7 @@ namespace SupplyRaid
                 SR_Manager.instance.Points += cash;
                 Destroy(cashList[i]);
                 ignoreFail = true;
+                SR_Manager.PlayPointsGainSFX();
             }
 
             if (this.weapons.Count <= 0)

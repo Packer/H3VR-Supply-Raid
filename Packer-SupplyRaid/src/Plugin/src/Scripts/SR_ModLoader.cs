@@ -235,6 +235,10 @@ namespace SupplyRaid
         }
 
 
+        //--------------------------------------------------------------------------------------------------------
+        // PROFILES
+        //--------------------------------------------------------------------------------------------------------
+
         public static List<SR_Profile> profiles = new List<SR_Profile>();
 
         public static bool SaveProfile(string saveName)
@@ -246,6 +250,10 @@ namespace SupplyRaid
             SR_Manager.profile.name = CleanFileName(saveName);
             if (SR_Manager.profile.name == "Profile")
                 return false;
+
+            //Copy Faction and Character names
+            SR_Manager.profile.character = SR_Manager.Character().name;
+            SR_Manager.profile.faction = SR_Manager.Faction().name;
 
             bool status = false;
             string path = Paths.PluginPath + "\\Packer-SupplyRaid\\";
@@ -337,6 +345,9 @@ namespace SupplyRaid
                     return null;
                 }
             }
+
+            SR_Menu.instance.PopulateProfiles();
+
             return profiles;
         }
     }
