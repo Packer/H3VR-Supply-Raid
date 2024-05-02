@@ -32,6 +32,15 @@ namespace SupplyRaid
         private int costMagazine = 0;
         private FVRObject magazineUpgrade;
 
+        public Transform Spawnpoint_Mag;
+        public Transform ScanningVolume;
+        public LayerMask ScanningLM;
+        private FVRFireArmMagazine m_detectedMag;
+        private FVRFireArmMagazine lastMag;
+        private Speedloader m_detectedSL;
+        private Collider[] colbuffer;
+        private float m_scanTick = 1f;
+
         private void Start()
         {
             colbuffer = new Collider[50];
@@ -41,8 +50,7 @@ namespace SupplyRaid
         {
             
             if (!SR_Manager.EnoughPoints(costUpgrade)
-                || m_detectedMag == null
-                || !IM.CompatMags.ContainsKey(m_detectedMag.MagazineType))
+                || m_detectedMag == null)
             {
                 SR_Manager.PlayFailSFX();
                 return;
@@ -183,13 +191,9 @@ namespace SupplyRaid
             else
                 SetMagButtonStatus(false);
 
-            if (m_detectedMag != null)
+            if (m_detectedMag != null && lastMag != m_detectedMag)
             {
-                if (!IM.CompatMags.ContainsKey(m_detectedMag.MagazineType))
-                {
-                    SR_Manager.PlayFailSFX();
-                    return;
-                }
+                lastMag = m_detectedMag;
 
                 //Duplicate Magazine Cost Calculation
                 int powerIndex = (int)m_detectedMag.ObjectWrapper.TagFirearmRoundPower;
@@ -204,16 +208,36 @@ namespace SupplyRaid
                 SetDuplicateStatus(true);
 
 
-                List <FVRObject> list = IM.CompatMags[m_detectedMag.MagazineType];
-                int num = 10000;
-                for (int i = 0; i < list.Count; i++)
+                /*
+                IM.OD.ContainsKey(m_detectedMag.ObjectWrapper.ItemID);
+                //Upgradable Check
+                if (!IM.CompatMags.ContainsKey(m_detectedMag.MagazineType))
                 {
-                    if (!(list[i].ItemID == m_detectedMag.ObjectWrapper.ItemID))
+                    SetUpgradeStatus(false);
+                    m_hasUpgradeableMags = false;
+                    SetDuplicateStatus(false);
+                    return;
+                }
+                */
+
+                //Populate Magazines
+                List<FVRObject> mags = new List<FVRObject>(ManagerSingleton<IM>.Instance.odicTagCategory[FVRObject.ObjectCategory.Magazine]);
+                for (int i = mags.Count - 1; i >= 0; i--)
+                {
+                    if (mags[i].MagazineType != m_detectedMag.MagazineType)
+                        mags.RemoveAt(i);
+                }
+
+                //List <FVRObject> mags = IM.CompatMags[m_detectedMag.MagazineType];
+                int num = 10000;
+                for (int i = 0; i < mags.Count; i++)
+                {
+                    if (!(mags[i].ItemID == m_detectedMag.ObjectWrapper.ItemID))
                     {
-                        if (list[i].MagazineCapacity > m_detectedMag.m_capacity && list[i].MagazineCapacity < num)
+                        if (mags[i].MagazineCapacity > m_detectedMag.m_capacity && mags[i].MagazineCapacity < num)
                         {
-                            magazineUpgrade = list[i];
-                            num = list[i].MagazineCapacity;
+                            magazineUpgrade = mags[i];
+                            num = mags[i].MagazineCapacity;
                         }
                     }
                 }
@@ -232,25 +256,21 @@ namespace SupplyRaid
                     if (magazineUpgrade.ItemID == m_detectedMag.ObjectWrapper.ItemID)
                     {
                         SetUpgradeStatus(false);
-                        m_hasUpgradeableMags = false;
                     }
                     else
                     {
                         SetUpgradeStatus(true);
-                        m_hasUpgradeableMags = true;
                     }
                 }
                 else
                 {
                     SetUpgradeStatus(false);
-                    m_hasUpgradeableMags = false;
                 }
             }
-            else
+            else if(m_detectedMag == null)
             {
                 SetUpgradeStatus(false);
                 SetDuplicateStatus(false);
-                m_hasUpgradeableMags = false;
             }
         }
 
@@ -385,23 +405,5 @@ namespace SupplyRaid
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireCube(ScanningVolume.position, ScanningVolume.localScale * 0.5f);
         }
-
-        public Transform Spawnpoint_Mag;
-
-        public Transform ScanningVolume;
-
-        public LayerMask ScanningLM;
-
-        private FVRFireArmMagazine m_detectedMag;
-
-        private Speedloader m_detectedSL;
-
-        private Collider[] colbuffer;
-
-        private int m_storedDupeCost = 1;
-
-        private float m_scanTick = 1f;
-
-        private bool m_hasUpgradeableMags = false;
     }
 }

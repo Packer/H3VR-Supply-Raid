@@ -20,6 +20,7 @@ namespace SupplyRaid
 
         private FVRFireArm detectedFireArm;
         private FVRFireArm lastFireArm;
+        private int attachmentCount = -1;
 
         public Transform selectedBox;
         private bool selectedBounds;
@@ -257,6 +258,10 @@ namespace SupplyRaid
 
         void UpdateButtons(FVRObject fvrObject)
         {
+            if (fvrObject == null)
+                return;
+
+
             //For each Button / Attachment Feature
             for (int i = 0; i < buttons.Length; i++)
             {
@@ -265,14 +270,19 @@ namespace SupplyRaid
                     continue;
 
                 //Don't recalculate loot tables if its the same weapon
-                if (lastFireArm != detectedFireArm)
+                if (lastFireArm != detectedFireArm || attachmentCount != detectedFireArm.Attachments.Count)
                 {
+                    if (buttons[i].attachmentTable.Loot == null)
+                        buttons[i].attachmentTable.Loot = new List<FVRObject>();
+
                     buttons[i].attachmentTable.Loot.Clear();
                     List<FVRObject> bespokeAttachments = new List<FVRObject>();
 
                     //-------------------------
                     //BESPOKE
                     //-------------------------
+                    bool isBespoke = fvrObject != null ? (fvrObject.TagAttachmentMount == FVRObject.OTagFirearmMount.Bespoke) : false;
+
                     if (detectedFireArm != null && fvrObject != null)
                     {
                         if (fvrObject.BespokeAttachments != null && fvrObject.BespokeAttachments.Count > 0 
@@ -300,39 +310,44 @@ namespace SupplyRaid
                                         bespokeAttachments.Add(fvrObject.BespokeAttachments[b]);
                                 }
                             }
+
+                            if(bespokeAttachments.Count > 0)
+                                isBespoke = true;
                         }
                     }
                     //-------------------------
-                    bool isBespoke = fvrObject ? fvrObject.TagAttachmentMount == FVRObject.OTagFirearmMount.Bespoke : false;
 
-                    if (fvrObject != null)
+                    //Mixed Picatinny Mounts
+                    bool picatinny = fvrObject.TagFirearmMounts.Contains(FVRObject.OTagFirearmMount.Picatinny);
+
+                    //Attachment Adapters
+                    if (detectedFireArm != null && !picatinny)
                     {
-                        if (buttons[i].attachmentTable.Loot == null)
-                            buttons[i].attachmentTable.Loot = new List<FVRObject>();
-
-                        for (int y = 0; y < bespokeAttachments.Count; y++)
+                        for (int z = 0; z < detectedFireArm.Attachments.Count; z++)
                         {
-                            if (bespokeAttachments[y].TagAttachmentFeature == (FVRObject.OTagAttachmentFeature)i)
+                            for (int y = 0; y < detectedFireArm.Attachments[z].AttachmentMounts.Count; y++)
                             {
-                                buttons[i].attachmentTable.Loot.Add(bespokeAttachments[y]);
-                                isBespoke = true;
+                                if (detectedFireArm.Attachments[z].AttachmentMounts[y].Type == FVRFireArmAttachementMountType.Picatinny)
+                                {
+                                    picatinny = true;
+                                    break;
+                                }
                             }
+                            if (picatinny)
+                                break;
                         }
                     }
 
-                    bool allowedBespoke = false;
-                    if (isBespoke)
+                    bool alwaysAllowed = false;
+                    if ((FVRObject.OTagAttachmentFeature)i == FVRObject.OTagAttachmentFeature.Suppression
+                    || (FVRObject.OTagAttachmentFeature)i == FVRObject.OTagAttachmentFeature.RecoilMitigation
+                    || (FVRObject.OTagAttachmentFeature)i == FVRObject.OTagAttachmentFeature.BarrelExtension)
                     {
-                        if ((FVRObject.OTagAttachmentFeature)i == FVRObject.OTagAttachmentFeature.Suppression
-                        || isBespoke && (FVRObject.OTagAttachmentFeature)i == FVRObject.OTagAttachmentFeature.RecoilMitigation
-                        || isBespoke && (FVRObject.OTagAttachmentFeature)i == FVRObject.OTagAttachmentFeature.BarrelExtension)
-                        {   
-                            allowedBespoke = true;
-                        }
+                        alwaysAllowed = true;
                     }
 
                     //Remove GLOBAL character subtractions
-                    if (!isBespoke || allowedBespoke)
+                    if (!isBespoke || alwaysAllowed || (isBespoke && picatinny))
                     {
                         //Current Era + All Modern Era's (More useful attachments)
                         List<FVRObject.OTagEra> eras = new List<FVRObject.OTagEra>();
@@ -340,42 +355,31 @@ namespace SupplyRaid
                         if(eras.Contains(fvrObject.TagEra))
                             eras.Add(fvrObject.TagEra);
 
+                        //Mounts
+                        List<FVRObject.OTagFirearmMount> mounts = new List<FVRObject.OTagFirearmMount>();
+                        mounts.AddRange(fvrObject.TagFirearmMounts);
+
+                        if(picatinny && !mounts.Contains(FVRObject.OTagFirearmMount.Picatinny))
+                            mounts.Add(FVRObject.OTagFirearmMount.Picatinny);
+
                         InitializeAttachmentTable(
                             buttons[i].attachmentTable, 
-                            eras, 
-                            fvrObject.TagFirearmMounts, 
+                            eras,
+                            mounts, 
                             (FVRObject.OTagAttachmentFeature)i);
+                    }
+
+                    //Bespoke attachments
+                    for (int y = 0; y < bespokeAttachments.Count; y++)
+                    {
+                        if (bespokeAttachments[y].TagAttachmentFeature == (FVRObject.OTagAttachmentFeature)i)
+                        {
+                            buttons[i].attachmentTable.Loot.Add(bespokeAttachments[y]);
+                        }
                     }
 
                     buttons[i].attachmentTable = SR_Global.RemoveGlobalSubtractionOnTable(buttons[i].attachmentTable);
                 }
-                /*
-
-                //Don't recalculate loot tables if its the same weapon
-                if (lastFireArm != detectedFireArm)
-                {
-                    //Only bespoke on these attachments
-                    if (bespoke[i])
-                    {
-                        Debug.Log("Found Bespoke " + i);
-                        for (int z = 0; z < fvrObject.BespokeAttachments.Count; z++)
-                        {
-                            if (fvrObject.BespokeAttachments[i].TagAttachmentFeature == (FVRObject.OTagAttachmentFeature)i)
-                            {
-                                buttons[i].attachmentTable.Loot.Add(fvrObject.BespokeAttachments[i]);
-                            }
-                        }
-                    }
-                    else if(!hasBespoke)
-                    {
-                        InitializeAttachmentTable(buttons[i].attachmentTable, eras, mounts, desiredFeature);
-                        //buttons[i].attachmentTable.InitializeAttachmentTable(eras, mounts, desiredFeature);
-                    }
-
-                }
-                */
-
-                //Debug.Log("Loottable size:  " + buttons[i].attachmentTable.Loot.Count);
 
                 //Enable or disable button if it has compatible features
                 if (buttons[i].attachmentTable.Loot.Count > 0)
@@ -387,6 +391,9 @@ namespace SupplyRaid
                 else
                     buttons[i].button.gameObject.SetActive(false);
             }
+
+            if(attachmentCount != detectedFireArm.Attachments.Count)
+                attachmentCount = detectedFireArm.Attachments.Count;
         }
 
         public void InitializeAttachmentTable(LootTable table, List<FVRObject.OTagEra> eras = null, 

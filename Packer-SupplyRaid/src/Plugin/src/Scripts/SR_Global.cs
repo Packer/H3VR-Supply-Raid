@@ -765,7 +765,8 @@ namespace SupplyRaid
         public static FVRObject GetLowestCapacityAmmoObject(
             FVRObject o, List<FVRObject.OTagEra> eras = null, int Min = -1, int Max = -1, List<FVRObject.OTagSet> sets = null)
         {
-            o = IM.OD[o.ItemID];
+            if(o == null)
+                o = IM.OD[o.ItemID];
 
             //MAGAZINES
             if (o.MagazineType != FireArmMagazineType.mNone)
