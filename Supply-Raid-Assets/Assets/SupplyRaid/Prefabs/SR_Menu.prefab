@@ -4593,6 +4593,7 @@ MonoBehaviour:
   thumbnail: {fileID: 0}
   button: {fileID: 0}
   text: {fileID: 114669557236474282}
+  textB: {fileID: 0}
   go: {fileID: 1148077118904208}
 --- !u!114 &114090569433260466
 MonoBehaviour:
@@ -7627,6 +7628,7 @@ MonoBehaviour:
   thumbnail: {fileID: 0}
   button: {fileID: 0}
   text: {fileID: 0}
+  textB: {fileID: 0}
   go: {fileID: 1148077118904208}
 --- !u!114 &114378651952732914
 MonoBehaviour:
@@ -7937,7 +7939,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 114779501112874620}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -8728,6 +8730,7 @@ MonoBehaviour:
   thumbnail: {fileID: 0}
   button: {fileID: 0}
   text: {fileID: 0}
+  textB: {fileID: 0}
   go: {fileID: 1148077118904208}
 --- !u!114 &114539676388923984
 MonoBehaviour:
@@ -9328,6 +9331,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114805066156418284}
   button: {fileID: 114628789299678614}
   text: {fileID: 114758736071021684}
+  textB: {fileID: 0}
   go: {fileID: 0}
 --- !u!114 &114619918296568366
 MonoBehaviour:
@@ -9893,6 +9897,7 @@ MonoBehaviour:
   thumbnail: {fileID: 0}
   button: {fileID: 0}
   text: {fileID: 0}
+  textB: {fileID: 0}
   go: {fileID: 1148077118904208}
 --- !u!114 &114661373502450344
 MonoBehaviour:
@@ -12583,6 +12588,7 @@ MonoBehaviour:
   thumbnail: {fileID: 0}
   button: {fileID: 0}
   text: {fileID: 0}
+  textB: {fileID: 0}
   go: {fileID: 1148077118904208}
 --- !u!114 &114985772228416816
 MonoBehaviour:

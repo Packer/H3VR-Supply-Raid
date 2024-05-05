@@ -81,6 +81,9 @@ namespace Supply_Raid_Editor
 
         [Tooltip("Globally Removes these ObjectIDs from ALL system including Attachments and Ammo types")]
         public List<string> subtractionObjectIDs = new List<string>();
+
+        [Tooltip("These objectIDs won't drop off the player")]
+        public List<string> dropProtectionObjectIDs = new List<string>();
     }
 
     [System.Serializable]

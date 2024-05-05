@@ -15,10 +15,39 @@ namespace Supply_Raid_Editor
         [Tooltip("Magazine/Clip Max Capacity for this loot table")]
         public int maxCapacity = -1;
 
+        [Tooltip("Min Level before this category can be spawned")]
+        public int minLevel = -1;
+        [Tooltip("Inclusive Max Level this category is available for")]
+        public int maxLevel = -1;
+
         [Tooltip("Magazine/Clip/Speed Loaders/Rounds that spawn with this itemCategory")]
         public int ammoLimitedCount = -1;
-        public int ammoSpawnLockedCount = -1;
+        public int ammoLimitedCountMin = -1; //If less than min then gets set to min
 
+        public int ammoLimitedMagazineCount = -1;
+        public int ammoLimitedMagazineCountMin = -1;
+
+        public int ammoLimitedClipCount = -1;
+        public int ammoLimitedClipCountMin = -1;
+
+        public int ammoLimitedSpeedLoaderCount = -1;
+        public int ammoLimitedSpeedLoaderCountMin = -1;
+
+        public int ammoLimitedRoundCount = -1;
+        public int ammoLimitedRoundCountMin = -1;
+
+        //-----------------------------------
+        public int ammoSpawnLockedCount = -1;
+        public int ammoSpawnLockedCountMin = -1;
+        //-----------------------------------
+        
+        [Tooltip("Do weapons spawn with their extra attachments")]
+        public bool requiredAttachments = true;
+
+        //How many of the same item spawns in the category
+        public int spawnCount = 1;
+        
+        //Do we use the loot tag system
         public bool lootTagsEnabled = true;
 
         [Header("Manual Setup Table")]

@@ -12,8 +12,8 @@ namespace SupplyRaid
 		public Image thumbnail;
 		public Button button;
         public Text text;
+        public Text textB;
         public GameObject go;
-
 
         public void SelectCharacter()
         {
@@ -107,8 +107,23 @@ namespace SupplyRaid
 
         public void TryBuyAmmo()
         {
-            if (SR_AmmoSpawner.instance == null || SR_Manager.instance.character.ammoUpgradeCost[index] <= -1)
+            if (!TryPurchaseAmmoType())
                 return;
+
+            //Set Ammo Type
+            if (SR_AmmoSpawner.instance.purchasedAmmoTypes[index])
+            {
+                SR_Manager.PlayConfirmSFX();
+                //SetAmmoType
+                //Debug.Log("Setting Via Button");
+                SR_AmmoSpawner.instance.SetAmmoType((AmmoEnum)index);
+            }
+        }
+
+        bool TryPurchaseAmmoType()
+        {
+            if (SR_AmmoSpawner.instance == null || SR_Manager.instance.character.ammoUpgradeCost[index] <= -1)
+                return false;
 
             //Try Buy
             if (SR_AmmoSpawner.instance.purchasedAmmoTypes[index] == false)
@@ -126,18 +141,19 @@ namespace SupplyRaid
                 else
                 {
                     SR_Manager.PlayFailSFX();
-                    return;
+                    return false;
                 }
             }
 
-            //Set Ammo Type
-            if(SR_AmmoSpawner.instance.purchasedAmmoTypes[index])
-            {
-                SR_Manager.PlayConfirmSFX();
-                //SetAmmoType
-                //Debug.Log("Setting Via Button");
-                SR_AmmoSpawner.instance.SetAmmoType((AmmoEnum)index);
-            }
+            return true;
+        }
+
+        public void TryBuyAmmoRound()
+        {
+            if (!TryPurchaseAmmoType())
+                return;
+
+            SR_AmmoSpawner.instance.BuySpecificRound(index);
         }
 
         public void SelectProfile()

@@ -78,6 +78,7 @@ namespace SupplyRaid
             SR_Manager.instance.LoadInAssets();
             assetsLoading = false;
 
+            yield return null;
             SR_Manager.instance.SetupGameData();
             timeout = Time.time + 10f;
         }

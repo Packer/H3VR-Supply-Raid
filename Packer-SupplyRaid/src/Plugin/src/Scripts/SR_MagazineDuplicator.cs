@@ -25,7 +25,6 @@ namespace SupplyRaid
         private List<FVRObject.OTagSet> m_validSets = new List<FVRObject.OTagSet>();
 
         public Transform selectedBox;
-        private MeshRenderer selectedMesh;
 
         private int costDuplicate = 0;
         private int costUpgrade = 0;
@@ -134,6 +133,30 @@ namespace SupplyRaid
                     Scan();
                 }
             }
+
+
+            //Selection Box
+            Transform target = null;
+
+            if (m_detectedMag && m_detectedMag.GameObject)
+                target = m_detectedMag.PoseOverride ? m_detectedMag.PoseOverride : m_detectedMag.transform;
+
+            if(!target && m_detectedSL && m_detectedSL.GameObject)
+                target = m_detectedSL.PoseOverride ? m_detectedSL.PoseOverride : m_detectedSL.transform;
+
+            if(!target && m_detectedFirearms.Count > 0 && m_detectedFirearms[0] && m_detectedFirearms[0].GameObject)
+                target = m_detectedFirearms[0].PoseOverride ? m_detectedFirearms[0].PoseOverride : m_detectedFirearms[0].transform;
+
+            if (target)
+            {
+                if (selectedBox.gameObject.activeSelf == false)
+                    selectedBox.gameObject.SetActive(true);
+                selectedBox.position = target.position;
+                selectedBox.rotation = target.rotation;
+                selectedBox.localScale = target.localScale;
+            }
+            else if (selectedBox.gameObject.activeSelf == true)
+                selectedBox.gameObject.SetActive(false);
         }
 
         private void Scan()

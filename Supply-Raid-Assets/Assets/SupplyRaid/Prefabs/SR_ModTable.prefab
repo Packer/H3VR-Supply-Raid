@@ -2173,6 +2173,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114356374303285560}
   button: {fileID: 0}
   text: {fileID: 0}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114079299011931728
 MonoBehaviour:
@@ -2300,6 +2301,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114355455903171340}
   button: {fileID: 0}
   text: {fileID: 114079299011931728}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114114158941249210
 MonoBehaviour:
@@ -2552,6 +2554,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114282002006619498}
   button: {fileID: 0}
   text: {fileID: 114150387355489814}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114185777172840542
 MonoBehaviour:
@@ -3043,6 +3046,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114835026961223832}
   button: {fileID: 0}
   text: {fileID: 0}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114282002006619498
 MonoBehaviour:
@@ -3209,6 +3213,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114910529319626172}
   button: {fileID: 0}
   text: {fileID: 114167439905121698}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114355455903171340
 MonoBehaviour:
@@ -3332,6 +3337,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114871880604790232}
   button: {fileID: 0}
   text: {fileID: 114863175011620518}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114371363314959442
 MonoBehaviour:
@@ -3376,6 +3382,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114215085328277304}
   button: {fileID: 0}
   text: {fileID: 114308517183964762}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114396312944394072
 MonoBehaviour:
@@ -3393,6 +3400,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114189398732294746}
   button: {fileID: 0}
   text: {fileID: 114643048546791836}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114400489188710352
 MonoBehaviour:
@@ -3437,6 +3445,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114959063767779946}
   button: {fileID: 0}
   text: {fileID: 114218985794927438}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114408313434494746
 MonoBehaviour:
@@ -3754,6 +3763,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114400489188710352}
   button: {fileID: 0}
   text: {fileID: 114957998811789416}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114494769388108010
 MonoBehaviour:
@@ -3818,6 +3828,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114961096179306706}
   button: {fileID: 0}
   text: {fileID: 114450321342543694}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114504068013254066
 MonoBehaviour:
@@ -3944,6 +3955,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114408313434494746}
   button: {fileID: 0}
   text: {fileID: 114234814231015236}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114524180065063730
 MonoBehaviour:
@@ -4191,6 +4203,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114699250169806218}
   button: {fileID: 0}
   text: {fileID: 114091965263148438}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114614794287159542
 MonoBehaviour:
@@ -4514,6 +4527,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114412764106575312}
   button: {fileID: 0}
   text: {fileID: 114893538853347592}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114666509513304644
 MonoBehaviour:
@@ -4681,6 +4695,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114142412016854726}
   button: {fileID: 0}
   text: {fileID: 114595706106506118}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114720542165375096
 MonoBehaviour:
@@ -4780,6 +4795,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114245642631872812}
   button: {fileID: 0}
   text: {fileID: 114499772548372370}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114734157169460566
 MonoBehaviour:
@@ -4797,6 +4813,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114831521886842066}
   button: {fileID: 0}
   text: {fileID: 114055875820665380}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114748107729824250
 MonoBehaviour:
@@ -4871,6 +4888,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114908823440477446}
   button: {fileID: 0}
   text: {fileID: 114019710954011418}
+  textB: {fileID: 0}
   go: {fileID: 1615308046627866}
 --- !u!114 &114756556294397448
 MonoBehaviour:

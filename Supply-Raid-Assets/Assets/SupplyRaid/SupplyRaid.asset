@@ -15,6 +15,8 @@ MonoBehaviour:
     type: 2}
   srCaptureZone: {fileID: 114982106423545416, guid: d2978018a2b49f64cae8dfe975162353,
     type: 2}
+  srManager: {fileID: 114527509631954866, guid: 5720f36485f6eb04ebd02187d0aef326,
+    type: 2}
   srMenu: {fileID: 114312252819119748, guid: 64bfcee5d1895a44fa2cd488b3e25828, type: 2}
   srBuyMenu: {fileID: 114595347761463974, guid: 6dfe4a067d5cc9d4daed3e248b70f3a5,
     type: 2}

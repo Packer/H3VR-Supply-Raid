@@ -9,6 +9,7 @@ namespace SupplyRaid
         public SR_Compass srCompass;
         public SR_CaptureZone srCaptureZone;
 
+        public SR_Manager srManager;
         [Header("Menus")]
         public SR_Menu srMenu;
         public SR_BuyMenu srBuyMenu;

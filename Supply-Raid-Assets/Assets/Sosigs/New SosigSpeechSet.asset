@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -872332539, guid: 61df6207064b6df9f1154d3f48a90696, type: 3}
+  m_Name: New SosigSpeechSet
+  m_EditorClassIdentifier: 
+  BasePitch: 1
+  BaseVolume: 0.4
+  ForceDeathSpeech: 0
+  UseAltDeathOnHeadExplode: 0
+  LessTalkativeSkirmish: 0
+  OnJointBreak: []
+  OnJointSlice: []
+  OnJointSever: []
+  OnDeath: []
+  OnBackBreak: []
+  OnNeckBreak: []
+  OnPain: []
+  OnConfusion: []
+  OnDeathAlt: []
+  OnWander: []
+  OnSkirmish: []
+  OnInvestigate: []
+  OnSearchingForGuns: []
+  OnTakingCover: []
+  OnBeingAimedAt: []
+  OnAssault: []
+  OnReloading: []
+  OnMedic: []
+  OnCall_Skirmish: []
+  OnRespond_Skirmish: []
+  OnCall_Assistance: []
+  OnRespond_Assistance: []
+  Test: []

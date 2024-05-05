@@ -11,11 +11,13 @@ MonoBehaviour:
   m_Script: {fileID: 1743412743, guid: 61df6207064b6df9f1154d3f48a90696, type: 3}
   m_Name: New EnemyTemplate
   m_EditorClassIdentifier: 
-  DisplayName: 
+  DisplayName: Wee
   SosigEnemyCategory: 0
   SosigEnemyID: -1
-  SosigPrefabs: []
-  ConfigTemplates: []
+  SosigPrefabs:
+  - {fileID: 0}
+  ConfigTemplates:
+  - {fileID: 11400000, guid: 585a3b565175d7c488fa7a9d667781ae, type: 2}
   ConfigTemplates_Easy: []
   OutfitConfig: []
   WeaponOptions: []

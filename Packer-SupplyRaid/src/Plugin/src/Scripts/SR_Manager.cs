@@ -212,22 +212,47 @@ namespace SupplyRaid
         {
             SR_Assets asset = SR_ModLoader.srAssets;
 
+            //TnH Loading
+            if (SupplyRaidPlugin.loadTnH)
+            {
+                SupplyRaidPlugin.loadTnH = false;
+                SR_Manager man = Instantiate(asset.srManager);
+
+                fallbackThumbnail = man.fallbackThumbnail;
+
+                if (globalAudio == null)
+                    globalAudio = Instantiate(man.globalAudio.gameObject, transform).GetComponent<AudioSource>();
+
+                //Audio
+                audioConfirm = man.audioConfirm;
+                audioCaptureComplete = man.audioCaptureComplete;
+                audioError = man.audioError;
+                audioFail = man.audioFail;
+                audioFailCapture = man.audioFailCapture;
+                audioPointsGain = man.audioPointsGain;
+                audioRearm = man.audioRearm;
+                audioTick = man.audioTick;
+                audioTickAlmost = man.audioTickAlmost;
+            }
+
             //------------------------------------------------------------------
             // Menus
             //------------------------------------------------------------------
-
             //SR Menu - Disable and Replace
             srMenu.gameObject.SetActive(false);
-            srMenu = Instantiate(asset.srMenu, srMenu.position, srMenu.rotation, srMenu.parent).transform;
+            SR_Menu.instance = Instantiate(asset.srMenu, srMenu.position, srMenu.rotation, srMenu.parent);
+            srMenu = SR_Menu.instance.transform;
             //SR_Menu.instance = srMenu.GetComponent<SR_Menu>();
 
             //SR Buy Menu
             buyMenu.gameObject.SetActive(false);
-            buyMenu = Instantiate(asset.srBuyMenu, buyMenu.position, buyMenu.rotation, buyMenu.parent).transform;
+            SR_BuyMenu.instance = Instantiate(asset.srBuyMenu, buyMenu.position, buyMenu.rotation, buyMenu.parent);
+            buyMenu = SR_BuyMenu.instance.transform;
 
             //SR Ammo Spawner/Station
             ammoStation.gameObject.SetActive(false);
-            ammoStation = Instantiate(asset.srAmmoSpawner, ammoStation.position, ammoStation.rotation, ammoStation.parent).transform;
+            SR_AmmoSpawner.instance = Instantiate(asset.srAmmoSpawner, ammoStation.position, ammoStation.rotation, ammoStation.parent);
+            ammoStation = SR_AmmoSpawner.instance.transform;
 
             //SR Magzine Duplicator
             duplicator.gameObject.SetActive(false);
@@ -235,7 +260,8 @@ namespace SupplyRaid
 
             //SR Mod Table
             attachmentStation.gameObject.SetActive(false);
-            attachmentStation = Instantiate(asset.srModTable, attachmentStation.position, attachmentStation.rotation, attachmentStation.parent).transform;
+            SR_ModTable.instance = Instantiate(asset.srModTable, attachmentStation.position, attachmentStation.rotation, attachmentStation.parent);
+            attachmentStation = SR_ModTable.instance.transform;
 
             //SR Recycler
             recycler.gameObject.SetActive(false);
@@ -243,7 +269,8 @@ namespace SupplyRaid
 
             //SR Results Menu
             resultsMenu.gameObject.SetActive(false);
-            resultsMenu = Instantiate(asset.srResultsMenu, resultsMenu.position, resultsMenu.rotation, resultsMenu.parent).transform;
+            SR_ResultsMenu.instance = Instantiate(asset.srResultsMenu, resultsMenu.position, resultsMenu.rotation, resultsMenu.parent);
+            resultsMenu = SR_ResultsMenu.instance.transform;
 
             //SR Spawn Menu
             spawnMenu.gameObject.SetActive(false);
@@ -258,14 +285,23 @@ namespace SupplyRaid
             //------------------------------------------------------------------
 
             //SR Compass
-            SR_Compass.instance.gameObject.SetActive(false);
+            Transform compassSpot;
+            if (SR_Compass.instance)
+            {
+                SR_Compass.instance.gameObject.SetActive(false);
+                compassSpot = SR_Compass.instance.transform;
+            }
+            else
+                compassSpot = buyMenu.transform;
+
             SR_Compass.instance = Instantiate(
                 asset.srCompass, 
-                SR_Compass.instance.transform.position, 
-                SR_Compass.instance.transform.rotation, 
-                SR_Compass.instance.transform.parent).GetComponent<SR_Compass>();
+                compassSpot.position, 
+                compassSpot.rotation,
+                compassSpot.parent).GetComponent<SR_Compass>();
 
-            /*
+
+            Debug.Log("FFFF");
             //SR Capture Zone - If NOT replaced then spawn the newer one
             if (!captureZone.replaced)
             {
@@ -274,9 +310,10 @@ namespace SupplyRaid
                     asset.srCaptureZone,
                     captureZone.transform.position,
                     captureZone.transform.rotation,
-                    captureZone.transform.parent).GetComponent<SR_CaptureZone>();
+                    captureZone.transform.parent);
             }
-            */
+
+            Debug.Log("TTTT");
 
             profile.playerHealth = 5000;
         }
@@ -329,19 +366,23 @@ namespace SupplyRaid
                     characters[i].SetupCharacterPreset(itemCategories);
             }
 
+            Debug.Log("AA");
             SR_Menu.instance.Setup();
+            Debug.Log("BB");
             SR_BuyMenu.instance.Setup();
         }
 
         void Start()
         {
-            resultsMenu.gameObject.SetActive(false);
+            if(resultsMenu)
+                resultsMenu.gameObject.SetActive(false);
             SetupAttachmentLootTable();
 
             enviromentLayer = LayerMask.NameToLayer("Enviroment");
 
             //TODO set active to true for when we have instructions
-            SR_HelpMenu.instance.SetActive(false);
+            if(SR_HelpMenu.instance)
+                SR_HelpMenu.instance.SetActive(false);
 
             //Random the Random
             Random.InitState((int)Time.realtimeSinceStartup);
@@ -432,23 +473,28 @@ namespace SupplyRaid
                 Points = character.pointsLevel[0];
             }
 
+            Debug.Log("AAAAA");
             //Spawn Gear
             if (character.StartGearLength() > 0)
                 spawnStation.gameObject.SetActive(true);
 
             //Show Game Panels
             SetGamePanels(true);
-            SR_HelpMenu.instance.SetActive(false);
+            if(SR_HelpMenu.instance)
+                SR_HelpMenu.instance.SetActive(false);
 
+            Debug.Log("BBBB");
             //Setup Ammo Type Prices
             SR_AmmoSpawner.instance.Setup();
 
             //Setup Attachment Prices
             SR_ModTable.instance.Setup();
 
+            Debug.Log("FFF");
             //Set Starting Supply ID as Host
             SetupSupplyPoints();
 
+            Debug.Log("GG");
             //Set our next level
             CurrentCaptures = profile.startLevel;
             SetLevel_Server();
@@ -463,6 +509,7 @@ namespace SupplyRaid
                 SR_Networking.instance.ServerRunning_Send();
             }
 
+            Debug.Log("JHJ");
             //Delay Rabbit Hole by 5 seconds
             rabbitHoleTimer = 5;
             squadRespawnTimer = 5;
@@ -598,7 +645,7 @@ namespace SupplyRaid
             }
 
             //STATIC SUPPLY POINT, REMOVE IT FROM THE LIST
-            if (forceStaticPlayerSupplyPoint == true)
+            if (forceStaticPlayerSupplyPoint)
             {
                 
             }
@@ -2003,7 +2050,7 @@ namespace SupplyRaid
             }
 
             //Get Valid Nav Mesh
-            position = SR_Global.GetValidNavPosition(position, 25f);
+            position = SR_Global.GetValidNavPosition(position, 30f);
 
             Sosig sosig =
                 SosigAPI.Spawn(
@@ -2013,7 +2060,7 @@ namespace SupplyRaid
                     rotation);
 
             //TODO this does nothing
-            sosig.m_isBlinded = false;
+            //sosig.m_isBlinded = false;
 
             //Set Agents to quailty level
             NavMeshAgent agent = sosig.GetComponent<NavMeshAgent>();
@@ -2087,17 +2134,7 @@ namespace SupplyRaid
             };
 
             lt_RequiredAttachments.Initialize(type, eras, null, null, null, null, null, mounts, null, features, null, null, null, null, -1, -1);
-
-            //Tag Set Removal
-            for (int num = lt_RequiredAttachments.Loot.Count - 1; num >= 0; num--)
-            {
-                FVRObject fVRObject = lt_RequiredAttachments.Loot[num];
-                if (set != null && !set.Contains(fVRObject.TagSet))
-                {
-                    lt_RequiredAttachments.Loot.RemoveAt(num);
-                    continue;
-                }
-            }
+            lt_RequiredAttachments = SR_Global.RemoveGlobalSubtractionOnTable(lt_RequiredAttachments);
         }
 
         //----------------------------------------------------------------------

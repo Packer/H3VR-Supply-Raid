@@ -35,6 +35,17 @@ namespace Supply_Raid_Editor
     {
         public string name = "Level #";
         public int enemiesTotal = 5;    //Per Player
+        public bool infiniteEnemies = false;        //If true, enemies will spawn up to onscreen or Total (Whatever is lowest)
+        public bool infiniteSquadEnemies = false;   //If true, enemies will spawn up to onscreen or Total (Whatever is lowest)
+        public float enemySpawnTimer = 1;           //How often enemies spawn through the rabbit hole system
+        public float squadDelayTimer = 1;           //How long before squads start spawning
+        
+        //Boss
+        [Tooltip("The minimum size for Bosses Groups")]
+        public int bossCount = 0;
+        [Tooltip("The sosig ID pool for stationary bosses")]
+        public SosigEnemyID[] bossPool;
+        
         //GUARDS
         public int guardCount = 0;
         public SosigEnemyID[] guardPool;

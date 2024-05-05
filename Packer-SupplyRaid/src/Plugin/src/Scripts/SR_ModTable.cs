@@ -23,7 +23,6 @@ namespace SupplyRaid
         private int attachmentCount = -1;
 
         public Transform selectedBox;
-        private bool selectedBounds;
 
         [Header("Spawn Positions")]
         public Transform[] spawnPoints;
@@ -100,7 +99,7 @@ namespace SupplyRaid
                 }
             }
 
-            if (detectedFireArm && selectedBounds)
+            if (detectedFireArm && detectedFireArm.GameObject)
             {
                 Transform target = detectedFireArm.PoseOverride ? detectedFireArm.PoseOverride : detectedFireArm.transform;
                 selectedBox.position = target.position;
@@ -223,7 +222,6 @@ namespace SupplyRaid
                 UpdateButtons(IM.OD[detectedFireArm.ObjectWrapper.ItemID]);
                 selectedBox.gameObject.SetActive(true);
                 selectedBox.position = detectedFireArm.transform.position;
-                selectedBounds = detectedFireArm.GameObject ? true : false;
             }
             else
             {
@@ -266,7 +264,7 @@ namespace SupplyRaid
             for (int i = 0; i < buttons.Length; i++)
             {
                 //Ignore None and disabled attachments
-                if (i == 0 || SR_Manager.instance.character.attachmentsCost[i] < 0)
+                if (i == 0 || buttons[i] == null || SR_Manager.instance.character.attachmentsCost[i] < 0)
                     continue;
 
                 //Don't recalculate loot tables if its the same weapon

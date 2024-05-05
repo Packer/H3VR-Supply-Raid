@@ -29,6 +29,7 @@ namespace SupplyRaid
         public FactionLevel[] endless;
         private string thumbnailPath = "";
 
+
         public void SetupThumbnailPath(string thumbPath)
         {
             thumbnailPath = thumbPath;

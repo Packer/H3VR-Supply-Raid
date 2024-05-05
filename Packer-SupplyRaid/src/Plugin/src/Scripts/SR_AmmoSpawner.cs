@@ -39,10 +39,155 @@ namespace SupplyRaid
         private List<FVRObject.OTagSet> m_validSets = new List<FVRObject.OTagSet>();
 
         private float m_scanTick = 1f;
+        public Transform selectedBox;
 
         //Ammo
         List<AmmoRound> ammoList = new List<AmmoRound>();
         List<FireArmRoundType> allRoundTypes = new List<FireArmRoundType>();
+
+        [Header("Ammo Page")]
+        public GameObject ammoPage;
+
+        //Round page
+        [Header("Round Page")]
+        public GameObject roundPage;
+        public GameObject roundButtonPrefab;
+        public Transform roundContainer;
+        private List<SR_GenericButton> roundButtons = new List<SR_GenericButton>();
+        private List<FVRObject> rounds = new List<FVRObject>();
+
+        void PopulateRoundPage()
+        {
+            //Clear all old buttons
+            for (int i = 0; i < roundButtons.Count; i++)
+            {
+                if (roundButtons[i])
+                    Destroy(roundButtons[i]);
+            }
+
+            List<FireArmRoundType> roundTypes = new List<FireArmRoundType>();
+
+            //Detected Rounds
+            roundTypes.AddRange(m_roundTypes);
+
+            //Mag Rounds
+            for (int i = 0; i < m_detectedMags.Count; i++)
+            {
+                if (m_detectedMags[i] && !roundTypes.Contains(m_detectedMags[i].RoundType))
+                    roundTypes.Add(m_detectedMags[i].RoundType);
+            }
+
+            //Clip Rounds
+            for (int i = 0; i < m_detectedClips.Count; i++)
+            {
+                if (m_detectedClips[i] 
+                    && !roundTypes.Contains(m_detectedClips[i].RoundType))
+                        roundTypes.Add(m_detectedClips[i].RoundType);
+            }
+
+            //Clip Rounds
+            for (int i = 0; i < m_detectedSLs.Count; i++)
+            {
+                if (m_detectedSLs[i] 
+                    && m_detectedSLs[i].ObjectWrapper 
+                    && !roundTypes.Contains(m_detectedSLs[i].ObjectWrapper.RoundType))
+                        roundTypes.Add(m_detectedSLs[i].ObjectWrapper.RoundType);
+            }
+
+            //Special Weapon
+            for (int i = 0; i < m_detectedSweapons.Count; i++)
+            {
+                if (m_detectedSweapons[i] 
+                    && m_detectedSweapons[i].ObjectWrapper 
+                    && !roundTypes.Contains(m_detectedSweapons[i].ObjectWrapper.RoundType))
+                        roundTypes.Add(m_detectedSweapons[i].ObjectWrapper.RoundType);
+            }
+            //Special Weapon
+            for (int i = 0; i < m_detectedFirearms.Count; i++)
+            {
+                if (m_detectedFirearms[i]
+                    && !roundTypes.Contains(m_detectedFirearms[i].RoundType))
+                        roundTypes.Add(m_detectedFirearms[i].RoundType);
+            }
+
+
+            //Populate Rounds
+            if(rounds == null)
+                rounds = new List<FVRObject>(ManagerSingleton<IM>.Instance.odicTagCategory[FVRObject.ObjectCategory.Cartridge]);
+            else
+                rounds.Clear();
+
+            for (int i = rounds.Count - 1; i >= 0; i--)
+            {
+                if (!roundTypes.Contains(rounds[i].RoundType))
+                    rounds.RemoveAt(i);
+            }
+
+            //Create Buttons!
+            for (int i = 0; i < rounds.Count; i++)
+            {
+                SR_GenericButton btn = Instantiate(roundButtonPrefab, roundContainer).GetComponent<SR_GenericButton>();
+                btn.gameObject.SetActive(true);
+
+                ItemSpawnerID id;
+                ManagerSingleton<IM>.Instance.SpawnerIDDic.TryGetValue(rounds[i].SpawnedFromId, out id);
+
+                //Description
+                btn.textB.text = rounds[i].DisplayName;
+                btn.index = i;  //index
+
+                if (id != null)
+                {
+                    FireArmRoundClass classType = GetFirearmRoundClassFromType(rounds[i].RoundType);
+                    AmmoEnum ammo = SR_Global.GetAmmoEnum(classType);
+
+                    //Cost Text
+                    if (purchasedAmmoTypes[(int)ammo])
+                        btn.text.text = "";
+                    else
+                        btn.text.text = ((int)ammo).ToString();
+
+                    //Thumbnail
+                    if (id.Sprite)
+                    {
+                        btn.thumbnail.sprite = id.Sprite;
+                    }
+                    else
+                    {
+                        //Use same Ammo Type sprite
+                        btn.thumbnail.sprite = ammoTypeButtons[(int)ammo].GetComponent<UnityEngine.UI.Image>().sprite;
+                    }
+                }
+            }
+        }
+
+        public void BuySpecificRound(int index)
+        {
+            if (!CanSpawn(SR_Manager.instance.character.modeRounds, SR_Manager.instance.character.roundsCost, 3))
+            {
+                SR_Manager.PlayFailSFX();
+                return;
+            }
+
+            if (rounds[index] != null)
+            {
+                Instantiate(rounds[index].GetGameObject(), Spawnpoint_Round.position, Spawnpoint_Round.rotation);
+            }
+            SR_Manager.PlayRearmSFX();
+
+            /*
+            FVRObject round = rounds[index];
+            FireArmRoundClass classType = GetFirearmRoundClassFromType(round.RoundType);
+            AmmoEnum ammo = SR_Global.GetAmmoEnum(classType);
+            */
+        }
+        
+        public void TogglePages()
+        {
+            roundPage.SetActive(ammoPage.activeSelf);
+            ammoPage.SetActive(!roundPage.activeSelf);
+        }
+
 
         private void Start()
         {
@@ -64,6 +209,9 @@ namespace SupplyRaid
                 else
                     m_scanTick = Random.Range(2f, 3f);
             }
+
+            if (selectionIcon.gameObject.activeSelf && selectedAmmoType != AmmoEnum.None)
+                selectionIcon.position = ammoTypeButtons[(int)selectedAmmoType].transform.position;
         }
 
         public void Setup()
@@ -208,7 +356,7 @@ namespace SupplyRaid
                                 case 2: //Clip
                                     clipButton.GetComponent<FVRPointableButton>().Text.text = "";
                                     break;
-                                case 4: //Rounds
+                                case 3: //Rounds
                                     roundButton.GetComponent<FVRPointableButton>().Text.text = "";
                                     break;
                                 default:
@@ -395,43 +543,43 @@ namespace SupplyRaid
                         continue;
 
                     //Magazine Rearm
-                    for (int i = 0; i < m_detectedMags.Count; i++)
+                    for (int z = 0; z < m_detectedMags.Count; z++)
                     {
-                        if (ammoList[x].roundType == m_detectedMags[i].RoundType)
+                        if (ammoList[x].roundType == m_detectedMags[z].RoundType)
                         {
-                            m_detectedMags[i].ReloadMagWithType(ammoList[x].roundClasses[y].roundClass);
+                            m_detectedMags[z].ReloadMagWithType(ammoList[x].roundClasses[y].roundClass);
                         }
                     }
 
                     //Clip Reload
-                    for (int j = 0; j < m_detectedClips.Count; j++)
+                    for (int z = 0; z < m_detectedClips.Count; z++)
                     {
-                        if (ammoList[x].roundType == m_detectedClips[j].RoundType)
+                        if (ammoList[x].roundType == m_detectedClips[z].RoundType)
                         {
-                            m_detectedClips[j].ReloadClipWithType(ammoList[x].roundClasses[y].roundClass);
+                            m_detectedClips[z].ReloadClipWithType(ammoList[x].roundClasses[y].roundClass);
                         }
                     }
 
-                    //SL
-                    for (int k = 0; k < m_detectedSLs.Count; k++)
+                    //Speed Loader
+                    for (int z = 0; z < m_detectedSLs.Count; z++)
                     {
-                        if (ammoList[x].roundType == m_detectedSLs[k].Chambers[0].Type)
+                        if (ammoList[x].roundType == m_detectedSLs[z].Chambers[0].Type)
                         {
-                            m_detectedSLs[k].ReloadClipWithType(ammoList[x].roundClasses[y].roundClass);
+                            m_detectedSLs[z].ReloadClipWithType(ammoList[x].roundClasses[y].roundClass);
                         }
                     }
 
                     //SWeapons
-                    for (int l = 0; l < m_detectedSweapons.Count; l++)
+                    for (int z = 0; z < m_detectedSweapons.Count; z++)
                     {
-                        m_detectedSweapons[l].W.InstaReload();
+                        m_detectedSweapons[z].W.InstaReload();
                     }
                 }
             }
             SR_Manager.PlayRearmSFX();
         }
 
-        private FireArmRoundClass GetClassFromType(FireArmRoundType t)
+        private FireArmRoundClass GetFirearmRoundClassFromType(FireArmRoundType t)
         {
             if (!m_decidedTypes.ContainsKey(t))
             {
@@ -601,6 +749,8 @@ namespace SupplyRaid
             }
             else
             {
+                //Populate Round Page
+                PopulateRoundPage();
                 SetAmmoType(selectedAmmoType);
             }
 

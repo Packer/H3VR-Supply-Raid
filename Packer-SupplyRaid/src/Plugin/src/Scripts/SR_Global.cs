@@ -915,6 +915,7 @@ namespace SupplyRaid
             goldMaterial = gold;
             return gold;
         }
+
         public static Bounds GetBounds(GameObject obj)
         {
 
@@ -986,6 +987,18 @@ namespace SupplyRaid
             }
 
             return collected;
+        }
+
+        public static void ItemIDToList(string[] itemIDs, List<FVRObject> input)
+        {
+            for (int i = 0; i < itemIDs.Length; i++)
+            {
+                FVRObject mainObject;
+                if (IM.OD.TryGetValue(itemIDs[i], out mainObject))
+                    input.Add(mainObject);
+                else
+                    Debug.Log("Supply Raid Custom Sosig - Could not find " + itemIDs);
+            }
         }
 
         public static AmmoEnum GetAmmoEnum(FireArmRoundClass round)

@@ -11,5 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 486e27304e8449efb6c6136482952c4d, type: 3}
   m_Name: New Enum Editor
   m_EditorClassIdentifier: 
-  EnumName: FistVR.FireArmRoundType
-  AddedValues: []
+  EnumName: FistVR.SosigEnemyID
+  AddedValues:
+  - Name: Wee
+    Value: 666

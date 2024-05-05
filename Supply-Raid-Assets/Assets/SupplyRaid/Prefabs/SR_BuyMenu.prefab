@@ -1049,6 +1049,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114558727115863720}
   button: {fileID: 0}
   text: {fileID: 0}
+  textB: {fileID: 0}
   go: {fileID: 0}
 --- !u!114 &114235777429677490
 MonoBehaviour:
@@ -1319,6 +1320,7 @@ MonoBehaviour:
   thumbnail: {fileID: 114898463221633268}
   button: {fileID: 0}
   text: {fileID: 114746236520547894}
+  textB: {fileID: 0}
   go: {fileID: 0}
 --- !u!114 &114651999154071376
 MonoBehaviour:

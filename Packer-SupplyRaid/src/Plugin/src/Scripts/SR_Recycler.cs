@@ -7,71 +7,18 @@ namespace SupplyRaid
 {
     public class SR_Recycler : MonoBehaviour
     {
-        public List<FVRFireArm> weapons = new List<FVRFireArm>();
-        //[SerializeField] AudioSource audioSource;
-        //[SerializeField] AudioClip[] clips;
+        private List<FVRFireArm> weapons = new List<FVRFireArm>();
 
         public Transform ScanningVolume;
         private float m_scanTick = 0.8f;
         private Collider[] colbuffer;
         public LayerMask ScanningLM;
-
         private List<GameObject> cashList = new List<GameObject>();
-
-        /*
-        void OnTriggerEnter(Collider other)
-        {
-            FVRFireArm weapon = other.gameObject.GetComponent<FVRFireArm>();
-            if (weapon != null)
-            {
-                weapons.Add(weapon);
-            }
-        }
-
-        void OnTriggerExit(Collider other)
-        {
-            FVRFireArm weapon = other.gameObject.GetComponent<FVRFireArm>();
-            if (weapon != null)
-            {
-                weapons.Remove(weapon);
-            }
-        }
-
-        public void Recycle()
-        {
-            List<FVRFireArm> toDestroy = new List<FVRFireArm>();
-
-            for (int i = 0; i < weapons.Count; i++)
-            {
-                if (weapons[i].IsHeld == false && weapons[i].QuickbeltSlot == null)
-                    toDestroy.Add(weapons[i]);
-            }
-
-            if (toDestroy.Count <= 0)
-            {
-                audioSource.PlayOneShot(clips[1]);
-            }
-            else
-            {
-                SupplyRaidManager.instance.Points += toDestroy.Count;
-                audioSource.PlayOneShot(clips[0]);
-
-                for (int i = 0; i < toDestroy.Count; i++)
-                {
-                    weapons.Remove(toDestroy[i]);
-                    Destroy(toDestroy[i].gameObject);
-                }
-                toDestroy.Clear();
-            }
-        }
-        */
-        //------------------------------------------------------------------
-        //------------------------------------------------------------------
-        //------------------------------------------------------------------
+        public Transform selectedBox;
 
         private void Start()
         {
-            this.colbuffer = new Collider[50];
+            colbuffer = new Collider[50];
         }
 
         public void Button_Recycler()
@@ -86,18 +33,20 @@ namespace SupplyRaid
                 SR_Manager.PlayPointsGainSFX();
             }
 
-            if (this.weapons.Count <= 0)
+            if (weapons.Count <= 0)
             {
                 if(!ignoreFail)
                     SR_Manager.PlayFailSFX();
                 return;
             }
-            if (this.weapons[0] != null)
+
+            if (weapons[0])
             {
-                Destroy(this.weapons[0].gameObject);
+                Destroy(weapons[0].gameObject);
                 ignoreFail = true;
             }
-            this.weapons.Clear();
+
+            weapons.Clear();
             if (ignoreFail)
                 SR_Manager.PlayPointsGainSFX();
             SR_Manager.instance.Points += SR_Manager.instance.character.recyclerPoints;
@@ -105,15 +54,24 @@ namespace SupplyRaid
 
         private void Update()
         {
-            this.m_scanTick -= Time.deltaTime;
-            if (this.m_scanTick <= 0f)
+            m_scanTick -= Time.deltaTime;
+            if (m_scanTick <= 0f)
             {
-                this.m_scanTick = Random.Range(0.6f, 0.8f);
-                float num = Vector3.Distance(base.transform.position, GM.CurrentPlayerBody.transform.position);
+                m_scanTick = Random.Range(0.6f, 0.8f);
+                float num = Vector3.Distance(transform.position, GM.CurrentPlayerBody.transform.position);
                 if (num < 12f)
                 {
-                    this.Scan();
+                    Scan();
                 }
+            }
+
+            //Selection Box
+            if (weapons.Count > 0 && weapons[0] && weapons[0].GameObject)
+            {
+                Transform target = weapons[0].PoseOverride ? weapons[0].PoseOverride : weapons[0].transform;
+                selectedBox.position = target.position;
+                selectedBox.rotation = target.rotation;
+                selectedBox.localScale = target.localScale;
             }
         }
 
@@ -142,7 +100,12 @@ namespace SupplyRaid
 
         private void Scan()
         {
-            int num = Physics.OverlapBoxNonAlloc(this.ScanningVolume.position, this.ScanningVolume.localScale * 0.5f, this.colbuffer, this.ScanningVolume.rotation, this.ScanningLM, QueryTriggerInteraction.Collide);
+            int num = Physics.OverlapBoxNonAlloc(
+                ScanningVolume.position, 
+                ScanningVolume.localScale * 0.5f, 
+                colbuffer, 
+                ScanningVolume.rotation, 
+                ScanningLM, QueryTriggerInteraction.Collide);
             weapons.Clear();
             cashList.Clear();
 
@@ -164,28 +127,38 @@ namespace SupplyRaid
                         break;
                 }
 
-                if (this.colbuffer[i].attachedRigidbody != null)
+                if (colbuffer[i].attachedRigidbody != null)
                 {
 
-                    FVRFireArm component = this.colbuffer[i].attachedRigidbody.gameObject.GetComponent<FVRFireArm>();
+                    FVRFireArm component = colbuffer[i].attachedRigidbody.gameObject.GetComponent<FVRFireArm>();
                     if (component != null)
                     {
                         if (!component.SpawnLockable)
                         {
-                            if (!component.IsHeld && component.QuickbeltSlot == null && !this.weapons.Contains(component))
+                            if (!component.IsHeld && component.QuickbeltSlot == null && !weapons.Contains(component))
                             {
-                                this.weapons.Add(component);
+                                weapons.Add(component);
                             }
                         }
                     }
                 }
+            }
+
+            if (weapons.Count > 0 && weapons[0] != null)
+            {
+                selectedBox.gameObject.SetActive(true);
+                selectedBox.position = weapons[0].transform.position;
+            }
+            else
+            {
+                selectedBox.gameObject.SetActive(false);
             }
         }
 
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(this.ScanningVolume.position, this.ScanningVolume.localScale * 0.5f);
+            Gizmos.DrawWireCube(ScanningVolume.position, ScanningVolume.localScale * 0.5f);
         }
     }
 }

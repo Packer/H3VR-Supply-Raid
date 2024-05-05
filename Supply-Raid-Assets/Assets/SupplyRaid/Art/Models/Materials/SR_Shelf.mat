@@ -132,7 +132,7 @@ Material:
     - _MainTexUV: 0
     - _MainTextures: 0
     - _MaxSamples: 20
-    - _Metal: 1
+    - _Metal: 0.1
     - _Metallic: 0
     - _MinSamples: 4
     - _Mode: 0
@@ -146,11 +146,11 @@ Material:
     - _RimPower: 4
     - _RimTexUV: 0
     - _RimWeight: 1
-    - _Roughness: 1
+    - _Roughness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SpecularTint: 0
-    - _Specularity: 1
+    - _Specularity: 0
     - _SrcBlend: 1
     - _TeamColor: 0
     - _TeamColorMasksAsTint: 0
@@ -169,7 +169,7 @@ Material:
     - _DecalColor: {r: 1, g: 1, b: 1, a: 1}
     - _DetailAlbedoMapVelocity: {r: 0, g: 0, b: 0, a: 0}
     - _DissolveGlowColor: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissionColor: {r: 0.1, g: 0.1, b: 0.1, a: 1}
+    - _EmissionColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _IncandescenceMapVelocity: {r: 0, g: 0, b: 0, a: 0}
     - _MainTexVelocity: {r: 0, g: 0, b: 0, a: 0}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
