@@ -58,7 +58,7 @@ namespace SupplyRaid
 
         private List<FVRObject> railAdapters = new List<FVRObject>();
 
-        private void Start()
+        public void Setup()
         {
             instance = this;
             colbuffer = new Collider[50];
@@ -76,10 +76,7 @@ namespace SupplyRaid
                     railAdapters.RemoveAt(i);
             }
             GenerateButtons();
-        }
 
-        public void Setup()
-        {
             for (int i = 0; i < buttons.Length; i++)
             {
                 buttons[i].button.text.text = SR_Manager.instance.character.attachmentsCost[i].ToString();
@@ -111,7 +108,7 @@ namespace SupplyRaid
 
         void GenerateButtons()
         {
-            if (railAdapters.Count == 0 || !buttonPrefab)
+            if (railAdapters == null || railAdapters.Count == 0 || !buttonPrefab)
                 return;
 
             for (int i = 0; i < railAdapters.Count; i++)

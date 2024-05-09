@@ -83,6 +83,11 @@ namespace SupplyRaid
             timeout = Time.time + 10f;
         }
 
+        public static List<FistVR.SosigConfigTemplate> LoadCustomSosigs()
+        {
+            return null;
+        }
+
         public static List<SR_ItemCategory> LoadItemCategories()
         {
             List<string> directories = GetItemCategoriesDirectory();

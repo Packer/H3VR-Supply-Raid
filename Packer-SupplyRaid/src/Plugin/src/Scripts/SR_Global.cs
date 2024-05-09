@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using BepInEx;
+using System.Linq;
 
 namespace SupplyRaid
 {
@@ -989,8 +991,55 @@ namespace SupplyRaid
             return collected;
         }
 
+        public static List<string> GetCustomSosigDirectories()
+        {
+            return Directory.GetFiles(Paths.PluginPath, "*.csosig", SearchOption.AllDirectories).ToList();
+        }
+
+        public static void LoadCustomSosigs()
+        {
+            List<string> directories = GetCustomSosigDirectories();
+
+            if (directories.Count == 0)
+            {
+                Debug.Log("Custom Sosigs: No Custom Sosigs were found!");
+                return;
+            }
+
+            //List<Custom_SosigEnemyTemplate> items = new List<Custom_SosigEnemyTemplate>();
+
+            //Load up each of our categories
+            for (int i = 0; i < directories.Count; i++)
+            {
+                SR_SosigEnemyTemplate sosigTemplate;
+
+                //Load each Category via the Directory
+                using (StreamReader streamReader = new StreamReader(directories[i]))
+                {
+                    string json = streamReader.ReadToEnd();
+
+                    try
+                    {
+                        sosigTemplate = JsonUtility.FromJson<SR_SosigEnemyTemplate>(json);
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.Log(ex.Message);
+                        return;
+                    }
+
+                    //Add to our collection
+                    SupplyRaidPlugin.customSosigs.Add(sosigTemplate.sosigEnemyID, sosigTemplate);
+
+                    Debug.Log("Supply Raid: Loaded Custom Sosig  " + sosigTemplate.sosigEnemyID + " - " + sosigTemplate.displayName);
+                }
+            }
+        }
+
         public static void ItemIDToList(string[] itemIDs, List<FVRObject> input)
         {
+
+
             for (int i = 0; i < itemIDs.Length; i++)
             {
                 FVRObject mainObject;

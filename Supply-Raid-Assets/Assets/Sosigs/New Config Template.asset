@@ -79,7 +79,9 @@ MonoBehaviour:
   DoesExplodeKill_Upper: 1
   DoesExplodeKill_Lower: 1
   UsesLinkSpawns: 0
-  LinkSpawns: []
-  LinkSpawnChance: []
+  LinkSpawns:
+  - {fileID: 0}
+  LinkSpawnChance:
+  - 0
   OverrideSpeech: 0
   OverrideSpeechSet: {fileID: 0}

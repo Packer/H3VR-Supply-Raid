@@ -38,8 +38,10 @@ namespace SupplyRaid
             //Disable TnH Content
             if (tnhManager)
             {
-                tnhManager.gameObject.SetActive(false);
+                tnhManager.FMODController.SwitchTo(0, 0, true, true);
                 tnhManager.ClearMiscEnemies();
+                tnhManager.gameObject.SetActive(false);
+                tnhManager.FMODController.SetMasterVolume(0);
 
                 for (int i = 0; i < tnhManager.HoldPoints.Count; i++)
                 {
@@ -96,6 +98,10 @@ namespace SupplyRaid
             srManager.spawnPoint = spawnPoint;
             srManager.spawnStation = menus;
             srManager.itemSpawner = tnhManager.ItemSpawner.transform;
+            srManager.itemSpawner.transform.SetParent(null);
+            srManager.itemSpawner.SetPositionAndRotation(
+                menus.position + Vector3.up + (-srManager.itemSpawner.forward * 2), 
+                menus.rotation * Quaternion.Euler(0, 180, 0));
 
             srManager.buyMenu = outside;
             srManager.ammoStation = outside;

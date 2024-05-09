@@ -318,6 +318,9 @@ namespace SupplyRaid
 
         public void UpdateFaction()
         {
+            if (SR_Manager.instance == null)
+                return;
+
             /*
             //Assign first Faction if Blank
             if (SR_Manager.instance.faction == null)
