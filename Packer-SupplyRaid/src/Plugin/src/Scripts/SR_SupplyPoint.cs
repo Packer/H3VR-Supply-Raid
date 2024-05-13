@@ -35,6 +35,8 @@ namespace SupplyRaid
 
         [Tooltip("Leave empty for random supply points, list Forces next supply points to be randomly selected from this list")]
         public SR_SupplyPoint[] nextSupplyPoints;
+        [Tooltip("Leave empty for if this has no specific supply points this connects to")]
+        public SR_SupplyPoint[] previousSupplyPoints;
 
         [Tooltip("Player Spawn/Respawn point")]
         public Transform respawn;

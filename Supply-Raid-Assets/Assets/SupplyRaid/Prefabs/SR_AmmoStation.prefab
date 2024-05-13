@@ -3249,7 +3249,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114180631792691690}
-        m_MethodName: TryBuyAmmo
+        m_MethodName: TryBuyAmmoRound
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

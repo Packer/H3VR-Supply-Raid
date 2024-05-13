@@ -541,6 +541,7 @@ namespace SupplyRaid
             //Setup Supply Order
             //-------------------------------------------------------
 
+            Debug.Log("HHH");
             if (profile.captureOrder == 0) //RANDOM ORDER
             {
                 //Random Order
@@ -638,7 +639,8 @@ namespace SupplyRaid
             //STATIC SUPPLY POINT, REMOVE IT FROM THE LIST
             if (forceStaticPlayerSupplyPoint)
             {
-                
+                if(supplyOrder.Count > 0)
+                    supplyOrder.Remove(playerSupplyID);
             }
         }
 
@@ -1143,22 +1145,57 @@ namespace SupplyRaid
                 */
                 if (profile.captureOrder == 1) //Random
                 {
+                    //int oldAttackID = attackSupplyID;
                     while (playerSupplyID == attackSupplyID)
                     {
                         //Debug.Log("Set Level Server SP While");
                         attackSupplyID = Random.Range(0, supplyPoints.Count);
+
+                        if (attackSupplyID == playerSupplyID 
+                            && supplyPoints[playerSupplyID].nextSupplyPoints != null
+                            && supplyPoints[playerSupplyID].nextSupplyPoints.Length > 0)
+                        {
+                            int randomPath = Random.Range(0, supplyPoints[playerSupplyID].nextSupplyPoints.Length);
+                            int randomID = supplyPoints[playerSupplyID].nextSupplyPoints[randomPath].index;
+                            attackSupplyID = randomID;
+                        }
                     }
                 }
                 else
                 {
+                    int breakNumber = 0;    //Just in case it wants to loop forever
                     //Ordered & Random Ordered
+                    while(breakNumber < 100)
+                    {
+                        if (supplyOrderIndex + 1 < supplyOrder.Count())
+                            supplyOrderIndex++;
+                        else
+                            supplyOrderIndex = 0;
 
-                    if (supplyOrderIndex + 1 < supplyOrder.Count())
-                        supplyOrderIndex++;
-                    else
-                        supplyOrderIndex = 0;
+                        attackSupplyID = supplyOrder[supplyOrderIndex];
 
-                    attackSupplyID = supplyOrder[supplyOrderIndex];
+                        //Deviation Paths
+                        bool isValid = false;
+                        if (supplyPoints[playerSupplyID].previousSupplyPoints != null 
+                            && supplyPoints[attackSupplyID].previousSupplyPoints.Length > 0)
+                        {
+                            for (int i = 0; i < supplyPoints[attackSupplyID].previousSupplyPoints.Length; i++)
+                            {
+                                if (playerSupplyID == supplyPoints[attackSupplyID].previousSupplyPoints[i].index)
+                                {
+                                    isValid = true;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                            isValid = true;
+
+                        if (isValid)
+                            breakNumber = 1000;
+                        
+                        breakNumber++;
+                    }
                 }
 
                 //Debug.Log("Supply Raid: Post Supply Setup");
@@ -2021,17 +2058,6 @@ namespace SupplyRaid
             sosigSquads.Add(sosig);
         }
 
-        MeshRenderer GetSosigMeshRenderer(string title, Transform geoParent)
-        {
-            for (int i = 0; i < geoParent.childCount; i++)
-            {
-                if (geoParent.GetChild(i).name == title)
-                    return geoParent.GetChild(i).GetComponent<MeshRenderer>();
-            }
-
-            return null;
-        }
-
         public Sosig CreateSosig(SosigAPI.SpawnOptions spawnOptions, Vector3 position, Quaternion rotation, SosigPool pool, string poolName)
         {
             //Debug.Log("Supply Raid - Spawning Sosig at position: " + position);
@@ -2064,6 +2090,13 @@ namespace SupplyRaid
                     position,
                     rotation);
 
+            //Set Agents to quailty level
+            NavMeshAgent agent = sosig.GetComponent<NavMeshAgent>();
+
+            agent.obstacleAvoidanceType = avoidanceQuailty;
+            agent.stoppingDistance = 1;
+
+
             //Custom Sosigs
             if (SupplyRaidPlugin.customSosigs.TryGetValue((int)id, out SR_SosigEnemyTemplate template))
             {
@@ -2084,7 +2117,7 @@ namespace SupplyRaid
                 }
 
                 //Sosig Material Changes
-                MeshRenderer head = GetSosigMeshRenderer("Geo_Head", sosig.Links[0].transform);
+                MeshRenderer head = SR_SosigData.GetSosigMeshRenderer("Geo_Head", sosig.Links[0].transform);
                 Material sosigMaterial = head.material;
                 if (custom.useCustomSkin)
                     sosigMaterial.SetTexture("_MainTex", SupplyRaidPlugin.customSosigTexture);
@@ -2097,71 +2130,35 @@ namespace SupplyRaid
                 sosigMaterial.SetInt("_SpecularHighlights", custom.specularHighlights ? 1 : 0);
                 sosigMaterial.SetInt("_GlossyReflections", custom.glossyReflections ? 1 : 0);
                 head.sharedMaterial = sosigMaterial;
+                sosig.GibMaterial = sosigMaterial;
 
                 //Head
                 if (sosig.Links.Count >= 1)
-                    UpdateSosigLink(sosig.Links[0], custom.scaleBody, custom.scaleHead, sosigMaterial, stopSever, "Geo_Head");
+                    SR_SosigData.UpdateSosigLink(sosig.Links[0], custom.scaleBody, custom.scaleHead, sosigMaterial, stopSever, (MeshRenderer)sosig.Renderers[0]);
 
                 //Torso
                 if (sosig.Links.Count >= 2)
-                    UpdateSosigLink(sosig.Links[1], custom.scaleBody, custom.scaleTorso, sosigMaterial, stopSever, "Geo_Torso");
+                    SR_SosigData.UpdateSosigLink(sosig.Links[1], custom.scaleBody, custom.scaleTorso, sosigMaterial, stopSever, (MeshRenderer)sosig.Renderers[1]);
 
                 //Legs
                 if (sosig.Links.Count >= 3)
-                    UpdateSosigLink(sosig.Links[2], custom.scaleBody, custom.scaleLegsUpper, sosigMaterial, stopSever, "Geo_UpperLink");
+                    SR_SosigData.UpdateSosigLink(sosig.Links[2], custom.scaleBody, custom.scaleLegsUpper, sosigMaterial, stopSever, (MeshRenderer)sosig.Renderers[2]);
 
                 //Legs Lower
                 if (sosig.Links.Count >= 4)
-                    UpdateSosigLink(sosig.Links[3], custom.scaleBody, custom.scaleLegsUpper, sosigMaterial, stopSever, "Geo_LowerLink");
+                    SR_SosigData.UpdateSosigLink(sosig.Links[3], custom.scaleBody, custom.scaleLegsUpper, sosigMaterial, stopSever, (MeshRenderer)sosig.Renderers[3]);
 
                 //Overall Scale
                 sosig.transform.localScale = custom.scaleBody;
+
+                //Update Agent
+                float agentRadius = (custom.scaleBody.x > custom.scaleBody.z ? custom.scaleBody.x : custom.scaleBody.z);
+                if(agentRadius > agent.radius)
+                    agent.radius = agent.radius * (custom.scaleBody.x > custom.scaleBody.z ? custom.scaleBody.x : custom.scaleBody.z);
+
+                agent.height *= custom.scaleBody.y;
             }
-
-            //Set Agents to quailty level
-            NavMeshAgent agent = sosig.GetComponent<NavMeshAgent>();
-
-            agent.obstacleAvoidanceType = avoidanceQuailty;
-            agent.stoppingDistance = 1;
-
             return sosig;
-        }
-
-        void UpdateSosigLink(SosigLink link, Vector3 bodyScale, Vector3 linkScale, Material sosigMaterial, bool stopSever, string geoName)
-        {
-            if(link == null) 
-                return;
-
-            CapsuleCollider capsule = (CapsuleCollider)link.C;
-            capsule.height *= linkScale.y;
-            capsule.radius *= (linkScale.x > linkScale.z ? linkScale.x : linkScale.z);
-
-            CharacterJoint joint = link.J != null ? link.J : link.GetComponent<CharacterJoint>();
-            if (joint)
-            {
-                //Review these, try without this
-                joint.anchor = new Vector3(0, joint.anchor.y * bodyScale.y * linkScale.y, 0);
-                //joint.connectedAnchor = new Vector3(0, joint.connectedAnchor.y * bodyScale.y * linkScale.y, 0);
-            }
-
-            if (sosigMaterial)
-            {
-                MeshRenderer meshRender = GetSosigMeshRenderer(geoName, link.transform);
-                meshRender.sharedMaterial = sosigMaterial;
-                meshRender.transform.localScale = Vector3.Scale(bodyScale, linkScale);
-            }
-
-            //LOL ANTON HARDCODED NONSENSE
-            if (stopSever)
-                link.m_isJointSevered = true;
-
-            if (link.m_wearables.Count > 0)
-            {
-                foreach (SosigWearable sosigWearable in link.m_wearables)
-                {
-                    sosigWearable.gameObject.transform.localScale = link.transform.localScale;
-                }
-            }
         }
 
         void ClearSosigs()
@@ -2218,7 +2215,6 @@ namespace SupplyRaid
                 FVRObject.OTagAttachmentFeature.IronSight,
                 FVRObject.OTagAttachmentFeature.Reflex,
             };
-
 
             List<FVRObject.OTagSet> set = new List<FVRObject.OTagSet>
             {

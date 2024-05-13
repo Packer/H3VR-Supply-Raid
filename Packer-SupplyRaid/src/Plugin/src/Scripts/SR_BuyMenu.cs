@@ -97,7 +97,41 @@ namespace SupplyRaid
             for (int i = 0; i < purchaseCategories.Count; i++)
             {
                 if (!loadedCategories.Contains(purchaseCategories[i].ItemCategory().category))
-                    loadedCategories.Add(purchaseCategories[i].ItemCategory().category);
+                {
+                    if (purchaseCategories[i].ItemCategory().category == "")
+                    {
+                        string newCategory = "";
+                        switch (purchaseCategories[i].ItemCategory().type)
+                        {
+                            case LootTable.LootTableType.Firearm:
+                                newCategory = "Standard_Firearm";
+                                break;
+                            case LootTable.LootTableType.Powerup:
+                                newCategory = "Standard_Powerup";
+                                break;
+                            case LootTable.LootTableType.Thrown:
+                                newCategory = "Standard_Thrown";
+                                break;
+                            case LootTable.LootTableType.Attachments:
+                                newCategory = "Standard_Attachments";
+                                break;
+                            case LootTable.LootTableType.Melee:
+                                newCategory = "Standard_Melee";
+                                break;
+                            default:
+                                newCategory = "Standard";
+                                break;
+                        }
+
+                        if (!loadedCategories.Contains(newCategory))
+                            loadedCategories.Add(newCategory);
+
+                        purchaseCategories[i].ItemCategory().category = newCategory;
+                        //purchaseCategories[i].ItemCategory().category = purchaseCategories[i].ItemCategory();
+                    }
+                    else
+                        loadedCategories.Add(purchaseCategories[i].ItemCategory().category);
+                }
             }
 
             //Generate Tabs and Containers

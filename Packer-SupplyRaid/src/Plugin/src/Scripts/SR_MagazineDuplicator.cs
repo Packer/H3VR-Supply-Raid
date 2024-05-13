@@ -134,6 +134,9 @@ namespace SupplyRaid
                 }
             }
 
+            if (selectedBox == null)
+                return;
+
 
             //Selection Box
             Transform target = null;
@@ -141,10 +144,10 @@ namespace SupplyRaid
             if (m_detectedMag && m_detectedMag.GameObject)
                 target = m_detectedMag.PoseOverride ? m_detectedMag.PoseOverride : m_detectedMag.transform;
 
-            if(!target && m_detectedSL && m_detectedSL.GameObject)
+            if (!target && m_detectedSL && m_detectedSL.GameObject)
                 target = m_detectedSL.PoseOverride ? m_detectedSL.PoseOverride : m_detectedSL.transform;
 
-            if(!target && m_detectedFirearms.Count > 0 && m_detectedFirearms[0] && m_detectedFirearms[0].GameObject)
+            if (!target && m_detectedFirearms.Count > 0 && m_detectedFirearms[0] && m_detectedFirearms[0].GameObject)
                 target = m_detectedFirearms[0].PoseOverride ? m_detectedFirearms[0].PoseOverride : m_detectedFirearms[0].transform;
 
             if (target)
@@ -222,10 +225,11 @@ namespace SupplyRaid
                 int powerIndex = (int)m_detectedMag.ObjectWrapper.TagFirearmRoundPower;
                 float multiplier = SR_Manager.instance.character.powerMultiplier[powerIndex];
 
-                if (SR_Manager.instance.character.perRound)
-                    costDuplicate = Mathf.CeilToInt(SR_Manager.instance.character.duplicateMagazineCost * m_detectedMag.m_capacity * multiplier);
-                else
-                    costDuplicate = Mathf.CeilToInt(SR_Manager.instance.character.duplicateMagazineCost * multiplier);
+                costDuplicate 
+                    = SR_Manager.Character().GetRoundCost(
+                        SR_Manager.instance.character.duplicateMagazineCost, 
+                        m_detectedMag.m_capacity, 
+                        multiplier);
 
                 //Can duplicate Magazine
                 SetDuplicateStatus(true);

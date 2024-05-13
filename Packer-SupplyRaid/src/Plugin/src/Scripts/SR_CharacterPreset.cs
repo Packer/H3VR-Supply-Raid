@@ -246,6 +246,18 @@ namespace SupplyRaid
             return true;
         }
 
+        public int GetRoundPowerCost(FistVR.FVRObject.OTagFirearmRoundPower power, int amount)
+        {
+            return Mathf.CeilToInt(powerMultiplier[(int)power] * amount * roundsCost);
+        }
+
+        public int GetRoundCost(float cost, int amount, float multiplier)
+        {
+            if(perRound)
+                return Mathf.CeilToInt(cost * amount * multiplier);
+            else
+                return Mathf.CeilToInt(cost * multiplier);
+        }
 	}
 
     [System.Serializable]

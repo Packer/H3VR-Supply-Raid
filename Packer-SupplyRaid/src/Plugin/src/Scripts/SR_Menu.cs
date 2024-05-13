@@ -761,8 +761,11 @@ namespace SupplyRaid
 
         public void ClientRequestSync()
         {
-            if(SupplyRaidPlugin.h3mpEnabled)
+            if (SupplyRaidPlugin.h3mpEnabled)
+            {
+                SR_Manager.PlayConfirmSFX();
                 SR_Networking.instance.RequestSync_Send();
+            }
         }
     }
 }

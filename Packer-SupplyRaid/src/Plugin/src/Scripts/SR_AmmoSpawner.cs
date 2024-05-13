@@ -56,13 +56,33 @@ namespace SupplyRaid
         private List<SR_GenericButton> roundButtons = new List<SR_GenericButton>();
         private List<FVRObject> rounds = new List<FVRObject>();
 
+        public static List<FVRObject> GetAllRounds()
+        {
+            List<FVRObject> gearIDs = new List<FVRObject>();
+
+            //Loop through every item in the game and compare Keyword
+            foreach (string key in IM.OD.Keys)
+            {
+                if (IM.OD.TryGetValue(key, out FVRObject fvrObject))
+                {
+                    if (fvrObject && fvrObject.Category == FVRObject.ObjectCategory.Cartridge)
+                    {
+                        gearIDs.Add(fvrObject);
+                    }
+                }
+            }
+
+            return gearIDs;
+        }
+
         void PopulateRoundPage()
         {
+            Debug.Log("Populating Rounds Page");
             //Clear all old buttons
             for (int i = 0; i < roundButtons.Count; i++)
             {
                 if (roundButtons[i])
-                    Destroy(roundButtons[i]);
+                    Destroy(roundButtons[i].gameObject);
             }
 
             List<FireArmRoundType> roundTypes = new List<FireArmRoundType>();
@@ -110,27 +130,26 @@ namespace SupplyRaid
                         roundTypes.Add(m_detectedFirearms[i].RoundType);
             }
 
-
             //Populate Rounds
-            if(rounds == null)
-                rounds = new List<FVRObject>(ManagerSingleton<IM>.Instance.odicTagCategory[FVRObject.ObjectCategory.Cartridge]);
-            else
-                rounds.Clear();
+            rounds = GetAllRounds();
 
             for (int i = rounds.Count - 1; i >= 0; i--)
             {
                 if (!roundTypes.Contains(rounds[i].RoundType))
                     rounds.RemoveAt(i);
             }
+            Debug.Log("Rounds Total: " + rounds.Count);
 
             //Create Buttons!
             for (int i = 0; i < rounds.Count; i++)
             {
+                Debug.Log("Round: " + i);
                 SR_GenericButton btn = Instantiate(roundButtonPrefab, roundContainer).GetComponent<SR_GenericButton>();
                 btn.gameObject.SetActive(true);
+                roundButtons.Add(btn);
 
                 ItemSpawnerID id;
-                ManagerSingleton<IM>.Instance.SpawnerIDDic.TryGetValue(rounds[i].SpawnedFromId, out id);
+                IM.Instance.SpawnerIDDic.TryGetValue(rounds[i].SpawnedFromId, out id);
 
                 //Description
                 btn.textB.text = rounds[i].DisplayName;
@@ -143,27 +162,34 @@ namespace SupplyRaid
 
                     //Cost Text
                     if (purchasedAmmoTypes[(int)ammo])
-                        btn.text.text = "";
+                    {
+                        if (SR_Manager.Character().modeRounds == 4)
+                        {
+                            int roundCost = SR_Manager.Character().GetRoundPowerCost(rounds[i].TagFirearmRoundPower, 1);
+                            btn.text.text = roundCost.ToString();
+                        }
+                        else
+                            btn.text.text = "";
+                    }
                     else
-                        btn.text.text = ((int)ammo).ToString();
+                    {
+                        btn.text.text = SR_Manager.Character().ammoUpgradeCost[(int)ammo].ToString();
+                    }
 
-                    //Thumbnail
-                    if (id.Sprite)
-                    {
-                        btn.thumbnail.sprite = id.Sprite;
-                    }
-                    else
-                    {
-                        //Use same Ammo Type sprite
-                        btn.thumbnail.sprite = ammoTypeButtons[(int)ammo].GetComponent<UnityEngine.UI.Image>().sprite;
-                    }
+                    //Use same Ammo Type sprite
+                    btn.thumbnail.sprite = ammoTypeButtons[(int)ammo].GetComponent<UnityEngine.UI.Image>().sprite;
+                }
+                else 
+                {
+                    Debug.Log("ERROR NO ID FOUND BRUH");
                 }
             }
         }
 
         public void BuySpecificRound(int index)
         {
-            if (!CanSpawn(SR_Manager.instance.character.modeRounds, SR_Manager.instance.character.roundsCost, 3))
+            Debug.Log("Spawning round " + index);
+            if (!CanSpawn(SR_Manager.Character().modeRounds, SR_Manager.Character().roundsCost, 3))
             {
                 SR_Manager.PlayFailSFX();
                 return;

@@ -34,9 +34,5 @@
         <HintPath>..\libs\Sodalite.dll</HintPath>
       </Reference>
     </ItemGroup>
-    
-    <ItemGroup>
-      <Folder Include="src\Scripts\CustomSosigs\" />
-    </ItemGroup>
 
 </Project>

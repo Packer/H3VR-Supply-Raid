@@ -76,6 +76,7 @@ namespace SupplyRaid
     [System.Serializable]
     public class SR_CustomSosig
     {
+        public string name; //For internal use
         public SosigEnemyID baseSosigID = SosigEnemyID.Misc_Dummy;
         public string customTextureName = "";
 
