@@ -991,11 +991,12 @@ namespace SupplyRaid
             return collected;
         }
 
+        /*
         public static List<string> GetCustomSosigDirectories()
         {
             return Directory.GetFiles(Paths.PluginPath, "*.csosig", SearchOption.AllDirectories).ToList();
         }
-
+        
         public static void LoadCustomSosigs()
         {
             List<string> directories = GetCustomSosigDirectories();
@@ -1035,6 +1036,7 @@ namespace SupplyRaid
                 }
             }
         }
+        */
 
         public static void ItemIDToList(string[] itemIDs, List<FVRObject> input)
         {

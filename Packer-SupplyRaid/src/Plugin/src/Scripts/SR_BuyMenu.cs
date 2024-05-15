@@ -127,7 +127,6 @@ namespace SupplyRaid
                             loadedCategories.Add(newCategory);
 
                         purchaseCategories[i].ItemCategory().category = newCategory;
-                        //purchaseCategories[i].ItemCategory().category = purchaseCategories[i].ItemCategory();
                     }
                     else
                         loadedCategories.Add(purchaseCategories[i].ItemCategory().category);

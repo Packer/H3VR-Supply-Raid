@@ -69,11 +69,10 @@ namespace SupplyRaid
     public class SosigPool
     {
         public SosigEnemyID[] sosigEnemyID;
-        public string[] customPool; //Arctic_Patrol etc
 
         public int Count()
         {
-            return sosigEnemyID.Length + customPool.Length;
+            return sosigEnemyID.Length;
         }
     }
 

@@ -23,8 +23,8 @@ namespace SupplyRaid
 		public static bool bgmEnabled = false;
 		public static bool loadTnH = false;
 		public static Text tnhButtonText = null;
-		public static Dictionary<int, SR_SosigEnemyTemplate> customSosigs = new Dictionary<int, SR_SosigEnemyTemplate>();
-        public static Texture2D customSosigTexture;
+		//public static Dictionary<int, SR_SosigEnemyTemplate> customSosigs = new Dictionary<int, SR_SosigEnemyTemplate>();
+        //public static Texture2D customSosigTexture;
 
         public SupplyRaidPlugin()
 		{
@@ -39,16 +39,17 @@ namespace SupplyRaid
 			bgmEnabled = Chainloader.PluginInfos.ContainsKey("dll.potatoes.ptnhbgml");
 
             SceneManager.activeSceneChanged += ChangedActiveScene;
-            LoadCustomSosigTexture();
-            GenerateAllJsons();
+            //LoadCustomSosigTexture();
+            //GenerateAllJsons();
         }
 
         void Start()
         {
-            SR_Global.LoadCustomSosigs();
-            StartCoroutine(SetupSosigTemplates());
+            //SR_Global.LoadCustomSosigs();
+            //StartCoroutine(SetupSosigTemplates());
         }
 
+        /*
         public System.Collections.IEnumerator SetupSosigTemplates()
         {
             Debug.Log("Custom Sosigs count: " + SupplyRaidPlugin.customSosigs.Count);
@@ -96,12 +97,13 @@ namespace SupplyRaid
             }
             Debug.Log("Sosigs count: " + IM.Instance.odicSosigObjsByID.Count);
         }
+        */
 
         public void GenerateAllJsons()
 		{
 			//GenerateNewSosig().ExportJson();
         }
-
+        /*
 		public SR_SosigEnemyTemplate GenerateNewSosig()
 		{
             SR_SosigEnemyTemplate enemy = new SR_SosigEnemyTemplate();
@@ -159,6 +161,7 @@ namespace SupplyRaid
 
             customSosigTexture = tex;
         }
+        */
 
         private void ChangedActiveScene(Scene current, Scene next)
         {

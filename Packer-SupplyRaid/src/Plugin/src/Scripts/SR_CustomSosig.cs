@@ -80,6 +80,10 @@ namespace SupplyRaid
         public SosigEnemyID baseSosigID = SosigEnemyID.Misc_Dummy;
         public string customTextureName = "";
 
+        //Voice
+        public float voicePitch = 1;
+        public float voiceVolume = 1;
+
         //Scale
         public Vector3 scaleBody = Vector3.one;
         public Vector3 scaleHead = Vector3.one;
@@ -270,6 +274,9 @@ namespace SupplyRaid
             config.UsesLinkSpawns = UsesLinkSpawns;
             SR_Global.ItemIDToList(LinkSpawns.ToArray(), config.LinkSpawns);
             config.LinkSpawnChance = LinkSpawnChance;
+
+            //config.OverrideSpeechSet = new SosigSpeechSet();
+            //config.OverrideSpeechSet.BasePitch
 
             return config;
         }

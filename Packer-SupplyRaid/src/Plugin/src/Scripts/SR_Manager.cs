@@ -1392,6 +1392,7 @@ namespace SupplyRaid
 
         private IEnumerator SetupDefenderSosigs(FactionLevel currentLevel)
         {
+            Debug.Log("WEET");
             int teamID = (int)faction.teamID;
             if (teamID == -1) //Random
                 teamID = Random.Range(0,4);
@@ -1404,6 +1405,7 @@ namespace SupplyRaid
             //Enemy Level Count
             int enemyCount = Mathf.CeilToInt(currentLevel.enemiesTotal * profile.playerCount);
 
+            Debug.Log("BBB");
             //Sniper Setup
             if (currentLevel.sniperCount > 0 && currentLevel.sniperPool.Count() > 0)
             {
@@ -1446,6 +1448,7 @@ namespace SupplyRaid
                 }
             }
 
+            Debug.Log("HH");
             //Boss Setup
             if (currentLevel.bossCount > 0 && currentLevel.bossPool.Count() > 0)
             {
@@ -1461,6 +1464,7 @@ namespace SupplyRaid
                 }
             }
 
+            Debug.Log("WETWH");
             //Guard Setup
             if (currentLevel.guardCount > 0 && currentLevel.guardPool.Count() > 0)
             {
@@ -1510,6 +1514,7 @@ namespace SupplyRaid
                 }
             }
 
+            Debug.Log("uu");
             yield return new WaitForSeconds(sosigSpawnTick);
 
             if (currentLevel.patrolPool.Count() <= 0)
@@ -1539,6 +1544,7 @@ namespace SupplyRaid
                 if (enemyCount <= 0)
                     filling = false;
             }
+            Debug.Log("gdgfd");
 
             int enemiesTotal = 0;
 
@@ -1554,6 +1560,7 @@ namespace SupplyRaid
 
             List<int> usedPaths = new List<int>();
 
+            Debug.Log("jjjj");
             //For each Patrol Path, create even amount of sosigs
             for (int y = 0; y < groups.Count; y++)
             {
@@ -1568,7 +1575,6 @@ namespace SupplyRaid
                 {
                     while (pp == null)
                     {
-                        Debug.Log("PP While");
                         pathID = Random.Range(0, AttackSupplyPoint().patrolPaths.Length);
 
                         if (!usedPaths.Contains(pathID))
@@ -1590,6 +1596,7 @@ namespace SupplyRaid
                 if (d * d < count)
                     extra = count - (d * d);
 
+                Debug.Log("mmm");
                 Vector3 newPos;
                 for (int z = 0, i = 0; z < d + extra; z++)
                 {
@@ -2079,7 +2086,6 @@ namespace SupplyRaid
 
             Debug.Log(IM.Instance.odicSosigObjsByID[id] ? "Found Sosig Config " : "Not Found Sosig");
 
-
             //Get Valid Nav Mesh
             position = SR_Global.GetValidNavPosition(position, 30f);
 
@@ -2096,7 +2102,7 @@ namespace SupplyRaid
             agent.obstacleAvoidanceType = avoidanceQuailty;
             agent.stoppingDistance = 1;
 
-
+            /*
             //Custom Sosigs
             if (SupplyRaidPlugin.customSosigs.TryGetValue((int)id, out SR_SosigEnemyTemplate template))
             {
@@ -2157,7 +2163,47 @@ namespace SupplyRaid
                     agent.radius = agent.radius * (custom.scaleBody.x > custom.scaleBody.z ? custom.scaleBody.x : custom.scaleBody.z);
 
                 agent.height *= custom.scaleBody.y;
+
+                //ANTON PLEASSS
+                SosigSpeechSet speechSet = ScriptableObject.CreateInstance<SosigSpeechSet>();
+
+                speechSet.OnAssault = sosig.Speech.OnAssault;
+                speechSet.OnAssault = sosig.Speech.OnAssault;
+                speechSet.OnBackBreak = sosig.Speech.OnBackBreak;
+                speechSet.OnBeingAimedAt = sosig.Speech.OnBeingAimedAt;
+                speechSet.OnCall_Assistance = sosig.Speech.OnCall_Assistance;
+                speechSet.OnCall_Skirmish = sosig.Speech.OnCall_Skirmish;
+                speechSet.OnConfusion = sosig.Speech.OnConfusion;
+                speechSet.OnDeath = sosig.Speech.OnDeath;
+                speechSet.OnDeathAlt = sosig.Speech.OnDeathAlt;
+                speechSet.OnInvestigate = sosig.Speech.OnInvestigate;
+                speechSet.OnJointBreak = sosig.Speech.OnJointBreak;
+                speechSet.OnJointSever = sosig.Speech.OnJointSever;
+                speechSet.OnJointSlice = sosig.Speech.OnJointSlice;
+                speechSet.OnMedic = sosig.Speech.OnMedic;
+                speechSet.OnNeckBreak = sosig.Speech.OnNeckBreak;
+                speechSet.OnPain = sosig.Speech.OnPain;
+                speechSet.OnReloading = sosig.Speech.OnReloading;
+                speechSet.OnRespond_Assistance = sosig.Speech.OnRespond_Assistance;
+                speechSet.OnRespond_Skirmish = sosig.Speech.OnRespond_Skirmish;
+                speechSet.OnSearchingForGuns = sosig.Speech.OnSearchingForGuns;
+                speechSet.OnSkirmish = sosig.Speech.OnSkirmish;
+                speechSet.OnTakingCover = sosig.Speech.OnTakingCover;
+                speechSet.OnWander = sosig.Speech.OnWander;
+                speechSet.Test = sosig.Speech.Test;
+
+                speechSet.LessTalkativeSkirmish = sosig.Speech.LessTalkativeSkirmish;
+                speechSet.UseAltDeathOnHeadExplode = sosig.Speech.UseAltDeathOnHeadExplode;
+                speechSet.ForceDeathSpeech = sosig.Speech.ForceDeathSpeech;
+
+                speechSet.BasePitch = custom.voicePitch;
+                speechSet.BaseVolume = custom.voiceVolume;
+
+                sosig.Speech = speechSet;
             }
+            */
+            
+
             return sosig;
         }
 
