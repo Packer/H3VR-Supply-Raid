@@ -133,7 +133,8 @@ namespace SupplyRaid
                     if (SR_Manager.SpendPoints(SR_Manager.instance.character.ammoUpgradeCost[index]))
                     {
                         SR_AmmoSpawner.instance.purchasedAmmoTypes[index] = true;
-                        text.text = ""; //Blank Cost because we own it
+                        if(text)
+                            text.text = ""; //Blank Cost because we own it
 
                         SR_Manager.PlayPointsGainSFX();
                     }

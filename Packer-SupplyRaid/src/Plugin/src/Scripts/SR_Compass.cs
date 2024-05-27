@@ -58,11 +58,11 @@ namespace SupplyRaid
                 transform.position = GM.CurrentPlayerBody.RightHand.position - GM.CurrentPlayerBody.RightHand.forward * distance;
             transform.rotation = Quaternion.identity;
 
-            face.transform.LookAt(GM.CurrentPlayerBody.Head.position);
+            face.LookAt(GM.CurrentPlayerBody.Head.position);
 
             //Direction
-            Quaternion pointRotation = SR_Manager.profile.hand ? GM.CurrentPlayerBody.RightHand.rotation : GM.CurrentPlayerBody.LeftHand.rotation;
-            directionText.text = Mathf.FloorToInt(pointRotation.eulerAngles.y).ToString();
+            //Quaternion pointRotation = SR_Manager.profile.hand ? GM.CurrentPlayerBody.RightHand.rotation : GM.CurrentPlayerBody.LeftHand.rotation;
+            directionText.text = Mathf.FloorToInt(face.eulerAngles.y).ToString();
 
             //Last SupplyPoint
             Vector3 pos = SR_Manager.LastSupplyPoint().buyMenu.position;

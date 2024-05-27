@@ -100,9 +100,10 @@ namespace SupplyRaid
                 {
                     if (purchaseCategories[i].ItemCategory().category == "")
                     {
-                        string newCategory = "";
+                        string newCategory;
                         switch (purchaseCategories[i].ItemCategory().type)
                         {
+                            default:
                             case LootTable.LootTableType.Firearm:
                                 newCategory = "Standard_Firearm";
                                 break;
@@ -117,9 +118,6 @@ namespace SupplyRaid
                                 break;
                             case LootTable.LootTableType.Melee:
                                 newCategory = "Standard_Melee";
-                                break;
-                            default:
-                                newCategory = "Standard";
                                 break;
                         }
 

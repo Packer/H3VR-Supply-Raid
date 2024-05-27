@@ -253,9 +253,8 @@ namespace SupplyRaid
 
         void UpdateButtons(FVRObject fvrObject)
         {
-            if (fvrObject == null)
+            if (fvrObject == null || detectedFireArm == null)
                 return;
-
 
             //For each Button / Attachment Feature
             for (int i = 0; i < buttons.Length; i++)
@@ -280,10 +279,9 @@ namespace SupplyRaid
 
                     if (detectedFireArm != null && fvrObject != null)
                     {
-                        if (fvrObject.BespokeAttachments != null && fvrObject.BespokeAttachments.Count > 0 
-                            || detectedFireArm.IDSpawnedFrom != null 
-                            && detectedFireArm.IDSpawnedFrom.Secondaries != null
-                            && detectedFireArm.IDSpawnedFrom.Secondaries.Length > 0)
+                        if (detectedFireArm.IDSpawnedFrom != null
+                        && detectedFireArm.IDSpawnedFrom.Secondaries != null
+                        && detectedFireArm.IDSpawnedFrom.Secondaries.Length > 0)
                         {
                             //Debug.Log("Populating Bespoke");
                             //Add Item Secondaries
@@ -291,11 +289,16 @@ namespace SupplyRaid
                             {
                                 if (detectedFireArm.IDSpawnedFrom.Secondaries[s] != null)
                                 {
-                                    if (!bespokeAttachments.Contains(detectedFireArm.IDSpawnedFrom.Secondaries[s].MainObject))
+                                    if (detectedFireArm.IDSpawnedFrom.Secondaries[s].MainObject != null &&
+                                        !bespokeAttachments.Contains(detectedFireArm.IDSpawnedFrom.Secondaries[s].MainObject))
                                         bespokeAttachments.Add(detectedFireArm.IDSpawnedFrom.Secondaries[s].MainObject);
                                 }
                             }
 
+                        }
+
+                        if (fvrObject.BespokeAttachments != null && fvrObject.BespokeAttachments.Count > 0)
+                        {
                             //Add Bespoke
                             for (int b = 0; b < fvrObject.BespokeAttachments.Count; b++)
                             {

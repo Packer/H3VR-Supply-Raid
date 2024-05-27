@@ -35,90 +35,16 @@ namespace SupplyRaid
         public Transform ScanningVolume;
         public LayerMask ScanningLM;
         private FVRFireArmMagazine m_detectedMag;
-        private FVRFireArmMagazine lastMag;
-        private Speedloader m_detectedSL;
         private Collider[] colbuffer;
         private float m_scanTick = 1f;
+
+        private bool canUpgrade = false;
+        private bool canDuplicate = false;
+        private bool canBuyNewMag = false;
 
         private void Start()
         {
             colbuffer = new Collider[50];
-        }
-
-        public void Button_Upgrade()
-        {
-            
-            if (!SR_Manager.EnoughPoints(costUpgrade)
-                || m_detectedMag == null)
-            {
-                SR_Manager.PlayFailSFX();
-                return;
-            }
-
-            if (magazineUpgrade != null)
-            {
-                SR_Manager.SpendPoints(costUpgrade);
-                Destroy(m_detectedMag.GameObject);
-                GameObject gameObject = Instantiate(magazineUpgrade.GetGameObject(), Spawnpoint_Mag.position, Spawnpoint_Mag.rotation);
-                SR_Manager.PlayConfirmSFX();
-            }
-            else
-                SR_Manager.PlayFailSFX();
-        }
-
-        public void Button_Duplicate()
-        {
-            if (m_detectedMag == null && m_detectedSL == null
-                || m_detectedMag != null && m_detectedMag.IsEnBloc
-                || costDuplicate < 1)
-            {
-                SR_Manager.PlayFailSFX();
-                return;
-            }
-            
-            if (SR_Manager.EnoughPoints(costDuplicate))
-            {
-                SR_Manager.PlayConfirmSFX();
-                SR_Manager.SpendPoints(costDuplicate);
-
-                if (m_detectedMag != null)
-                {
-                    FVRObject fvrobject = m_detectedMag.ObjectWrapper;
-                    GameObject gameObject = Instantiate(fvrobject.GetGameObject(), Spawnpoint_Mag.position, Spawnpoint_Mag.rotation);
-                    FVRFireArmMagazine component = gameObject.GetComponent<FVRFireArmMagazine>();
-                    for (int i = 0; i < Mathf.Min(m_detectedMag.LoadedRounds.Length, component.LoadedRounds.Length); i++)
-                    {
-                        if (m_detectedMag.LoadedRounds[i] != null && m_detectedMag.LoadedRounds[i].LR_Mesh != null)
-                        {
-                            component.LoadedRounds[i].LR_Class = m_detectedMag.LoadedRounds[i].LR_Class;
-                            component.LoadedRounds[i].LR_Mesh = m_detectedMag.LoadedRounds[i].LR_Mesh;
-                            component.LoadedRounds[i].LR_Material = m_detectedMag.LoadedRounds[i].LR_Material;
-                            component.LoadedRounds[i].LR_ObjectWrapper = m_detectedMag.LoadedRounds[i].LR_ObjectWrapper;
-                        }
-                    }
-                    component.m_numRounds = m_detectedMag.m_numRounds;
-                    component.UpdateBulletDisplay();
-                }
-                else if (m_detectedSL != null)
-                {
-                    FVRObject fvrobject = m_detectedSL.ObjectWrapper;
-                    GameObject gameObject2 = Instantiate(fvrobject.GetGameObject(), Spawnpoint_Mag.position, Spawnpoint_Mag.rotation);
-                    Speedloader component2 = gameObject2.GetComponent<Speedloader>();
-                    for (int j = 0; j < m_detectedSL.Chambers.Count; j++)
-                    {
-                        if (m_detectedSL.Chambers[j].IsLoaded)
-                        {
-                            component2.Chambers[j].Load(m_detectedSL.Chambers[j].LoadedClass, false);
-                        }
-                        else
-                        {
-                            component2.Chambers[j].Unload();
-                        }
-                    }
-                }
-                return;
-            }
-            SR_Manager.PlayFailSFX();
         }
 
         private void Update()
@@ -137,15 +63,11 @@ namespace SupplyRaid
             if (selectedBox == null)
                 return;
 
-
             //Selection Box
             Transform target = null;
 
             if (m_detectedMag && m_detectedMag.GameObject)
                 target = m_detectedMag.PoseOverride ? m_detectedMag.PoseOverride : m_detectedMag.transform;
-
-            if (!target && m_detectedSL && m_detectedSL.GameObject)
-                target = m_detectedSL.PoseOverride ? m_detectedSL.PoseOverride : m_detectedSL.transform;
 
             if (!target && m_detectedFirearms.Count > 0 && m_detectedFirearms[0] && m_detectedFirearms[0].GameObject)
                 target = m_detectedFirearms[0].PoseOverride ? m_detectedFirearms[0].PoseOverride : m_detectedFirearms[0].transform;
@@ -164,16 +86,21 @@ namespace SupplyRaid
 
         private void Scan()
         {
-            int num = Physics.OverlapBoxNonAlloc(ScanningVolume.position, ScanningVolume.localScale * 0.5f, colbuffer, ScanningVolume.rotation, ScanningLM, QueryTriggerInteraction.Collide);
+            int num = Physics.OverlapBoxNonAlloc(
+                ScanningVolume.position, 
+                ScanningVolume.localScale * 0.5f, 
+                colbuffer, 
+                ScanningVolume.rotation, 
+                ScanningLM, QueryTriggerInteraction.Collide);
+
+            magazineUpgrade = null;
             m_detectedMag = null;
-            m_detectedSL = null;
             m_detectedFirearms.Clear();
 
             for (int i = 0; i < num; i++)
             {
                 if (colbuffer[i].attachedRigidbody != null)
                 {
-
                     FVRFireArm firearm = this.colbuffer[i].attachedRigidbody.gameObject.GetComponent<FVRFireArm>();
                     if (firearm != null)
                     {
@@ -189,12 +116,6 @@ namespace SupplyRaid
                         m_detectedMag = component;
                         break;
                     }
-                    Speedloader component2 = colbuffer[i].attachedRigidbody.gameObject.GetComponent<Speedloader>();
-                    if (component2 != null && !component2.IsHeld && component2.QuickbeltSlot == null && component2.IsPretendingToBeAMagazine)
-                    {
-                        m_detectedSL = component2;
-                        break;
-                    }
 
                     //TODO find attachment magazines.
                     /*
@@ -207,45 +128,39 @@ namespace SupplyRaid
                     */
                 }
             }
-            SetCostBasedOnMag();
+            SetupCosts();
         }
 
-        private void SetCostBasedOnMag()
+        private void SetupCosts()
         {
+            //-----------------------------
+            // New Magazine
+            //-----------------------------
             if (m_detectedFirearms.Count > 0)
-                SetMagButtonStatus(true);
+                SetNewMagazineStatus(true);
             else
-                SetMagButtonStatus(false);
+                SetNewMagazineStatus(false);
 
-            if (m_detectedMag != null && lastMag != m_detectedMag)
+            if (m_detectedMag != null)
             {
-                lastMag = m_detectedMag;
-
-                //Duplicate Magazine Cost Calculation
+                //-----------------------------
+                // Duplicate Magazine
+                //-----------------------------
                 int powerIndex = (int)m_detectedMag.ObjectWrapper.TagFirearmRoundPower;
                 float multiplier = SR_Manager.instance.character.powerMultiplier[powerIndex];
 
-                costDuplicate 
+                costDuplicate
                     = SR_Manager.Character().GetRoundCost(
-                        SR_Manager.instance.character.duplicateMagazineCost, 
-                        m_detectedMag.m_capacity, 
+                        SR_Manager.instance.character.duplicateMagazineCost,
+                        m_detectedMag.m_capacity,
                         multiplier);
 
                 //Can duplicate Magazine
                 SetDuplicateStatus(true);
 
-
-                /*
-                IM.OD.ContainsKey(m_detectedMag.ObjectWrapper.ItemID);
-                //Upgradable Check
-                if (!IM.CompatMags.ContainsKey(m_detectedMag.MagazineType))
-                {
-                    SetUpgradeStatus(false);
-                    m_hasUpgradeableMags = false;
-                    SetDuplicateStatus(false);
-                    return;
-                }
-                */
+                //-----------------------------
+                // Magazine Upgrade
+                //-----------------------------
 
                 //Populate Magazines
                 List<FVRObject> mags = new List<FVRObject>(ManagerSingleton<IM>.Instance.odicTagCategory[FVRObject.ObjectCategory.Magazine]);
@@ -275,10 +190,10 @@ namespace SupplyRaid
                     multiplier = SR_Manager.instance.character.powerMultiplier[powerIndex];
 
                     //Update Magazine Cost Calculation
-                    if (SR_Manager.instance.character.perRound)
-                        costUpgrade = Mathf.CeilToInt(SR_Manager.instance.character.upgradeMagazineCost * m_detectedMag.m_capacity * multiplier);
-                    else
-                        costUpgrade = Mathf.CeilToInt(SR_Manager.instance.character.upgradeMagazineCost * multiplier);
+                    costUpgrade = SR_Manager.Character().GetRoundCost(
+                        SR_Manager.instance.character.upgradeMagazineCost,
+                        m_detectedMag.m_capacity,
+                        multiplier);
 
                     if (magazineUpgrade.ItemID == m_detectedMag.ObjectWrapper.ItemID)
                     {
@@ -294,45 +209,200 @@ namespace SupplyRaid
                     SetUpgradeStatus(false);
                 }
             }
-            else if(m_detectedMag == null)
+            else
             {
                 SetUpgradeStatus(false);
                 SetDuplicateStatus(false);
             }
         }
 
-        public void Button_SpawnMagazine()
+        //-------------------------------------------------------------------
+        // Duplicate
+        //-------------------------------------------------------------------
+
+        public void Button_Duplicate()
         {
-            if (!m_detectedFirearms[0])
+            if (!canDuplicate
+                || m_detectedMag == null
+                || m_detectedMag != null && m_detectedMag.IsEnBloc
+                || m_detectedMag.gameObject == null)
             {
                 SR_Manager.PlayFailSFX();
                 return;
             }
 
-            if (IM.OD.ContainsKey(m_detectedFirearms[0].ObjectWrapper.ItemID))
+            if (SR_Manager.EnoughPoints(costDuplicate))
             {
-                FVRObject fvrobject = IM.OD[m_detectedFirearms[0].ObjectWrapper.ItemID];
-                if (fvrobject.CompatibleMagazines.Count > 0)
-                {
-                    FVRObject fvrobject3 = fvrobject.CompatibleMagazines[0];
-                    GameObject gameObject2 = fvrobject3.GetGameObject();
+                SR_Manager.PlayConfirmSFX();
+                SR_Manager.SpendPoints(costDuplicate);
 
-                    if (SR_Manager.SpendPoints(costMagazine))
-                    {
-                        SR_Manager.PlayConfirmSFX();
-                        GameObject gameObject3 = Instantiate(gameObject2, Spawnpoint_Mag.position + Vector3.up * 0.1f, Spawnpoint_Mag.rotation);
-                        FVRFireArmMagazine fvrfireArmMagazine = gameObject3.GetComponent<FVRFireArmMagazine>();
-                        FireArmRoundType roundType2 = fvrfireArmMagazine.RoundType;
-                        FireArmRoundClass classFromType2 = GetClassFromType(roundType2);
-                        fvrfireArmMagazine.ReloadMagWithType(classFromType2);
-                    }
-                    else
-                        SR_Manager.PlayFailSFX();
-                    //Only do it for one weapon
-                    return;
-                }
+                Instantiate(m_detectedMag.gameObject, Spawnpoint_Mag.position, Spawnpoint_Mag.rotation);
+            }
+            else
+                SR_Manager.PlayFailSFX();
+        }
+
+        void SetDuplicateStatus(bool status)
+        {
+            if (costDuplicate < 0)
+            {
+                duplicateBtn.transform.parent.gameObject.SetActive(false);
+            }
+            else
+            {
+                duplicateBtn.sprite = statusImages[status ? 0 : 1];
+                duplicateCostText.text = costDuplicate.ToString();
+                canDuplicate = status;
             }
         }
+
+        //-------------------------------------------------------------------
+        // Upgrade Magazine
+        //-------------------------------------------------------------------
+
+        public void Button_Upgrade()
+        {
+            if (!canUpgrade
+                || !SR_Manager.EnoughPoints(costUpgrade)
+                || m_detectedMag == null)
+            {
+                SR_Manager.PlayFailSFX();
+                return;
+            }
+
+            if (magazineUpgrade != null)
+            {
+                SR_Manager.SpendPoints(costUpgrade);
+                Destroy(m_detectedMag.GameObject);
+                GameObject gameObject = Instantiate(magazineUpgrade.GetGameObject(), Spawnpoint_Mag.position, Spawnpoint_Mag.rotation);
+                SR_Manager.PlayConfirmSFX();
+            }
+            else
+                SR_Manager.PlayFailSFX();
+        }
+
+        void SetUpgradeStatus(bool status)
+        {
+            if (costUpgrade < 0)
+            {
+                upgradeBtn.transform.parent.gameObject.SetActive(false);
+                return;
+            }
+            else
+            {
+                upgradeBtn.sprite = statusImages[status ? 0 : 1];
+                upgradeCostText.text = costUpgrade.ToString();
+                canUpgrade = status;
+            }
+        }
+
+        //-------------------------------------------------------------------
+        // New Magazine
+        //-------------------------------------------------------------------
+
+        private FVRObject newMagazine;
+
+        public void Button_SpawnMagazine()
+        {
+            if (!canBuyNewMag
+                || m_detectedFirearms == null
+                || m_detectedFirearms.Count <= 0
+                || !m_detectedFirearms[0])
+            {
+                SR_Manager.PlayFailSFX();
+                return;
+            }
+
+            if (newMagazine != null)
+            {
+                GameObject magazinePrefab = newMagazine.GetGameObject();
+
+                if (magazinePrefab != null && SR_Manager.SpendPoints(costMagazine))
+                {
+                    GameObject spawnedMagazine = Instantiate(magazinePrefab, Spawnpoint_Mag.position + Vector3.up * 0.15f, Spawnpoint_Mag.rotation);
+
+                    if (spawnedMagazine != null)
+                    {
+                        FVRFireArmMagazine fvrfireArmMagazine = spawnedMagazine.GetComponent<FVRFireArmMagazine>();
+
+                        if (fvrfireArmMagazine)
+                        {
+                            FireArmRoundType roundType2 = fvrfireArmMagazine.RoundType;
+                            FireArmRoundClass classFromType2 = GetClassFromType(roundType2);
+                            fvrfireArmMagazine.ReloadMagWithType(classFromType2);
+
+                            SR_Manager.PlayConfirmSFX();
+                        }
+                    }
+                }
+                else
+                    SR_Manager.PlayFailSFX();
+            }
+        }
+
+        void SetNewMagazineStatus(bool status)
+        {
+            //Disabled Button
+            if (SR_Manager.instance.character.newMagazineCost < 0)
+            {
+                magazineBtn.transform.parent.gameObject.SetActive(false);
+                return;
+            }
+
+            //Status
+            newMagazine = null;
+            magazineBtn.sprite = statusImages[status ? 0 : 1];
+            canBuyNewMag = status;
+
+            if (status == false)
+            {
+                magazineBtn.sprite = statusImages[1];
+                canBuyNewMag = false;
+                magazineCostText.text = "";
+                return;
+            }
+
+            //Get New Magazine
+            if (m_detectedFirearms[0] && IM.OD.ContainsKey(m_detectedFirearms[0].ObjectWrapper.ItemID))
+            {
+                FVRObject firearmFVR = IM.OD[m_detectedFirearms[0].ObjectWrapper.ItemID];
+                
+                /*
+                FVRObject lowestCapacity = firearmFVR.CompatibleMagazines[0];
+                for (int i = 1; i < firearmFVR.CompatibleMagazines.Count; i++)
+                {
+                    if (firearmFVR.CompatibleMagazines[i].MagazineCapacity < lowestCapacity.MagazineCapacity)
+                        lowestCapacity = firearmFVR.CompatibleMagazines[i];
+                }
+                */
+
+                newMagazine = SR_Global.GetLowestCapacityAmmoObject(firearmFVR);
+            }
+
+            //Missing or Failed Magazine, probably a bad mod
+            if (newMagazine == null)
+            {
+                magazineBtn.sprite = statusImages[1];
+                canBuyNewMag = false;
+                magazineCostText.text = "";
+                return;
+            }
+
+            //New Magazine Cost Calculation
+            int powerIndex = (int)newMagazine.TagFirearmRoundPower;
+            float multiplier = SR_Manager.instance.character.powerMultiplier[powerIndex];
+
+            costMagazine = SR_Manager.Character().GetRoundCost(
+                SR_Manager.instance.character.newMagazineCost,
+                newMagazine.MagazineCapacity,
+                multiplier);
+
+            magazineCostText.text = costMagazine.ToString();
+        }
+
+        //-------------------------------------------------------------------
+        // Misc
+        //-------------------------------------------------------------------
 
         private FireArmRoundClass GetClassFromType(FireArmRoundType t)
         {
@@ -359,73 +429,9 @@ namespace SupplyRaid
             return m_decidedTypes[t];
         }
 
-        void SetMagButtonStatus(bool status)
-        {
-            if (SR_Manager.instance.character.newMagazineCost < 0)
-            {
-                magazineBtn.transform.parent.gameObject.SetActive(false);
-                return;
-            }
-
-            if (!magazineUpgrade)
-                return;
-
-            int powerIndex = (int)magazineUpgrade.TagFirearmRoundPower;
-            float multiplier = SR_Manager.instance.character.powerMultiplier[powerIndex];
-
-            //New Magazine Cost Calculation
-            if (SR_Manager.instance.character.perRound)
-            {
-                if (m_detectedFirearms.Count <= 0 || m_detectedFirearms[0] == null)
-                    return;
-
-                if (m_detectedFirearms[0] &&
-                    IM.OD.ContainsKey(m_detectedFirearms[0].ObjectWrapper.ItemID))
-                {
-                    FVRObject fvrobject = IM.OD[m_detectedFirearms[0].ObjectWrapper.ItemID];
-
-                    if (fvrobject == null
-                        || fvrobject.CompatibleMagazines == null
-                        || fvrobject.CompatibleMagazines.Count <= 0)
-                        return;
-                    costMagazine = Mathf.CeilToInt(SR_Manager.instance.character.newMagazineCost * fvrobject.CompatibleMagazines[0].MagazineCapacity * multiplier);
-                }
-            }
-            else
-            {
-                costMagazine = Mathf.CeilToInt(SR_Manager.instance.character.newMagazineCost * multiplier);
-            }
-
-            magazineBtn.sprite = statusImages[status ? 0 : 1];
-            magazineCostText.text = costMagazine.ToString();
-        }
-
-        void SetUpgradeStatus(bool status)
-        {
-
-            if (costUpgrade < 0)
-            {
-                upgradeBtn.transform.parent.gameObject.SetActive(false);
-                return;
-            }
-            else
-            {
-                upgradeBtn.sprite = statusImages[status ? 0 : 1];
-                upgradeCostText.text = costUpgrade.ToString();
-            }
-        }
-
-        void SetDuplicateStatus(bool status)
-        {
-            if (costDuplicate < 0)
-                duplicateBtn.transform.parent.gameObject.SetActive(false);
-            else
-            {
-                duplicateBtn.sprite = statusImages[status ? 0 : 1];
-                duplicateCostText.text = costDuplicate.ToString();
-            }
-
-        }
+        //-------------------------------------------------------------------
+        // Editor
+        //-------------------------------------------------------------------
 
         private void OnDrawGizmos()
         {

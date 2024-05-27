@@ -198,6 +198,11 @@ namespace SupplyRaid
                 {
                     string json = streamReader.ReadToEnd();
 
+                    //Legacy Support
+                    bool legacy = false;
+                    if (!json.Contains("powerMultiplier"))
+                        legacy = true;
+
                     try
                     {
                         character = JsonUtility.FromJson<SR_CharacterPreset>(json);
@@ -206,6 +211,15 @@ namespace SupplyRaid
                     {
                         Debug.Log(ex.Message);
                         return null;
+                    }
+
+                    //Old Characters
+                    if (legacy)
+                    {
+                        for (int y = 0; y < character.powerMultiplier.Length; y++)
+                        {
+                            character.powerMultiplier[y] = 1;
+                        }
                     }
 
                     //Add to our item category pool

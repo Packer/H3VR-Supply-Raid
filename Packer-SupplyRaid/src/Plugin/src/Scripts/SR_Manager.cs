@@ -911,6 +911,8 @@ namespace SupplyRaid
             //Teleport player to Spawn
             GM.CurrentMovementManager.TeleportToPoint(spawnPoint.position, true, spawnPoint.rotation.eulerAngles);
 
+
+            string cashMoney = SR_Global.GetHighestValueCashMoney(Character().recyclerTokens);
             //Convert All Coal on player to Money
             for (int i = 0; i < GM.CurrentPlayerBody.QBSlots_Internal.Count; i++)
             {
@@ -919,7 +921,7 @@ namespace SupplyRaid
                 if (obj != null && obj.gameObject.name == "CharcoalBriquette(Clone)")
                 {
                     FVRObject mainObject = null;
-                    IM.OD.TryGetValue("Cartridge69CashMoneyD1", out mainObject);
+                    IM.OD.TryGetValue(cashMoney, out mainObject);
 
                     if (mainObject == null)
                         continue;
@@ -1392,7 +1394,6 @@ namespace SupplyRaid
 
         private IEnumerator SetupDefenderSosigs(FactionLevel currentLevel)
         {
-            Debug.Log("WEET");
             int teamID = (int)faction.teamID;
             if (teamID == -1) //Random
                 teamID = Random.Range(0,4);
@@ -1405,7 +1406,6 @@ namespace SupplyRaid
             //Enemy Level Count
             int enemyCount = Mathf.CeilToInt(currentLevel.enemiesTotal * profile.playerCount);
 
-            Debug.Log("BBB");
             //Sniper Setup
             if (currentLevel.sniperCount > 0 && currentLevel.sniperPool.Count() > 0)
             {
@@ -1448,7 +1448,6 @@ namespace SupplyRaid
                 }
             }
 
-            Debug.Log("HH");
             //Boss Setup
             if (currentLevel.bossCount > 0 && currentLevel.bossPool.Count() > 0)
             {
@@ -1459,12 +1458,11 @@ namespace SupplyRaid
                 for (int i = 0; i < bossCount; i++)
                 {
                     Transform spot = AttackSupplyPoint().GetBossSpawn();
-                    SpawnGuardSosig(spot.position, spot.rotation, currentLevel);
+                    SpawnGuardSosig(spot, currentLevel);
                     yield return new WaitForSeconds(sosigSpawnTick);
                 }
             }
 
-            Debug.Log("WETWH");
             //Guard Setup
             if (currentLevel.guardCount > 0 && currentLevel.guardPool.Count() > 0)
             {
@@ -1475,7 +1473,7 @@ namespace SupplyRaid
                 for (int i = 0; i < guardCount; i++)
                 {
                     Transform spot = AttackSupplyPoint().GetRandomGuardSpawn();
-                    SpawnGuardSosig(spot.position, spot.rotation, currentLevel);
+                    SpawnGuardSosig(spot, currentLevel);
                     yield return new WaitForSeconds(sosigSpawnTick);
 
 
@@ -1514,7 +1512,6 @@ namespace SupplyRaid
                 }
             }
 
-            Debug.Log("uu");
             yield return new WaitForSeconds(sosigSpawnTick);
 
             if (currentLevel.patrolPool.Count() <= 0)
@@ -1544,7 +1541,6 @@ namespace SupplyRaid
                 if (enemyCount <= 0)
                     filling = false;
             }
-            Debug.Log("gdgfd");
 
             int enemiesTotal = 0;
 
@@ -1560,7 +1556,6 @@ namespace SupplyRaid
 
             List<int> usedPaths = new List<int>();
 
-            Debug.Log("jjjj");
             //For each Patrol Path, create even amount of sosigs
             for (int y = 0; y < groups.Count; y++)
             {
@@ -1596,8 +1591,7 @@ namespace SupplyRaid
                 if (d * d < count)
                     extra = count - (d * d);
 
-                Debug.Log("mmm");
-                Vector3 newPos;
+                Transform newPos;
                 for (int z = 0, i = 0; z < d + extra; z++)
                 {
                     for (int x = 0; x < d; x++, i++)
@@ -1605,14 +1599,12 @@ namespace SupplyRaid
                         if (i < count)
                         {
                             if (forcePatrolInitialSpawnOnRabbitHoles)
-                                newPos = AttackSupplyPoint().GetRandomSosigSpawn().position;
+                                newPos = AttackSupplyPoint().GetRandomSosigSpawn();
                             else
-                                newPos = AttackSupplyPoint().patrolPaths[pathID].patrolPoints[patrolPoint].position
-                                    + GetSquaredPosition(x, z, d);
+                                newPos = AttackSupplyPoint().patrolPaths[pathID].patrolPoints[patrolPoint];
 
                             SpawnPatrolSosig(
                                 newPos,
-                                AttackSupplyPoint().patrolPaths[pathID].patrolPoints[patrolPoint].rotation,
                                 pp,
                                 currentLevel);
 
@@ -1851,10 +1843,10 @@ namespace SupplyRaid
                 return;
             }
 
-            SpawnPatrolSosig(sosigSpawn.position, sosigSpawn.rotation,
+            SpawnPatrolSosig(sosigSpawn,
                                 pp,
                                 currentLevel);
-            Debug.Log("Supply Raid - Rabbithole Sosig " + sosigSpawn.position);
+            //Debug.Log("Supply Raid - Rabbithole Sosig " + sosigSpawn.position);
         }
 
         Vector3 GetSquaredPosition(int x, int z, int d)
@@ -1862,7 +1854,7 @@ namespace SupplyRaid
             return new Vector3(x * 1 - ((d / 2) * 1), 0, -z * 1);
         }
 
-        void SpawnGuardSosig(Vector3 position, Quaternion rotation, FactionLevel currentLevel)
+        void SpawnGuardSosig(Transform point, FactionLevel currentLevel)
         {
             //Error Check
             if (currentLevel == null)
@@ -1870,12 +1862,13 @@ namespace SupplyRaid
                 Debug.Log("Supply Raid - Missing Guard Spawn Data");
                 return;
             }
-            float size = AttackSupplyPoint().spawnRadius / 2;
-            //Todo make this better?
-            position.x += Random.Range(-size, size);
-            position.z += Random.Range(-size, size);
 
-            Sosig sosig = CreateSosig(_spawnOptions, position, rotation, currentLevel.guardPool, currentLevel.name);
+            Vector3 scale = (point.localScale * AttackSupplyPoint().spawnRadius) / 2;
+            Vector3 position = point.position;
+            position.x += Random.Range(-scale.x, scale.x);
+            position.z += Random.Range(-scale.z, scale.z);
+
+            Sosig sosig = CreateSosig(_spawnOptions, position, point.rotation, currentLevel.guardPool, currentLevel.name);
 
             if (sosig == null)
             {
@@ -1892,7 +1885,7 @@ namespace SupplyRaid
             sosig.SetGuardInvestigateDistanceThreshold(10);
             sosig.CoverSearchRange = 10;
             sosig.m_guardPoint = position;
-            sosig.m_guardDominantDirection = rotation.eulerAngles;
+            sosig.m_guardDominantDirection = point.rotation.eulerAngles;
 
             //Default Sosig Values
             sosigGuard.AssignToSosig(sosig);
@@ -1903,7 +1896,7 @@ namespace SupplyRaid
             sosigGuards.Add(sosig);
         }
 
-        void SpawnSniperSosig(Transform spot, Vector3 position, Quaternion rotation, FactionLevel currentLevel)
+        void SpawnSniperSosig(Transform point, Vector3 position, Quaternion rotation, FactionLevel currentLevel)
         {
             //Error Check
             if (currentLevel == null)
@@ -1913,11 +1906,10 @@ namespace SupplyRaid
             }
 
             //Random placement via transform
-            float xScale = spot.localScale.x / 2;
-            float zScale = spot.localScale.z / 2;
-
-            position.x += Random.Range(-xScale, xScale);
-            position.z += Random.Range(-zScale, zScale);
+            Vector3 scale = (point.localScale * AttackSupplyPoint().spawnRadius) / 2;
+            position.x += Random.Range(-scale.x, scale.x);
+            position.z += Random.Range(-scale.z, scale.z);
+            //position.z += Random.Range(-zScale, zScale);
 
             Sosig sosig = CreateSosig(_spawnOptions, position, rotation, currentLevel.sniperPool, currentLevel.name);
 
@@ -1950,7 +1942,7 @@ namespace SupplyRaid
             sosigSnipers.Add(sosig);
         }
 
-        void SpawnPatrolSosig(Vector3 position, Quaternion rotation, PatrolPath pp, FactionLevel currentLevel)
+        void SpawnPatrolSosig(Transform point, PatrolPath pp, FactionLevel currentLevel)
         {
             //Error Check
             if (pp == null || currentLevel == null)
@@ -1959,7 +1951,12 @@ namespace SupplyRaid
                 return;
             }
 
-            Sosig sosig = CreateSosig(_spawnOptions, position, rotation, currentLevel.patrolPool, currentLevel.name);
+            Vector3 position = point.position;
+            Vector3 scale = (point.localScale * AttackSupplyPoint().spawnRadius) / 2;
+            position.x += Random.Range(-scale.x, scale.x);
+            position.z += Random.Range(-scale.z, scale.z);
+
+            Sosig sosig = CreateSosig(_spawnOptions, position, point.rotation, currentLevel.patrolPool, currentLevel.name);
 
             if (sosig == null)
             {
@@ -2084,7 +2081,7 @@ namespace SupplyRaid
                 return null;
             }
 
-            Debug.Log(IM.Instance.odicSosigObjsByID[id] ? "Found Sosig Config " : "Not Found Sosig");
+            //Debug.Log(IM.Instance.odicSosigObjsByID[id] ? "Found Sosig Config " : "Not Found Sosig");
 
             //Get Valid Nav Mesh
             position = SR_Global.GetValidNavPosition(position, 30f);

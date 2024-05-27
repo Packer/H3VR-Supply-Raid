@@ -24,13 +24,16 @@ namespace SupplyRaid
         public void Button_Recycler()
         {
             bool ignoreFail = false;
+
+            if(cashList.Count > 0)
+                SR_Manager.PlayPointsGainSFX();
+
             for (int i = 0; i < cashList.Count; i++)
             {
                 int cash = GetCashValue(cashList[i].name);
                 SR_Manager.instance.Points += cash;
                 Destroy(cashList[i]);
                 ignoreFail = true;
-                SR_Manager.PlayPointsGainSFX();
             }
 
             if (weapons.Count <= 0)

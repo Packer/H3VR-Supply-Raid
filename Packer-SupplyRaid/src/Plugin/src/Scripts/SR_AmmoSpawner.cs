@@ -77,7 +77,7 @@ namespace SupplyRaid
 
         void PopulateRoundPage()
         {
-            Debug.Log("Populating Rounds Page");
+            //Debug.Log("Populating Rounds Page");
             //Clear all old buttons
             for (int i = 0; i < roundButtons.Count; i++)
             {
@@ -138,12 +138,12 @@ namespace SupplyRaid
                 if (!roundTypes.Contains(rounds[i].RoundType))
                     rounds.RemoveAt(i);
             }
-            Debug.Log("Rounds Total: " + rounds.Count);
+            //Debug.Log("Rounds Total: " + rounds.Count);
 
             //Create Buttons!
             for (int i = 0; i < rounds.Count; i++)
             {
-                Debug.Log("Round: " + i);
+                //Debug.Log("Round: " + i);
                 SR_GenericButton btn = Instantiate(roundButtonPrefab, roundContainer).GetComponent<SR_GenericButton>();
                 btn.gameObject.SetActive(true);
                 roundButtons.Add(btn);
@@ -153,12 +153,19 @@ namespace SupplyRaid
 
                 //Description
                 btn.textB.text = rounds[i].DisplayName;
-                btn.index = i;  //index
 
                 if (id != null)
                 {
-                    FireArmRoundClass classType = GetFirearmRoundClassFromType(rounds[i].RoundType);
+                    //rounds[i].RoundType;
+                    //int ammoCount = AM.STypeClassLists[ammoList[i].roundType].Count;
+
+                    FireArmRoundClass classType = AM.STypeClassLists[rounds[i].RoundType][i];
                     AmmoEnum ammo = SR_Global.GetAmmoEnum(classType);
+                    btn.index = (int)ammo;  //index
+
+                    //Works but not really
+                    //FireArmRoundClass classType = GetFirearmRoundClassFromType(rounds[i].RoundType);
+                    ///AmmoEnum ammo = SR_Global.GetAmmoEnum(classType);
 
                     //Cost Text
                     if (purchasedAmmoTypes[(int)ammo])
@@ -176,19 +183,20 @@ namespace SupplyRaid
                         btn.text.text = SR_Manager.Character().ammoUpgradeCost[(int)ammo].ToString();
                     }
 
+                    //Debug.Log("Ammo IDS: " + ammo);
                     //Use same Ammo Type sprite
                     btn.thumbnail.sprite = ammoTypeButtons[(int)ammo].GetComponent<UnityEngine.UI.Image>().sprite;
                 }
                 else 
                 {
-                    Debug.Log("ERROR NO ID FOUND BRUH");
+                    Debug.Log("Supply Raid - No ID found for rounds");
                 }
             }
         }
 
         public void BuySpecificRound(int index)
         {
-            Debug.Log("Spawning round " + index);
+            //Debug.Log("Spawning round " + index);
             if (!CanSpawn(SR_Manager.Character().modeRounds, SR_Manager.Character().roundsCost, 3))
             {
                 SR_Manager.PlayFailSFX();
@@ -438,43 +446,37 @@ namespace SupplyRaid
             }
 
             bool flag = false;
+            List<FVRObject> usableSpeedloaders = new List<FVRObject>();
+
+            //Collect all compatible speedloaders
             for (int i = 0; i < m_detectedFirearms.Count; i++)
             {
                 if (IM.OD.ContainsKey(m_detectedFirearms[i].ObjectWrapper.ItemID))
                 {
-                    for (int x = 0; x < ammoList.Count; x++)
+                    List<FVRObject> speedloaders = new List<FVRObject>(ManagerSingleton<IM>.Instance.odicTagCategory[FVRObject.ObjectCategory.SpeedLoader]);
+                    for (int x = speedloaders.Count - 1; x >= 0; x--)
                     {
-                        //Does not have round classes
-                        if (ammoList[x].roundClasses == null)
-                            continue;
-
-                        //Loop through each Round Class
-                        for (int y = 0; y < ammoList[x].roundClasses.Count; y++)
+                        if (speedloaders[x].Category == FVRObject.ObjectCategory.SpeedLoader
+                            && speedloaders[x].RoundType == m_detectedFirearms[i].RoundType)
                         {
-                            //If not the type we want, continue to next
-                            if (ammoList[x].roundClasses[y].ammo != selectedAmmoType)
-                                continue;
-
-                            FVRObject fvrobject = IM.OD[m_detectedFirearms[i].ObjectWrapper.ItemID];
-
-                            if (fvrobject.CompatibleSpeedLoaders.Count > 0
-                                && ammoList[x].roundType == fvrobject.CompatibleSpeedLoaders[0].RoundType)
-                            {
-
-                                GameObject gameObject = fvrobject.CompatibleSpeedLoaders[0].GetGameObject();
-                                Speedloader speedloader = gameObject.GetComponent<Speedloader>();
-                                if (!speedloader.IsPretendingToBeAMagazine)
-                                {
-                                    flag = true;
-                                    GameObject newSpeedLoader = Instantiate(gameObject, Spawnpoint_Round.position + Vector3.up * i * 0.1f, Spawnpoint_Round.rotation);
-                                    speedloader = newSpeedLoader.GetComponent<Speedloader>();
-                                    speedloader.ReloadClipWithType(ammoList[x].roundClasses[y].roundClass);
-                                }
-                            }
+                            usableSpeedloaders.Add(speedloaders[x]);
                         }
                     }
                 }
             }
+
+            for (int i = 0; i < usableSpeedloaders.Count; i++)
+            {
+                GameObject gameObject = usableSpeedloaders[i].GetGameObject();
+                Speedloader speedloader = gameObject.GetComponent<Speedloader>();
+                if (!speedloader.IsPretendingToBeAMagazine)
+                {
+                    flag = true;
+                    GameObject newSpeedLoader = Instantiate(gameObject, Spawnpoint_Round.position + Vector3.up * i * 0.1f, Spawnpoint_Round.rotation);
+                    //speedloader = newSpeedLoader.GetComponent<Speedloader>();
+                }
+            }
+
             if (flag)
                 SR_Manager.PlayRearmSFX();
             else
@@ -632,7 +634,13 @@ namespace SupplyRaid
 
         private void Scan()
         {
-            int num = Physics.OverlapBoxNonAlloc(ScanningVolume.position, ScanningVolume.localScale * 0.5f, colbuffer, ScanningVolume.rotation, ScanningLM, QueryTriggerInteraction.Collide);
+            int num = Physics.OverlapBoxNonAlloc(
+                ScanningVolume.position, 
+                ScanningVolume.localScale * 0.5f, 
+                colbuffer, 
+                ScanningVolume.rotation, 
+                ScanningLM, 
+                QueryTriggerInteraction.Collide);
             m_roundTypes.Clear();
             m_detectedMags.Clear();
             m_detectedClips.Clear();
@@ -716,7 +724,6 @@ namespace SupplyRaid
                     }
                 }
             }
-
             UpdateAmmoTypeDisplay();
         }
 
@@ -765,6 +772,7 @@ namespace SupplyRaid
                 ammoList.Add(ammoConvert);
             }
 
+            ClearAmmoButtons();
             //Nothing in the scan zone
             if (ammoList.Count == 0)
             {
@@ -780,9 +788,7 @@ namespace SupplyRaid
                 SetAmmoType(selectedAmmoType);
             }
 
-
             UpdateAmmoList();
-
         }
 
         /// <summary>
@@ -816,14 +822,18 @@ namespace SupplyRaid
             UpdateDisplayButtons();
         }
 
+        void ClearAmmoButtons()
+        {
+            for (int i = 0; i < roundButtons.Count; i++)
+            {
+                if (roundButtons[i])
+                    Destroy(roundButtons[i].gameObject);
+            }
+        }
+
         void UpdateDisplayButtons()
         {
             selectionIcon.gameObject.SetActive(false);
-            for (int i = 0; i < ammoTypeButtons.Length; i++)
-            {
-                if (ammoTypeButtons[i] != null)
-                    ammoTypeButtons[i].SetActive(false);
-            }
 
             //Loop through entire list
             for (int i = 0; i < ammoList.Count; i++)

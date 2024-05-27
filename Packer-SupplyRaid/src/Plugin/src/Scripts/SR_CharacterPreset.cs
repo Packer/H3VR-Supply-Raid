@@ -253,6 +253,7 @@ namespace SupplyRaid
 
         public int GetRoundCost(float cost, int amount, float multiplier)
         {
+            //Debug.Log("Round Cost:" + cost + " A: " + amount + " M: "+ multiplier);
             if(perRound)
                 return Mathf.CeilToInt(cost * amount * multiplier);
             else

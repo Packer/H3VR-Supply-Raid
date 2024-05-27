@@ -48,7 +48,7 @@ namespace SupplyRaid
         public float playerNearby = 6;
 
         [Header("Sosig Waypoints")]
-        public float spawnRadius = 1.5f;
+        public float spawnRadius = 1f;
         [Tooltip("Squad waypoint when going to this supply point")]
         public Transform squadPoint;
         [Tooltip("Guard spawn points, they will move during combat/alerted")]
@@ -226,8 +226,9 @@ namespace SupplyRaid
                 Gizmos.DrawSphere(squadPoint.position + Vector3.up, 0.25f);
                 Gizmos.DrawSphere(squadPoint.position + (Vector3.up * 1.75f), 0.25f);
 
-                spawnSize = new Vector3(squadPoint.localScale.x, 0.1f, squadPoint.localScale.z);
-                Gizmos.DrawWireCube(squadPoint.position, spawnSize);
+                spawnSize = new Vector3(squadPoint.localScale.x * spawnRadius, 0.1f, squadPoint.localScale.z * spawnRadius);
+                Gizmos.matrix = Matrix4x4.TRS(squadPoint.position, squadPoint.rotation, spawnSize);
+                Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
             }
 
             //Guards
@@ -235,6 +236,7 @@ namespace SupplyRaid
             {
                 for (int i = 0; i < guardPoints.Count; i++)
                 {
+                    Gizmos.matrix = Matrix4x4.identity;
                     Gizmos.color = new Color(1f, 0.1f, 0.1f, 1f);
                     Gizmos.DrawLine(guardPoints[i].position + Vector3.up, guardPoints[i].position + Vector3.up + guardPoints[i].forward);
 
@@ -242,8 +244,9 @@ namespace SupplyRaid
                     Gizmos.DrawSphere(guardPoints[i].position + Vector3.up, 0.25f);
                     Gizmos.DrawSphere(guardPoints[i].position + (Vector3.up * 1.75f), 0.25f);
 
-                    spawnSize = new Vector3(spawnRadius, 0.1f, spawnRadius);
-                    Gizmos.DrawWireCube(guardPoints[i].position, spawnSize);
+                    spawnSize = new Vector3(guardPoints[i].lossyScale.x * spawnRadius, 0.1f, guardPoints[i].lossyScale.z * spawnRadius);
+                    Gizmos.matrix = Matrix4x4.TRS(guardPoints[i].position, guardPoints[i].rotation, spawnSize);
+                    Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
                 }
             }
 
@@ -252,6 +255,8 @@ namespace SupplyRaid
             {
                 for (int i = 0; i < sniperPoints.Count; i++)
                 {
+                    Gizmos.matrix = Matrix4x4.identity;
+
                     Gizmos.color = new Color(0.1f, 0.1f, 1f, 1f);
                     Gizmos.DrawLine(sniperPoints[i].position + (Vector3.up * 1.75f), sniperPoints[i].position + (Vector3.up * 1.75f) + (sniperPoints[i].forward * 3));
 
@@ -259,12 +264,12 @@ namespace SupplyRaid
                     Gizmos.DrawSphere(sniperPoints[i].position + Vector3.up, 0.25f);
                     Gizmos.DrawSphere(sniperPoints[i].position + (Vector3.up * 1.75f), 0.25f);
 
-                    spawnSize = new Vector3(spawnRadius, 0.1f, spawnRadius);
-                    Gizmos.DrawWireCube(sniperPoints[i].position, spawnSize);
+                    spawnSize = new Vector3(sniperPoints[i].lossyScale.x * spawnRadius, 0.1f, sniperPoints[i].lossyScale.z * spawnRadius);
+                    Gizmos.matrix = Matrix4x4.TRS(sniperPoints[i].position, sniperPoints[i].rotation, spawnSize);
+                    Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
                 }
             }
 
-            spawnSize = new Vector3(3, 0.1f, 3);
 
             for (int i = 0; i < patrolPaths.Length; i++)
             {
@@ -274,6 +279,12 @@ namespace SupplyRaid
                 {
                     if (patrolPaths[i].patrolPoints[x] == null)
                         continue;
+
+                    Gizmos.matrix = Matrix4x4.identity;
+
+                    spawnSize = new Vector3(patrolPaths[i].patrolPoints[x].lossyScale.x, 
+                        0.1f,
+                        patrolPaths[i].patrolPoints[x].lossyScale.z);
 
                     Gizmos.DrawWireCube(patrolPaths[i].patrolPoints[x].position, spawnSize);
                     Gizmos.DrawLine(

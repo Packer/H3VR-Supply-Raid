@@ -5273,7 +5273,7 @@ MonoBehaviour:
   m_usesButton: 0
   Image: {fileID: 114258759291266404}
   m_usesImage: 0
-  Text: {fileID: 0}
+  Text: {fileID: 114812638739256378}
   m_usesText: 0
   Rend: {fileID: 0}
   m_usesRend: 0
