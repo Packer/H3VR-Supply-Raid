@@ -382,20 +382,24 @@ namespace SupplyRaid
             //Random the Random
             Random.InitState((int)Time.realtimeSinceStartup);
 
+            /*
             if (SupplyRaidPlugin.bgmEnabled)
             {
                 Invoke("LoadBGM", 0.25f);
             }
+            */
         }
 
         void LoadBGM()
         {
+            /*
             //BGM
             if (SupplyRaidPlugin.bgmEnabled)
             {
                 BGM.SpawnPanel(spawnMenu.transform.position + Vector3.up, spawnMenu.transform.rotation);
                 BGM.InitializeSoundtrackInterface();
             }
+            */
         }
 
         void OnDisable()
@@ -513,11 +517,13 @@ namespace SupplyRaid
             //DEBUG
             //StartCoroutine(SR_Global.SpawnAllLevelSosigs());
 
+            /*
             //BGM
             if (SupplyRaidPlugin.bgmEnabled)
             {
                 BGM.SetTakeMusic(CurrentCaptures);
             }
+            */
         }
 
         void SetupSupplyPoints()
@@ -857,11 +863,13 @@ namespace SupplyRaid
 
             CurrentCaptures++;
 
+            /*
             //BGM
             if (SupplyRaidPlugin.bgmEnabled)
             {
                 BGM.SetTakeMusic(CurrentCaptures);
             }
+            */
 
             if (inEndless)
                 endlessLevel++;

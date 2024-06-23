@@ -114,7 +114,7 @@ namespace Supply_Raid_Editor
             switch (loadType)
             {
                 case JSONTypeEnum.Faction:
-                    paths = StandaloneFileBrowser.OpenFilePanel("Load Faction", modPath, ".sfsr", false);
+                    paths = StandaloneFileBrowser.OpenFilePanel("Load Faction", modPath, "sfsr", false);
                     /*
                     if (paths.Length > 0 && !paths[0].Contains("SR_Faction"))
                     {

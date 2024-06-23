@@ -14,13 +14,13 @@ namespace SupplyRaid
 	[BepInPlugin(PluginInfo.GUID, PluginInfo.NAME, PluginInfo.VERSION)]
 	[BepInProcess("h3vr.exe")]
 	[BepInDependency("VIP.TommySoucy.H3MP", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("dll.potatoes.ptnhbgml", BepInDependency.DependencyFlags.SoftDependency)]
+    //[BepInDependency("dll.potatoes.ptnhbgml", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(AtlasConstants.Guid, AtlasConstants.Version)]
     public class SupplyRaidPlugin : BaseUnityPlugin
 	{
 		private readonly Hooks _hooks;
 		public static bool h3mpEnabled = false;
-		public static bool bgmEnabled = false;
+		//public static bool bgmEnabled = false;
 		public static bool loadTnH = false;
 		public static Text tnhButtonText = null;
 		//public static Dictionary<int, SR_SosigEnemyTemplate> customSosigs = new Dictionary<int, SR_SosigEnemyTemplate>();
@@ -36,7 +36,7 @@ namespace SupplyRaid
 		{
             AtlasPlugin.Loaders["supplyraid"] = new SandboxLoader();
             h3mpEnabled = Chainloader.PluginInfos.ContainsKey("VIP.TommySoucy.H3MP");
-			bgmEnabled = Chainloader.PluginInfos.ContainsKey("dll.potatoes.ptnhbgml");
+			//bgmEnabled = Chainloader.PluginInfos.ContainsKey("dll.potatoes.ptnhbgml");
 
             SceneManager.activeSceneChanged += ChangedActiveScene;
         }

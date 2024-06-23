@@ -50,6 +50,9 @@ namespace Supply_Raid_Editor
         //Do we use the loot tag system
         public bool lootTagsEnabled = true;
 
+        //Get Loot relevent to player from loot drops
+        public bool lootTagsFromQuickbelt = false;
+
         [Header("Manual Setup Table")]
         //Groups of objects that get spawned if selected
         public List<ObjectGroup> objectGroups = new List<ObjectGroup>();

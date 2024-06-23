@@ -13,17 +13,20 @@ namespace Supply_Raid_Editor
         public static ItemCategoryUI instance;
 
         [Header("Pages")]
+        public GameObject mainPage;
         public GameObject objectGroupsPage;
         public GameObject lootTablePage;
         public GameObject subtractivePage;
-
 
         [Header("Input Fields")]
         public Image itemThumbnail;
         public InputField itemName;
         public InputField minCapacity;
         public InputField maxCapacity;
+        public InputField minLevel;
+        public InputField maxLevel;
         public Dropdown categoryDropdown;
+        public Toggle requiredAttachments;
 
         private void Awake()
         {
@@ -55,6 +58,9 @@ namespace Supply_Raid_Editor
                 case 2:
                     subtractivePage.SetActive(true);
                     break;
+                case 3:
+                    mainPage.SetActive(true);
+                    break;
             }
         }
 
@@ -64,6 +70,7 @@ namespace Supply_Raid_Editor
             objectGroupsPage.SetActive(false);
             lootTablePage.SetActive(false);
             subtractivePage.SetActive(false);
+            mainPage.SetActive(false);
         }
 
         private void Update()
@@ -110,12 +117,33 @@ namespace Supply_Raid_Editor
             item.minCapacity = int.Parse(minCapacity.text);
             item.maxCapacity = int.Parse(maxCapacity.text);
 
+            //Level
+            item.minLevel = int.Parse(minLevel.text);
+            item.maxLevel = int.Parse(maxLevel.text);
+
             //Ammo Count
             item.ammoLimitedCount = int.Parse(limitedAmmoCount.text);
+            item.ammoLimitedCountMin = int.Parse(limitedAmmoCountMin.text);
+            item.ammoLimitedMagazineCount = int.Parse(limitedMagazineCount.text);
+            item.ammoLimitedMagazineCountMin = int.Parse(limitedMagazineCountMin.text);
+            item.ammoLimitedClipCount = int.Parse(limitedClipCount.text);
+            item.ammoLimitedClipCountMin = int.Parse(limitedClipCountMin.text);
+            item.ammoLimitedSpeedLoaderCount = int.Parse(limitedSpeedLoaderCount.text);
+            item.ammoLimitedSpeedLoaderCountMin = int.Parse(limitedSpeedLoaderCountMin.text);
+            item.ammoLimitedRoundCount = int.Parse(limitedRoundCount.text);
+            item.ammoLimitedRoundCountMin = int.Parse(limitedRoundCountMin.text);
+
             item.ammoSpawnLockedCount = int.Parse(spawnLockAmmoCount.text);
+            item.ammoSpawnLockedCountMin = int.Parse(spawnLockAmmoCountMin.text);
+
+            item.spawnCount = int.Parse(spawnCount.text);
+
+            //Required Attachments
+            item.requiredAttachments = requiredAttachments.isOn;
 
             //Loot Tags
             item.lootTagsEnabled = lootTagsEnabled.isOn;
+            item.lootTagsFromQuickbelt = lootTagsFromQuickbelt.isOn;
 
             //Type
             item.type = (LootTable.LootTableType)categoryDropdown.value;
@@ -252,12 +280,33 @@ namespace Supply_Raid_Editor
             minCapacity.text = item.minCapacity.ToString();
             maxCapacity.text = item.maxCapacity.ToString();
 
+            //Level
+            minLevel.text = item.minLevel.ToString();
+            maxLevel.text = item.maxLevel.ToString();
+
             //Ammo Count
             limitedAmmoCount.text = item.ammoLimitedCount.ToString();
+            limitedAmmoCountMin.text = item.ammoLimitedCountMin.ToString();
+            limitedMagazineCount.text = item.ammoLimitedMagazineCount.ToString();
+            limitedMagazineCountMin.text = item.ammoLimitedMagazineCountMin.ToString();
+            limitedClipCount.text = item.ammoLimitedClipCount.ToString();
+            limitedClipCountMin.text = item.ammoLimitedClipCountMin.ToString();
+            limitedSpeedLoaderCount.text = item.ammoLimitedSpeedLoaderCount.ToString();
+            limitedSpeedLoaderCountMin.text = item.ammoLimitedSpeedLoaderCountMin.ToString();
+            limitedRoundCount.text = item.ammoLimitedRoundCount.ToString();
+            limitedRoundCountMin.text = item.ammoLimitedRoundCountMin.ToString();
+
             spawnLockAmmoCount.text = item.ammoSpawnLockedCount.ToString();
+            spawnLockAmmoCountMin.text = item.ammoSpawnLockedCountMin.ToString();
+
+            spawnCount.text = item.spawnCount.ToString();
+
+            //Attachments
+            requiredAttachments.isOn = item.requiredAttachments;
 
             //Loot Tags
             lootTagsEnabled.isOn = item.lootTagsEnabled;
+            lootTagsFromQuickbelt.isOn = item.lootTagsFromQuickbelt;
             //lootTagsButton.SetActive(item.lootTagsEnabled);
 
             //Type
@@ -737,10 +786,25 @@ namespace Supply_Raid_Editor
 
         [Header("Ammo Count")]
         public InputField limitedAmmoCount;
+        public InputField limitedAmmoCountMin;
+        public InputField limitedMagazineCount;
+        public InputField limitedMagazineCountMin;
+        public InputField limitedClipCount;
+        public InputField limitedClipCountMin;
+        public InputField limitedSpeedLoaderCount;
+        public InputField limitedSpeedLoaderCountMin;
+        public InputField limitedRoundCount;
+        public InputField limitedRoundCountMin;
+
         public InputField spawnLockAmmoCount;
+        public InputField spawnLockAmmoCountMin;
 
         public Toggle lootTagsEnabled;
+        public Toggle lootTagsFromQuickbelt;
         public GameObject lootTagsButton;
+
+
+        public InputField spawnCount;
 
         #endregion
     }

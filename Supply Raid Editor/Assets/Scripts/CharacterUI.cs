@@ -19,6 +19,7 @@ namespace Supply_Raid_Editor
         public InputField description;
         public InputField category;
         public InputField defaultFaction;
+        public Toggle pointsCatchup;
 
         //--------------------------------------
         //List Based Items
@@ -67,6 +68,8 @@ namespace Supply_Raid_Editor
         public Dropdown clipsDropdown;
         public InputField roundsCost;
         public Dropdown roundsDropdown;
+        public List<InputField> powerMultipliers;
+        public Toggle perRound;
 
         [Header("Panels")]
         public Toggle disableModTable;
@@ -123,6 +126,15 @@ namespace Supply_Raid_Editor
                 DataManager.Character().attachmentsCost[i] = 1;
             }
 
+            //Points Catchup
+            DataManager.Character().pointsCatchup = true;
+
+            //Power Multiplier
+            for (int i = 0; i < DataManager.Character().powerMultiplier.Length; i++)
+            {
+                DataManager.Character().powerMultiplier[i] = 1;
+            }
+
             //Default to at least 1 level point
             NewLevelPoints();
 
@@ -157,6 +169,7 @@ namespace Supply_Raid_Editor
             characterName.text = character.name;
             description.text = character.description;
             category.text = character.category;
+            pointsCatchup.isOn = character.pointsCatchup;
 
             //Points auto assigned
 
@@ -176,6 +189,15 @@ namespace Supply_Raid_Editor
             roundsCost.text = character.roundsCost.ToString();
             roundsDropdown.value = character.modeRounds;
 
+            //Power Multiplier
+            for (int i = 0; i < character.powerMultiplier.Length; i++)
+            {
+                powerMultipliers[i].SetTextWithoutNotify(character.powerMultiplier[i].ToString());
+            }
+
+            perRound.isOn = character.perRound;
+
+            //Panels
             disableAmmoRearm.isOn = character.disableAmmoTable;
             disableModTable.isOn = character.disableModtable;
             disableBuyMenu.isOn = character.disableBuyMenu;
@@ -234,6 +256,7 @@ namespace Supply_Raid_Editor
             character.description = description.text;
             character.category = category.text;
             character.factionName = defaultFaction.text;
+            character.pointsCatchup = pointsCatchup.isOn;
 
             //Points auto assigned
 
@@ -243,6 +266,14 @@ namespace Supply_Raid_Editor
             character.modCost = int.Parse(customMod.text);
             character.recyclerPoints = int.Parse(pointsRecycle.text);
             character.recyclerTokens = int.Parse(tokenRecycle.text);
+
+            //Power Multiplier
+            for (int i = 0; i < powerMultipliers.Count; i++)
+            {
+                character.powerMultiplier[i] = float.Parse(powerMultipliers[i].text);
+            }
+
+            character.perRound = perRound.isOn;
 
             character.rearmingCost = int.Parse(rearmCost.text);
             character.modeRearming = rearmDropdown.value;

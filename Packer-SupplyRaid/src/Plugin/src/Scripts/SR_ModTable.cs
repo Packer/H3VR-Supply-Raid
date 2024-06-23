@@ -32,6 +32,9 @@ namespace SupplyRaid
         public GameObject menuAdapters;
 
 
+        [Header("Modul Support")]
+        public GameObject modulButton;
+
         [System.Serializable]
         public class TableButton
         {
@@ -61,7 +64,7 @@ namespace SupplyRaid
         public void Setup()
         {
             instance = this;
-            colbuffer = new Collider[50];
+            colbuffer = new Collider[60];
 
             //Get All Muzzle Brakes
             modernEras.Add(FVRObject.OTagEra.PostWar);
@@ -238,7 +241,7 @@ namespace SupplyRaid
 
             bool forceSecondary = false;
 
-            if (i == 1) //Iron Sights
+            if (i == 1 || i == 2) //Iron Sights & scopes
                 forceSecondary = true;
 
             if (SR_Global.SpawnLoot(buttons[i].attachmentTable, null, spawnPoints, forceSecondary))

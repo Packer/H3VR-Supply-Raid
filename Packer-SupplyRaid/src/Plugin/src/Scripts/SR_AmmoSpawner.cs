@@ -39,7 +39,6 @@ namespace SupplyRaid
         private List<FVRObject.OTagSet> m_validSets = new List<FVRObject.OTagSet>();
 
         private float m_scanTick = 1f;
-        public Transform selectedBox;
 
         //Ammo
         List<AmmoRound> ammoList = new List<AmmoRound>();
@@ -221,7 +220,6 @@ namespace SupplyRaid
             roundPage.SetActive(ammoPage.activeSelf);
             ammoPage.SetActive(!roundPage.activeSelf);
         }
-
 
         private void Start()
         {
@@ -898,5 +896,4 @@ namespace SupplyRaid
             //public bool hasAmmo = false;
         }
     }
-
 }

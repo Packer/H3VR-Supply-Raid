@@ -10,11 +10,16 @@ namespace Supply_Raid_Editor
         public int index = -1;
         public InputField inputField;
         public Text text;
-
+        public int id;
 
         public void RemovePointsLevel()
         {
             CharacterUI.instance.RemovePointsTab(this);
+        }
+
+        public void RemoveBossID()
+        {
+            FactionUI.instance.RemovePoolItem(id, this);
         }
     }
 }

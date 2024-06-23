@@ -192,7 +192,7 @@ namespace SupplyRaid
                     //Update Magazine Cost Calculation
                     costUpgrade = SR_Manager.Character().GetRoundCost(
                         SR_Manager.instance.character.upgradeMagazineCost,
-                        m_detectedMag.m_capacity,
+                        magazineUpgrade.MagazineCapacity,
                         multiplier);
 
                     if (magazineUpgrade.ItemID == m_detectedMag.ObjectWrapper.ItemID)

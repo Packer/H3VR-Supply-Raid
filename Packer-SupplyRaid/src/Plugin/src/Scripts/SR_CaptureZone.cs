@@ -110,12 +110,13 @@ namespace SupplyRaid
                     if (SR_Compass.instance && SR_Compass.instance.captureText.gameObject.activeSelf == false)
                     {
                         SR_Compass.instance.captureText.gameObject.SetActive(true);
+                        /*
                         //BGM
                         if (SupplyRaidPlugin.bgmEnabled)
                         {
                             BGM.SetHoldMusic(SR_Manager.instance.CurrentCaptures);
                         }
-
+                        */
                     }
 
                     if(SR_Compass.instance)
@@ -150,11 +151,13 @@ namespace SupplyRaid
                         if (SR_Manager.instance.captureProtection <= 0)
                         {
                             SR_Manager.PlayFailSFX();
+                            /*
                             //BGM
                             if (SupplyRaidPlugin.bgmEnabled)
                             {
                                 BGM.SetHoldMusic(SR_Manager.instance.CurrentCaptures);
                             }
+                            */
                         }
                         if (SR_Compass.instance)
                             SR_Compass.instance.captureText.gameObject.SetActive(false);

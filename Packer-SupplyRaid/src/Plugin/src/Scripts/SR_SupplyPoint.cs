@@ -265,7 +265,7 @@ namespace SupplyRaid
                     Gizmos.DrawSphere(sniperPoints[i].position + (Vector3.up * 1.75f), 0.25f);
 
                     spawnSize = new Vector3(sniperPoints[i].lossyScale.x * spawnRadius, 0.1f, sniperPoints[i].lossyScale.z * spawnRadius);
-                    Gizmos.matrix = Matrix4x4.TRS(sniperPoints[i].position, sniperPoints[i].rotation, spawnSize);
+                    Gizmos.matrix = Matrix4x4.TRS(sniperPoints[i].position, Quaternion.identity, spawnSize);
                     Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
                 }
             }

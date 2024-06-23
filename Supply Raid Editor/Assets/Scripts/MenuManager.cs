@@ -34,6 +34,7 @@ namespace Supply_Raid_Editor
         public bool factionLoaded = false;
         public bool itemLoaded = false;
 
+        [Header("IGNORE THIS STUFF, NOT USED")]
 
         [Header("Character")]
         public Image characterThumbnail;
@@ -41,6 +42,7 @@ namespace Supply_Raid_Editor
         public InputField characterDescription;
         public InputField characterCategory;
         public InputField characterFaction;
+        public Toggle characterPointsCatchup;
 
         public InputField characterPoints;
         public InputField characterPointsPerLevel;
@@ -146,7 +148,7 @@ namespace Supply_Raid_Editor
         public void TryNewItemCategory()
         {
             if (itemLoaded)
-                PopupWarning("NewItemCategory", "A new item category will overwrite the previous one, are you sure?");
+                PopupWarning(nameof(NewItemCategory), "A new item category will overwrite the previous one, are you sure?");
             else
                 NewItemCategory();
         }
@@ -155,6 +157,44 @@ namespace Supply_Raid_Editor
         {
             ItemCategoryUI.instance.CreateItemCategory();
             itemLoaded = true;
+        }
+
+        //FACTION -------------------
+
+        public void TryNewFaction()
+        {
+            if (factionLoaded)
+                PopupWarning(nameof(NewFaction), "A new Faction will overwrite the previous one, are you sure?");
+            else
+                NewFaction();
+
+        }
+
+        void NewFaction()
+        {
+            FactionUI.instance.CreateNewFaction();
+            factionLoaded = true;
+        }
+
+
+        public void TryLoadFaction()
+        {
+            if (factionLoaded)
+                PopupWarning(nameof(LoadFaction), "Loading a Faction will overwrite the previous one, are you sure?");
+            else
+                LoadFaction();
+        }
+
+
+        void LoadFaction()
+        {
+            if (DataManager.instance.OnLoadDialogue(JSONTypeEnum.Faction))
+            {
+                factionLoaded = true;
+            }
+
+            FactionUI.instance.UpdateUI();
+            //RefreshItemCategory();
         }
 
 

@@ -20,8 +20,9 @@ namespace Supply_Raid_Editor
 
         [Tooltip("Points player receives per capture, endless reuses the last array position")]
         public List<int> pointsLevel = new List<int>();
+        public bool pointsCatchup = true;
 
-//Supply Point
+        //Supply Point
         // Duplicator
         [Tooltip("Cost of a new Magazine - if -1 disable")]
         public int newMagazineCost = 1;
@@ -29,6 +30,10 @@ namespace Supply_Raid_Editor
         public int upgradeMagazineCost = 2;
         [Tooltip("Cost of Duplicating a magazine - if -1 disable")]
         public int duplicateMagazineCost = 1;
+
+        //New
+        public float[] powerMultiplier = new float[10];
+        public bool perRound = false;
 
         [Tooltip("Custom Mod Cost")]
         public int modCost = 1;
@@ -61,8 +66,8 @@ namespace Supply_Raid_Editor
 
 //BASE SETINGS
         //Death
-        public int deathMode = 0;   //0 = Instant Respawn, 1 = count down Timer, 2 = respawn on next Capture, 3 = lives
-        public float deathCount = 0;   //lives, Timer etc
+        //public int deathMode = 0;   //0 = Instant Respawn, 1 = count down Timer, 2 = respawn on next Capture, 3 = lives
+        //public float deathCount = 0;   //lives, Timer etc
 //WMAU
         [Tooltip("Cost of each ammo upgrade, 0 is normally free as its the standard - 28 Ammo Types - if set to -1 disable")]
         public int[] ammoUpgradeCost = new int[28];
