@@ -8,6 +8,7 @@ namespace Supply_Raid_Editor
     {
         public static FactionUI instance;
         [SerializeField] GameObject infomationPanel;
+        public Image thumbnail;
 
 
         [Header("-INFOMATION-")]
@@ -108,11 +109,11 @@ namespace Supply_Raid_Editor
 
             addLevel.name = " ";
 
-            addLevel.bossPool = new SosigEnemyID[0];
-            addLevel.sniperPool = new SosigEnemyID[0];
-            addLevel.guardPool = new SosigEnemyID[0];
-            addLevel.patrolPool = new SosigEnemyID[0];
-            addLevel.squadPool = new SosigEnemyID[0];
+            addLevel.bossPool = new SosigPool();
+            addLevel.sniperPool = new SosigPool();
+            addLevel.guardPool = new SosigPool();
+            addLevel.patrolPool = new SosigPool();
+            addLevel.squadPool = new SosigPool();
             //addLevel.enemiesTotal = 5;
             //addLevel. 
 
@@ -172,6 +173,8 @@ namespace Supply_Raid_Editor
             description.text = item.description;
             category.text = item.category;
             teamID.text = item.teamID.ToString();
+
+            levelGroupPanel.SetActive(false);
         }
 
         //Open Level
@@ -200,6 +203,38 @@ namespace Supply_Raid_Editor
                 return;
             }
 
+            //Clear old
+            for (int i = 0; i < bossList.Count; i++)
+            {
+                Destroy(bossList[i].gameObject);
+            }
+            bossList.Clear();
+
+            for (int i = 0; i < sniperList.Count; i++)
+            {
+                Destroy(sniperList[i].gameObject);
+            }
+            sniperList.Clear();
+
+            for (int i = 0; i < guardList.Count; i++)
+            {
+                Destroy(guardList[i].gameObject);
+            }
+            guardList.Clear();
+
+            for (int i = 0; i < patrolList.Count; i++)
+            {
+                Destroy(patrolList[i].gameObject);
+            }
+            patrolList.Clear();
+
+            for (int i = 0; i < squadList.Count; i++)
+            {
+                Destroy(squadList[i].gameObject);
+            }
+            squadList.Clear();
+
+
             levelName.text = level.name;
             levelEnemiesTotal.text = level.enemiesTotal.ToString();
             levelInfiniteEnemies.isOn = level.infiniteEnemies;
@@ -211,61 +246,74 @@ namespace Supply_Raid_Editor
             levelBossCount.text = level.bossCount.ToString();
 
             if (level.bossPool == null)
-                level.bossPool = new SosigEnemyID[0];
+                level.bossPool = new SosigPool();
 
-            for (int i = 0; i < level.bossPool.Length; i++)
+            if (level.bossPool.sosigEnemyID == null)
+                level.bossPool.sosigEnemyID = new SosigEnemyID[0];
+
+            for (int i = 0; i < level.bossPool.sosigEnemyID.Length; i++)
             {
                 NewPoolItem((int)PoolEnum.Boss);
-                bossList[i].inputField.text = level.bossPool[i].ToString();
+                bossList[i].inputField.text = ((int)level.bossPool.sosigEnemyID[i]).ToString();
             }
 
             //Snipers
             levelSniperCount.text = level.sniperCount.ToString();
 
             if (level.sniperPool == null)
-                level.sniperPool = new SosigEnemyID[0];
+                level.sniperPool = new SosigPool();
 
-            for (int i = 0; i < level.sniperPool.Length; i++)
+            if (level.sniperPool.sosigEnemyID == null)
+                level.sniperPool.sosigEnemyID = new SosigEnemyID[0];
+
+            for (int i = 0; i < level.sniperPool.sosigEnemyID.Length; i++)
             {
                 NewPoolItem((int)PoolEnum.Sniper);
-                sniperList[i].inputField.text = level.sniperPool[i].ToString();
+                sniperList[i].inputField.text = ((int)level.sniperPool.sosigEnemyID[i]).ToString();
             }
 
             //Guards
             levelGuardCount.text = level.guardCount.ToString();
 
             if (level.guardPool == null)
-            {
-                Debug.Log("No guards");
-                level.guardPool = new SosigEnemyID[0];
-            }
+                level.guardPool = new SosigPool();
 
-            for (int i = 0; i < level.guardPool.Length; i++)
+            if (level.guardPool.sosigEnemyID == null)
+                level.guardPool.sosigEnemyID = new SosigEnemyID[0];
+
+            for (int i = 0; i < level.guardPool.sosigEnemyID.Length; i++)
             {
-                Debug.Log(i);
                 NewPoolItem((int)PoolEnum.Guard);
-                guardList[i].inputField.text = level.guardPool[i].ToString();
+                guardList[i].inputField.text = ((int)level.guardPool.sosigEnemyID[i]).ToString();
             }
 
             //Patrol
             levelMinPatrolSize.text = level.minPatrolSize.ToString();
 
             if (level.patrolPool == null)
-                level.patrolPool = new SosigEnemyID[0];
-            for (int i = 0; i < level.patrolPool.Length; i++)
+                level.patrolPool = new SosigPool();
+            if (level.patrolPool.sosigEnemyID == null)
+                level.patrolPool.sosigEnemyID = new SosigEnemyID[0];
+
+
+            for (int i = 0; i < level.patrolPool.sosigEnemyID.Length; i++)
             {
                 NewPoolItem((int)PoolEnum.Patrol);
-                patrolList[i].inputField.text = level.patrolPool[i].ToString();
+                patrolList[i].inputField.text = ((int)level.patrolPool.sosigEnemyID[i]).ToString();
             }
 
             //Squad
             levelSquadCount.text = level.squadCount.ToString();
+
             if (level.squadPool == null)
-                level.squadPool = new SosigEnemyID[0];
-            for (int i = 0; i < level.squadPool.Length; i++)
+                level.squadPool = new SosigPool();
+            if (level.squadPool.sosigEnemyID == null)
+                level.squadPool.sosigEnemyID = new SosigEnemyID[0];
+
+            for (int i = 0; i < level.squadPool.sosigEnemyID.Length; i++)
             {
                 NewPoolItem((int)PoolEnum.Squad);
-                squadList[i].inputField.text = level.squadPool[i].ToString();
+                squadList[i].inputField.text = ((int)level.squadPool.sosigEnemyID[i]).ToString();
             }
 
             //Squad
@@ -301,43 +349,53 @@ namespace Supply_Raid_Editor
 
             //Boss
             level.bossCount = int.Parse(levelBossCount.text);
-            level.bossPool = new SosigEnemyID[bossList.Count];
+            level.bossPool = new SosigPool();
+            level.bossPool.sosigEnemyID = new SosigEnemyID[bossList.Count];
             for (int x = 0; x < bossList.Count; x++)
             {
-                level.bossPool[x] = (SosigEnemyID)int.Parse(bossList[x].inputField.text);
+                if(bossList[x].inputField.text != "")
+                    level.bossPool.sosigEnemyID[i] = (SosigEnemyID)int.Parse(bossList[x].inputField.text);
             }
 
             //Guards
             level.guardCount = int.Parse(levelGuardCount.text);
-            level.guardPool = new SosigEnemyID[guardList.Count];
+            level.guardPool = new SosigPool();
+            level.guardPool.sosigEnemyID = new SosigEnemyID[guardList.Count];
             for (int x = 0; x < guardList.Count; x++)
             {
-                level.guardPool[x] = (SosigEnemyID)int.Parse(guardList[x].inputField.text);
+                if (guardList[x].inputField.text != "")
+                    level.guardPool.sosigEnemyID[x] = (SosigEnemyID)int.Parse(guardList[x].inputField.text);
             }
 
             //Snipers
             level.sniperCount = int.Parse(levelSniperCount.text);
-            level.sniperPool = new SosigEnemyID[sniperList.Count];
+            level.sniperPool = new SosigPool();
+            level.sniperPool.sosigEnemyID = new SosigEnemyID[sniperList.Count];
             for (int x = 0; x < sniperList.Count; x++)
             {
-                level.sniperPool[x] = (SosigEnemyID)int.Parse(sniperList[x].inputField.text);
+                if (sniperList[x].inputField.text != "")
+                    level.sniperPool.sosigEnemyID[x] = (SosigEnemyID)int.Parse(sniperList[x].inputField.text);
             }
 
             //Patrol
             level.minPatrolSize = int.Parse(levelMinPatrolSize.text);
-            level.patrolPool = new SosigEnemyID[patrolList.Count];
+            level.patrolPool = new SosigPool();
+            level.patrolPool.sosigEnemyID = new SosigEnemyID[patrolList.Count];
             for (int x = 0; x < patrolList.Count; x++)
             {
-                level.patrolPool[x] = (SosigEnemyID)int.Parse(patrolList[x].inputField.text);
+                if (patrolList[x].inputField.text != "")
+                    level.patrolPool.sosigEnemyID[x] = (SosigEnemyID)int.Parse(patrolList[x].inputField.text);
             }
 
             //Squad
 
             level.squadCount = int.Parse(levelSquadCount.text);
-            level.squadPool = new SosigEnemyID[squadList.Count];
+            level.squadPool = new SosigPool();
+            level.squadPool.sosigEnemyID = new SosigEnemyID[squadList.Count];
             for (int x = 0; x < squadList.Count; x++)
             {
-                level.squadPool[x] = (SosigEnemyID)int.Parse(squadList[x].inputField.text);
+                if (squadList[x].inputField.text != "")
+                    level.squadPool.sosigEnemyID[x] = (SosigEnemyID)int.Parse(squadList[x].inputField.text);
             }
 
             level.squadTeamRandomized = (TeamSquadEnum)levelSquadTeamRandomized.value;

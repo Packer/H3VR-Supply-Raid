@@ -23280,9 +23280,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   infomationPanel: {fileID: 216755499}
+  thumbnail: {fileID: 856662002}
   factionName: {fileID: 190665387}
-  description: {fileID: 154865966}
-  category: {fileID: 857980545}
+  description: {fileID: 857980545}
+  category: {fileID: 154865966}
   teamID: {fileID: 1180176300}
   levelPanel: {fileID: 1454498290}
   levelGroupPanel: {fileID: 1343417983}
@@ -36713,7 +36714,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1110248952072809323, guid: 97b9dc2bebf61134db42b05d197c1f57, type: 3}
       propertyPath: m_Text
-      value: Character Editor
+      value: Character
       objectReference: {fileID: 0}
     - target: {fileID: 1110248952072809323, guid: 97b9dc2bebf61134db42b05d197c1f57, type: 3}
       propertyPath: m_RaycastTarget

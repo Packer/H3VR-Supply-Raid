@@ -47,28 +47,39 @@ namespace Supply_Raid_Editor
         [Tooltip("The minimum size for Bosses Groups")]
         public int bossCount = 0;
         [Tooltip("The sosig ID pool for stationary bosses")]
-        public SosigEnemyID[] bossPool;
+        public SosigPool bossPool;
         
         //GUARDS
         public int guardCount = 4;
-        public SosigEnemyID[] guardPool;
+        public SosigPool guardPool;
 
         //SNIPERS
         public int sniperCount = 2;
-        public SosigEnemyID[] sniperPool;
+        public SosigPool sniperPool;
 
         //PATROL
         public int minPatrolSize = 2;
-        public SosigEnemyID[] patrolPool;
+        public SosigPool patrolPool;
 
         //A Squad is a group of sosigs that spawn at a random supply point then move towards the capture supply point.
         //They can be assigned a team to help or hinder the player
         public int squadCount = 0;
-        public SosigEnemyID[] squadPool;
+        public SosigPool squadPool;
 
         public SquadBehaviour squadBehaviour = SquadBehaviour.CaptureSupplyPoint;
         public TeamSquadEnum squadTeamRandomized = TeamSquadEnum.Team1;
         public int squadSizeMin = 0;
         public int squadSizeMax = 0;
+    }
+
+    [System.Serializable]
+    public class SosigPool
+    {
+        public SosigEnemyID[] sosigEnemyID;
+
+        public int Count()
+        {
+            return sosigEnemyID.Length;
+        }
     }
 }

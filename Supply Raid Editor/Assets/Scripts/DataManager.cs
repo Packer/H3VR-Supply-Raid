@@ -200,7 +200,10 @@ namespace Supply_Raid_Editor
                     MenuManager.instance.factionLoaded = true;
                     MenuManager.instance.OpenFactionPanel();
                     FactionUI.instance.LoadFaction();
-                    //DataManager.instance.LoadFaction(url);
+
+                    url = url.Remove(url.Length - 4) + "png";
+                    url = url.Remove(0, 8);
+                    FactionUI.instance.thumbnail.sprite = LoadSprite(url);
                     break;
                 case JSONTypeEnum.ItemCategory:
                     LoadItemCategory(loader.text);
