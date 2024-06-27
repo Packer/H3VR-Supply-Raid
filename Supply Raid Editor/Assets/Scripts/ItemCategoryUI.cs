@@ -270,6 +270,7 @@ namespace Supply_Raid_Editor
             //Close relevent Elements
             objectIDPanel.SetActive(false);
 
+
             //Load Data
             SR_ItemCategory item = DataManager.instance.itemCategory;
 
@@ -642,6 +643,7 @@ namespace Supply_Raid_Editor
         {
             SR_ItemCategory item = DataManager.instance.itemCategory;
             item.objectGroups.Remove(group);
+            lastGroupUI = null;
 
             //Update UI
             UpdateItemCategory();

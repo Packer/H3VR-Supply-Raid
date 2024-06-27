@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,16 +7,28 @@ namespace Supply_Raid_Editor
     public class FactionUI : MonoBehaviour
     {
         public static FactionUI instance;
+        [SerializeField] GameObject infomationPanel;
 
+
+        [Header("-INFOMATION-")]
         [SerializeField] InputField factionName;
         [SerializeField] InputField description;
         [SerializeField] InputField category;
 
-        [SerializeField] Dropdown teamID;
+        [SerializeField] InputField teamID;
 
         //--------------------------------------------
         //LEVEL
         //--------------------------------------------
+        [Header("-LEVEL-")]
+        [SerializeField] GameObject levelPanel;
+        [SerializeField] GameObject levelGroupPanel;
+        [SerializeField] GameObject levelsPrefab;
+        [SerializeField] Text levelsTitle;
+        private List<GenericButton> levelButtons = new List<GenericButton>();
+
+        private int levelIndex = -1;
+        private bool levelEndless = false;
 
         [SerializeField] InputField levelName;
         [SerializeField] InputField levelEnemiesTotal;
@@ -30,28 +41,22 @@ namespace Supply_Raid_Editor
         public GameObject listPrefab;
         //Boss
         [SerializeField] InputField levelBossCount;
-        [SerializeField] List<InputField> levelBossPool;
         [SerializeField] Transform levelBossContent;
-
         public List<PointsUI> bossList = new List<PointsUI>();
 
         //GUARDS
         [SerializeField] InputField levelGuardCount;
-        [SerializeField] List<InputField> levelGuardPool;
-
+        [SerializeField] Transform levelGuardContent;
         public List<PointsUI> guardList = new List<PointsUI>();
 
         //SNIPERS
         [SerializeField] InputField levelSniperCount;
-        [SerializeField] List<InputField> levelSniperPool;
-
+        [SerializeField] Transform levelSniperContent;
         public List<PointsUI> sniperList = new List<PointsUI>();
 
         //PATROL
         [SerializeField] InputField levelMinPatrolSize;
-        [SerializeField] List<InputField> levelPatrolPool;
-
-
+        [SerializeField] Transform levelPatrolContent;
         public List<PointsUI> patrolList = new List<PointsUI>();
 
         //SQUAD
@@ -62,7 +67,7 @@ namespace Supply_Raid_Editor
         [SerializeField] InputField levelSquadSizeMax;
 
         [SerializeField] Dropdown levelSquadBehaviour;
-        [SerializeField] List<InputField> levelSquadPool;
+        [SerializeField] Transform levelSquadContent;
 
         public List<PointsUI> squadList = new List<PointsUI>();
 
@@ -71,39 +76,332 @@ namespace Supply_Raid_Editor
             instance = this;
         }
 
+        public void OpenPage(int i)
+        {
+            levelPanel.SetActive(false);
+            infomationPanel.SetActive(false);
+
+            switch (i)
+            {
+                default:
+                case 0:
+                    infomationPanel.SetActive(true);
+                    break;
+                case 1:
+                    levelsTitle.text = "Levels:";
+                    levelPanel.SetActive(true);
+                    levelEndless = false;
+                    OpenLevels(false);
+                    break;
+                case 2:
+                    levelsTitle.text = "Endless:";
+                    levelPanel.SetActive(true);
+                    levelEndless = true;
+                    OpenLevels(true);
+                    break;
+            }
+        }
+
+        public void AddLevel()
+        {
+            FactionLevel addLevel = new FactionLevel();
+
+            addLevel.name = " ";
+
+            addLevel.bossPool = new SosigEnemyID[0];
+            addLevel.sniperPool = new SosigEnemyID[0];
+            addLevel.guardPool = new SosigEnemyID[0];
+            addLevel.patrolPool = new SosigEnemyID[0];
+            addLevel.squadPool = new SosigEnemyID[0];
+            //addLevel.enemiesTotal = 5;
+            //addLevel. 
+
+            if (levelEndless)
+                DataManager.Faction().endless.Add(addLevel);
+            else
+                DataManager.Faction().levels.Add(addLevel);
+
+            OpenLevels(levelEndless);
+        }
+
+        public void OpenLevels(bool endless)
+        {
+            //Clear all old levels
+            for (int i = 0; i < levelButtons.Count; i++)
+            {
+                Destroy(levelButtons[i].gameObject);
+            }
+
+            levelButtons.Clear();
+
+            //Spawn in new levels
+
+            List<FactionLevel> levels = endless ? DataManager.Faction().endless : DataManager.Faction().levels;
+
+            for (int i = 0; i < levels.Count; i++)
+            {
+                GenericButton btn = Instantiate(levelsPrefab, levelsPrefab.transform.parent).GetComponent<GenericButton>();
+                btn.gameObject.SetActive(true);
+                btn.index = i;
+                btn.toggle = endless;
+                btn.go.GetComponent<Text>().text = i.ToString();
+                btn.text.text = levels[i].name;
+                levelButtons.Add(btn);
+            }
+
+            //Disable Levels Panel (Right Side)
+            levelGroupPanel.SetActive(false);
+        }
+
 
         public void UpdateFaction()
         {
-            SR_SosigFaction item = DataManager.instance.faction;
+            SR_SosigFaction item = DataManager.Faction();
 
             item.name = factionName.text;
             item.description = description.text;
             item.category = category.text;
-            item.teamID = (TeamEnum)teamID.value;
+            item.teamID = (TeamEnum)int.Parse(teamID.text);
         }
 
+        public void UpdateUI()
+        {
+            SR_SosigFaction item = DataManager.Faction();
+
+            factionName.text = item.name;
+            description.text = item.description;
+            category.text = item.category;
+            teamID.text = item.teamID.ToString();
+        }
 
         //Open Level
         public void OpenLevel(int i)
         {
-            
+            levelGroupPanel.SetActive(true);
+            levelIndex = i;
+            levelEndless = false;
+            LoadLevelData(DataManager.Faction().levels[i]);
         }
 
+        //Open Endless Level
+        public void OpenEndlessLevel(int i)
+        {
+            levelGroupPanel.SetActive(true);
+            levelIndex = i;
+            levelEndless = true;
+            LoadLevelData(DataManager.Faction().endless[i]);
+        }
+
+        void LoadLevelData(FactionLevel level)
+        {
+            if (level == null)
+            {
+                DataManager.LogError("Faction level was not loaded!");
+                return;
+            }
+
+            levelName.text = level.name;
+            levelEnemiesTotal.text = level.enemiesTotal.ToString();
+            levelInfiniteEnemies.isOn = level.infiniteEnemies;
+            levelInfiniteSquadEnemies.isOn = level.infiniteSquadEnemies;
+            levelEnemySpawnTimer.text = level.enemySpawnTimer.ToString();
+            levelSquadDelayTimer.text = level.squadDelayTimer.ToString();
+
+            //Boss
+            levelBossCount.text = level.bossCount.ToString();
+
+            if (level.bossPool == null)
+                level.bossPool = new SosigEnemyID[0];
+
+            for (int i = 0; i < level.bossPool.Length; i++)
+            {
+                NewPoolItem((int)PoolEnum.Boss);
+                bossList[i].inputField.text = level.bossPool[i].ToString();
+            }
+
+            //Snipers
+            levelSniperCount.text = level.sniperCount.ToString();
+
+            if (level.sniperPool == null)
+                level.sniperPool = new SosigEnemyID[0];
+
+            for (int i = 0; i < level.sniperPool.Length; i++)
+            {
+                NewPoolItem((int)PoolEnum.Sniper);
+                sniperList[i].inputField.text = level.sniperPool[i].ToString();
+            }
+
+            //Guards
+            levelGuardCount.text = level.guardCount.ToString();
+
+            if (level.guardPool == null)
+            {
+                Debug.Log("No guards");
+                level.guardPool = new SosigEnemyID[0];
+            }
+
+            for (int i = 0; i < level.guardPool.Length; i++)
+            {
+                Debug.Log(i);
+                NewPoolItem((int)PoolEnum.Guard);
+                guardList[i].inputField.text = level.guardPool[i].ToString();
+            }
+
+            //Patrol
+            levelMinPatrolSize.text = level.minPatrolSize.ToString();
+
+            if (level.patrolPool == null)
+                level.patrolPool = new SosigEnemyID[0];
+            for (int i = 0; i < level.patrolPool.Length; i++)
+            {
+                NewPoolItem((int)PoolEnum.Patrol);
+                patrolList[i].inputField.text = level.patrolPool[i].ToString();
+            }
+
+            //Squad
+            levelSquadCount.text = level.squadCount.ToString();
+            if (level.squadPool == null)
+                level.squadPool = new SosigEnemyID[0];
+            for (int i = 0; i < level.squadPool.Length; i++)
+            {
+                NewPoolItem((int)PoolEnum.Squad);
+                squadList[i].inputField.text = level.squadPool[i].ToString();
+            }
+
+            //Squad
+            levelSquadTeamRandomized.value = (int)level.squadTeamRandomized;
+            levelSquadSizeMin.text = level.squadSizeMin.ToString();
+            levelSquadSizeMax.text = level.squadSizeMax.ToString();
+
+            levelSquadBehaviour.value = (int)level.squadBehaviour;
+
+            levelPanel.SetActive(true);
+        }
+
+        public void UpdateOpenLevel()
+        {
+            SaveLevel(levelIndex);
+        }
 
         public void SaveLevel(int i)
         {
+            FactionLevel level;
             
+            if(levelEndless)
+                level = DataManager.Faction().endless[i];
+            else
+                level = DataManager.Faction().levels[i];
+
+            level.name = levelName.text;
+            level.enemiesTotal = int.Parse(levelEnemiesTotal.text);
+            level.infiniteEnemies = levelInfiniteEnemies.isOn;
+            level.infiniteSquadEnemies = levelInfiniteSquadEnemies.isOn;
+            level.enemySpawnTimer = int.Parse(levelEnemySpawnTimer.text);
+            level.squadDelayTimer = int.Parse(levelSquadDelayTimer.text);
+
+            //Boss
+            level.bossCount = int.Parse(levelBossCount.text);
+            level.bossPool = new SosigEnemyID[bossList.Count];
+            for (int x = 0; x < bossList.Count; x++)
+            {
+                level.bossPool[x] = (SosigEnemyID)int.Parse(bossList[x].inputField.text);
+            }
+
+            //Guards
+            level.guardCount = int.Parse(levelGuardCount.text);
+            level.guardPool = new SosigEnemyID[guardList.Count];
+            for (int x = 0; x < guardList.Count; x++)
+            {
+                level.guardPool[x] = (SosigEnemyID)int.Parse(guardList[x].inputField.text);
+            }
+
+            //Snipers
+            level.sniperCount = int.Parse(levelSniperCount.text);
+            level.sniperPool = new SosigEnemyID[sniperList.Count];
+            for (int x = 0; x < sniperList.Count; x++)
+            {
+                level.sniperPool[x] = (SosigEnemyID)int.Parse(sniperList[x].inputField.text);
+            }
+
+            //Patrol
+            level.minPatrolSize = int.Parse(levelMinPatrolSize.text);
+            level.patrolPool = new SosigEnemyID[patrolList.Count];
+            for (int x = 0; x < patrolList.Count; x++)
+            {
+                level.patrolPool[x] = (SosigEnemyID)int.Parse(patrolList[x].inputField.text);
+            }
+
+            //Squad
+
+            level.squadCount = int.Parse(levelSquadCount.text);
+            level.squadPool = new SosigEnemyID[squadList.Count];
+            for (int x = 0; x < squadList.Count; x++)
+            {
+                level.squadPool[x] = (SosigEnemyID)int.Parse(squadList[x].inputField.text);
+            }
+
+            level.squadTeamRandomized = (TeamSquadEnum)levelSquadTeamRandomized.value;
+            level.squadSizeMin = int.Parse(levelSquadSizeMin.text);
+            level.squadSizeMax = int.Parse(levelSquadSizeMax.text);
+
+            level.squadBehaviour = (SquadBehaviour)levelSquadBehaviour.value;
+
+            if (levelEndless)
+                DataManager.Faction().endless[levelIndex] = level;
+            else
+                DataManager.Faction().levels[levelIndex] = level;
+
+        }
+
+        public enum PoolEnum
+        {
+            Boss = 0,
+            Guard = 1,
+            Sniper = 2,
+            Patrol = 3,
+            Squad = 4,
+
         }
 
         //POOLS
-
-        public void NewPoolItem(int id, Transform content)
+        /*
+        public void AddPoolItem(PoolEnum i)
         {
+
+            NewPoolItem(PoolEnum.Boss);
+            NewPoolItem(PoolEnum.Guard);
+            NewPoolItem(PoolEnum.Sniper);
+            NewPoolItem(PoolEnum.Patrol);
+        }
+        */
+
+        public void NewPoolItem(int id)
+        {
+            Transform content = null;
+
+            List<PointsUI> list = GetListByID((int)id);
+            switch ((PoolEnum)id)
+            {
+                case PoolEnum.Boss:
+                    content = levelBossContent;
+                    break;
+                case PoolEnum.Guard:
+                    content = levelGuardContent;
+                    break;
+                case PoolEnum.Sniper:
+                    content = levelSniperContent;
+                    break;
+                case PoolEnum.Patrol:
+                    content = levelPatrolContent;
+                    break;
+                case PoolEnum.Squad:
+                    content = levelSquadContent;
+                    break;
+            }
 
             PointsUI point = Instantiate(listPrefab, content).GetComponent<PointsUI>();
             point.gameObject.SetActive(true);
-            point.id = id;
-            List<PointsUI> list = GetListByID(id);
+            point.id = (int)id;
 
             if (list.Count > 0)
             {
@@ -143,12 +441,14 @@ namespace Supply_Raid_Editor
             return list;
         }
 
-        public void RemovePoolItem(int id, PointsUI item)
+        public void RemovePoolItem(PointsUI item)
         {
-            List<PointsUI> list = GetListByID(id);
+            List<PointsUI> list = GetListByID(item.id);
 
             if (list.Count <= 0)
-                return;
+            {
+                Debug.Log("No List found Error");
+            }
 
             if (list.Contains(item))
                 list.Remove(item);
@@ -173,21 +473,25 @@ namespace Supply_Raid_Editor
             //Reopen Level
         }
 
-        public void UpdateUI()
-        {
-            
-        }
-
         public void CreateNewFaction()
         {
-            LoadFaction(new SR_SosigFaction());
+            //FILL WITH DEFAULT VALUES
+            DataManager.Faction().name = "New Faction";
+            DataManager.Faction().description = "A short description of this sosig faction";
+            DataManager.Faction().category = "Standard";
+            DataManager.Faction().teamID = TeamEnum.Team1;
+
+            DataManager.Faction().levels = new List<FactionLevel>();
+            DataManager.Faction().endless = new List<FactionLevel>();
+
+            UpdateUI();
         }
 
         // LOADING
 
-        public void LoadFaction(SR_SosigFaction faction)
+        public void LoadFaction()
         {
-            
+            UpdateUI();
         }
 
         // SAVING

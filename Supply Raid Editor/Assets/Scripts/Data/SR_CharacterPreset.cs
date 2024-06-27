@@ -25,11 +25,11 @@ namespace Supply_Raid_Editor
         //Supply Point
         // Duplicator
         [Tooltip("Cost of a new Magazine - if -1 disable")]
-        public int newMagazineCost = 1;
+        public float newMagazineCost = 1;
         [Tooltip("Cost of upgrading a magazine - if -1 disable")]
-        public int upgradeMagazineCost = 2;
+        public float upgradeMagazineCost = 2;
         [Tooltip("Cost of Duplicating a magazine - if -1 disable")]
-        public int duplicateMagazineCost = 1;
+        public float duplicateMagazineCost = 1;
 
         //New
         public float[] powerMultiplier = new float[10];

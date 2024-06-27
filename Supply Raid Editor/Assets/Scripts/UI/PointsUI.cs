@@ -17,9 +17,9 @@ namespace Supply_Raid_Editor
             CharacterUI.instance.RemovePointsTab(this);
         }
 
-        public void RemoveBossID()
+        public void RemovePoolID()
         {
-            FactionUI.instance.RemovePoolItem(id, this);
+            FactionUI.instance.RemovePoolItem(this);
         }
     }
 }

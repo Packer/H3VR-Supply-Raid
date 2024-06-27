@@ -195,6 +195,11 @@ namespace Supply_Raid_Editor
                     //MenuManager.instance.characterThumbnail.sprite = LoadSprite(url);
                     break;
                 case JSONTypeEnum.Faction:
+                    LoadFaction(loader.text);
+                    yield return null;
+                    MenuManager.instance.factionLoaded = true;
+                    MenuManager.instance.OpenFactionPanel();
+                    FactionUI.instance.LoadFaction();
                     //DataManager.instance.LoadFaction(url);
                     break;
                 case JSONTypeEnum.ItemCategory:
@@ -288,6 +293,26 @@ namespace Supply_Raid_Editor
             }
 
             return itemCategory;
+        }
+
+        public SR_SosigFaction LoadFaction(string json)
+        {
+            try
+            {
+                faction = JsonUtility.FromJson<SR_SosigFaction>(json);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex.Message);
+                return null;
+            }
+
+            if (itemCategory != null)
+            {
+                Log("Loaded faction " + faction.name);
+            }
+
+            return faction;
         }
 
         public List<SR_CharacterPreset> LoadCharacters()

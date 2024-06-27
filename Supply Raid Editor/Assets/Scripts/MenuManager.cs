@@ -172,6 +172,7 @@ namespace Supply_Raid_Editor
 
         void NewFaction()
         {
+            DataManager.instance.faction = new SR_SosigFaction();
             FactionUI.instance.CreateNewFaction();
             factionLoaded = true;
         }
