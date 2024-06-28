@@ -116,12 +116,14 @@ namespace SupplyRaid
             if (objectGroups == null || objectGroups.Count <= 0)
                 return;
 
+            //Debug.Log("Check to Clear TOTALSIZE:" + IM.OD.Count);
             List<string> clearStrings = new List<string>();
 
             for (int x = 0; x < objectGroups.Count; x++)
             {
                 for (int y = 0; y < objectGroups[x].objectID.Count; y++)
                 {
+                    //Debug.Log("ID: " + objectGroups[x].objectID[y]);
                     //Remove any non-loaded mod objects
                     if (!IM.OD.ContainsKey(objectGroups[x].objectID[y]))
                         clearStrings.Add(objectGroups[x].objectID[y]);
@@ -129,8 +131,10 @@ namespace SupplyRaid
 
                 for (int i = 0; i < clearStrings.Count; i++)
                 {
+                    //Debug.Log("Clearing: " + i + " : " + clearStrings[i]);
                     objectGroups[x].objectID.Remove(clearStrings[i]);
                 }
+                clearStrings.Clear();
             }
 
             for (int i = objectGroups.Count - 1; i >= 0; i--)

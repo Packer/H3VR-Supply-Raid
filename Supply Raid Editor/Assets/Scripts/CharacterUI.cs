@@ -260,9 +260,9 @@ namespace Supply_Raid_Editor
 
             //Points auto assigned
 
-            character.newMagazineCost = int.Parse(newMagazine.text);
-            character.upgradeMagazineCost = int.Parse(upgradeMagazine.text);
-            character.duplicateMagazineCost = int.Parse(duplicateMagazine.text);
+            character.newMagazineCost = float.Parse(newMagazine.text);
+            character.upgradeMagazineCost = float.Parse(upgradeMagazine.text);
+            character.duplicateMagazineCost = float.Parse(duplicateMagazine.text);
             character.modCost = int.Parse(customMod.text);
             character.recyclerPoints = int.Parse(pointsRecycle.text);
             character.recyclerTokens = int.Parse(tokenRecycle.text);

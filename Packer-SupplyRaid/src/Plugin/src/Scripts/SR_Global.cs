@@ -244,7 +244,7 @@ namespace SupplyRaid
         /// <returns></returns>
         public static bool SpawnLoot(LootTable table, SR_ItemCategory itemCategory, Transform[] spawns, bool forceSecondary = false)
         {
-            if (table == null || table.Loot.Count == 0)
+            if (table == null || table.Loot.Count == 0 && itemCategory.objectGroups.Count == 0)
                 return false;
             FVRObject mainObject;
             FVRObject ammoObject;
@@ -312,7 +312,7 @@ namespace SupplyRaid
                 //Get Random Group
                 if (itemCategory != null && itemCategory.objectGroups != null && itemCategory.objectGroups.Count > 0)
                 {
-                    idGroup = itemCategory.objectGroups[index].objectID;
+                    idGroup.AddRange(itemCategory.objectGroups[index].objectID);
                 }
 
                 //Increase Items to Spawn
@@ -359,7 +359,7 @@ namespace SupplyRaid
                     }
                     else
                     {
-                        if(itemCategory != null)
+                        if (itemCategory != null)
                             Debug.Log("Supply Raid - NO OBJECT FOUND IN ITEM CATEGORY: " + itemCategory.name);
                         else
                             Debug.Log("Supply Raid - NO OBJECT FOUND ");

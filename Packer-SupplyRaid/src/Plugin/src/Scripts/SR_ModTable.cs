@@ -380,6 +380,18 @@ namespace SupplyRaid
                     }
 
                     buttons[i].attachmentTable = SR_Global.RemoveGlobalSubtractionOnTable(buttons[i].attachmentTable);
+
+                    //Remove Meme
+                    for (int num = buttons[i].attachmentTable.Loot.Count - 1; num >= 0; num--)
+                    {
+                        FVRObject fVRObject = buttons[i].attachmentTable.Loot[num];
+                        if (fVRObject.TagSet == FVRObject.OTagSet.Meme)
+                        {
+                            buttons[i].attachmentTable.Loot.RemoveAt(num);
+                            continue;
+                        }
+                    }
+
                 }
 
                 //Enable or disable button if it has compatible features

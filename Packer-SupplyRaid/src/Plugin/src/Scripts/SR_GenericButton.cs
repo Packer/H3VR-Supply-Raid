@@ -14,6 +14,7 @@ namespace SupplyRaid
         public Text text;
         public Text textB;
         public GameObject go;
+        public FVRObject fvrObject;
 
         public void SelectCharacter()
         {
@@ -154,7 +155,7 @@ namespace SupplyRaid
             if (!TryPurchaseAmmoType())
                 return;
 
-            SR_AmmoSpawner.instance.BuySpecificRound(index);
+            SR_AmmoSpawner.instance.BuySpecificRound(fvrObject);
         }
 
         public void SelectProfile()

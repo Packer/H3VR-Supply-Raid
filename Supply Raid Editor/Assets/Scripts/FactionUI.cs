@@ -344,8 +344,8 @@ namespace Supply_Raid_Editor
             level.enemiesTotal = int.Parse(levelEnemiesTotal.text);
             level.infiniteEnemies = levelInfiniteEnemies.isOn;
             level.infiniteSquadEnemies = levelInfiniteSquadEnemies.isOn;
-            level.enemySpawnTimer = int.Parse(levelEnemySpawnTimer.text);
-            level.squadDelayTimer = int.Parse(levelSquadDelayTimer.text);
+            level.enemySpawnTimer = float.Parse(levelEnemySpawnTimer.text);
+            level.squadDelayTimer = float.Parse(levelSquadDelayTimer.text);
 
             //Boss
             level.bossCount = int.Parse(levelBossCount.text);

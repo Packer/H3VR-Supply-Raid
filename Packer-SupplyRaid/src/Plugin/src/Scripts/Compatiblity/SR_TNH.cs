@@ -198,14 +198,14 @@ namespace SupplyRaid
                 sp.buyMenu = TryGetLocation(validPanels, 0);
                 sp.buyMenu.transform.Rotate(0,90,0);
 
+                sp.ammoStation = TryGetLocation(validPanels, 3);
+                sp.ammoStation.transform.Rotate(0, 90, 0);
+
                 sp.attachmentStation = TryGetLocation(validPanels, 1);
                 sp.attachmentStation.transform.Rotate(0, 90, 0);
 
                 sp.recycler = TryGetLocation(validPanels, 2);
                 sp.recycler.transform.Rotate(0, 90, 0);
-
-                sp.ammoStation = TryGetLocation(validPanels, 3);
-                sp.ammoStation.transform.Rotate(0, 90, 0);
 
                 sp.duplicator = TryGetLocation(validPanels, 4);
                 sp.duplicator.transform.Rotate(0, 90, 0);

@@ -189,7 +189,7 @@ namespace SupplyRaid
                 if (PointEvent != null)
                     PointEvent.Invoke(points);
 
-                Debug.Log("Points: " + points);
+                //Debug.Log("Points: " + points);
             }
             get { return points; }
         }
@@ -504,7 +504,6 @@ namespace SupplyRaid
                 SR_Networking.instance.ServerRunning_Send();
             }
 
-            Debug.Log("JHJ");
             //Delay Rabbit Hole by 5 seconds
             rabbitHoleTimer = 5;
             squadRespawnTimer = 5;
@@ -547,7 +546,6 @@ namespace SupplyRaid
             //Setup Supply Order
             //-------------------------------------------------------
 
-            Debug.Log("HHH");
             if (profile.captureOrder == 0) //RANDOM ORDER
             {
                 //Random Order

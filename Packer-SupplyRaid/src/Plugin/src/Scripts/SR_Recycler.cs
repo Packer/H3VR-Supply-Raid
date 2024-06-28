@@ -30,6 +30,9 @@ namespace SupplyRaid
 
             for (int i = 0; i < cashList.Count; i++)
             {
+                if (cashList[i] == null)
+                    continue;
+
                 int cash = GetCashValue(cashList[i].name);
                 SR_Manager.instance.Points += cash;
                 Destroy(cashList[i]);
@@ -45,7 +48,8 @@ namespace SupplyRaid
 
             if (weapons[0])
             {
-                Destroy(weapons[0].gameObject);
+                if(weapons[0].gameObject)
+                    Destroy(weapons[0].gameObject);
                 ignoreFail = true;
             }
 

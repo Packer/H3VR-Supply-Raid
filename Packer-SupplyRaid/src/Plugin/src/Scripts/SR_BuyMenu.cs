@@ -205,7 +205,9 @@ namespace SupplyRaid
                     SR_Manager.SpendPoints(purchaseCategories[i].cost);
                 }
                 else
+                {
                     SR_Manager.PlayFailSFX();
+                }
             }
             else
             {
@@ -224,8 +226,10 @@ namespace SupplyRaid
 
             for (int i = 0; i < purchaseCategories.Count; i++)
             {
-                if(purchaseCategories[i] != null)
+                if (purchaseCategories[i] != null)
                     lootTables[i] = purchaseCategories[i].ItemCategory().InitializeLootTable();
+                else
+                    Debug.Log("Supply Raid: Missing Purchase Category");
             }
         }
 
