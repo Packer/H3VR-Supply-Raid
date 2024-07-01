@@ -1015,7 +1015,6 @@ GameObject:
   - component: {fileID: 114584148286040028}
   - component: {fileID: 114223714401817574}
   - component: {fileID: 65057990104374604}
-  - component: {fileID: 114751676548951414}
   m_Layer: 10
   m_Name: Modul
   m_TagString: Untagged
@@ -2242,6 +2241,7 @@ MonoBehaviour:
   text: {fileID: 0}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114079299011931728
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2370,6 +2370,7 @@ MonoBehaviour:
   text: {fileID: 114079299011931728}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114114158941249210
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2650,6 +2651,7 @@ MonoBehaviour:
   text: {fileID: 114150387355489814}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114185777172840542
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3172,6 +3174,7 @@ MonoBehaviour:
   text: {fileID: 0}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114282002006619498
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3339,6 +3342,7 @@ MonoBehaviour:
   text: {fileID: 114167439905121698}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114355455903171340
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3463,6 +3467,7 @@ MonoBehaviour:
   text: {fileID: 114863175011620518}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114371363314959442
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3508,6 +3513,7 @@ MonoBehaviour:
   text: {fileID: 114308517183964762}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114396312944394072
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3526,6 +3532,7 @@ MonoBehaviour:
   text: {fileID: 114643048546791836}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114400489188710352
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3571,6 +3578,7 @@ MonoBehaviour:
   text: {fileID: 114218985794927438}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114408313434494746
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3889,6 +3897,7 @@ MonoBehaviour:
   text: {fileID: 114957998811789416}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114494769388108010
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3954,6 +3963,7 @@ MonoBehaviour:
   text: {fileID: 114450321342543694}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114504068013254066
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4081,6 +4091,7 @@ MonoBehaviour:
   text: {fileID: 114234814231015236}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114524180065063730
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4397,6 +4408,7 @@ MonoBehaviour:
   text: {fileID: 114091965263148438}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114614794287159542
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4462,6 +4474,8 @@ MonoBehaviour:
   - {fileID: 4707299384391020}
   menuAttachments: {fileID: 1228772377181288}
   menuAdapters: {fileID: 1390529866328074}
+  attachmentsButton: {fileID: 1220285895572976}
+  adaptersButton: {fileID: 1458363987673172}
   modulButton: {fileID: 1865205664131870}
   buttons:
   - button: {fileID: 114724399496174076}
@@ -4722,6 +4736,7 @@ MonoBehaviour:
   text: {fileID: 114893538853347592}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114666509513304644
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4890,6 +4905,7 @@ MonoBehaviour:
   text: {fileID: 114595706106506118}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114720542165375096
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4990,6 +5006,7 @@ MonoBehaviour:
   text: {fileID: 114499772548372370}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114734157169460566
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5008,6 +5025,7 @@ MonoBehaviour:
   text: {fileID: 114055875820665380}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114748107729824250
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5083,24 +5101,7 @@ MonoBehaviour:
   text: {fileID: 114019710954011418}
   textB: {fileID: 0}
   go: {fileID: 1615308046627866}
---- !u!114 &114751676548951414
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1865205664131870}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -537941954, guid: bcc605c3eca03cb9d2e7221f1969bc76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  index: 0
-  value: -1
-  thumbnail: {fileID: 114600117247450728}
-  button: {fileID: 0}
-  text: {fileID: 0}
-  textB: {fileID: 0}
-  go: {fileID: 1615308046627866}
+  fvrObject: {fileID: 0}
 --- !u!114 &114756556294397448
 MonoBehaviour:
   m_ObjectHideFlags: 1
