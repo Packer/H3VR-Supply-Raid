@@ -36,7 +36,6 @@ namespace SupplyRaid
         private List<FireArmRoundType> m_roundTypes = new List<FireArmRoundType>();
         private Collider[] colbuffer;
         private Dictionary<FireArmRoundType, FireArmRoundClass> m_decidedTypes = new Dictionary<FireArmRoundType, FireArmRoundClass>();
-
         private float m_scanTick = 1f;
 
         //Ammo

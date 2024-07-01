@@ -31,7 +31,8 @@ namespace SupplyRaid
         public GameObject menuAttachments;
         public GameObject menuAdapters;
 
-
+        public GameObject attachmentsButton;
+        public GameObject adaptersButton;
         [Header("Modul Support")]
         public GameObject modulButton;
 
@@ -84,6 +85,10 @@ namespace SupplyRaid
             {
                 buttons[i].button.text.text = SR_Manager.instance.character.attachmentsCost[i].ToString();
             }
+
+            //Hide Adapters if not enabled
+            if (adaptersButton && SR_Manager.Character().attachmentsCost[(int)FVRObject.OTagAttachmentFeature.Adapter] <= -1)
+                adaptersButton.SetActive(false);
         }
 
         private void Update()

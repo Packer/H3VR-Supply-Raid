@@ -1412,6 +1412,21 @@ namespace SupplyRaid
             //Enemy Level Count
             int enemyCount = Mathf.CeilToInt(currentLevel.enemiesTotal * profile.playerCount);
 
+            //Boss Setup
+            if (currentLevel.bossCount > 0 && currentLevel.bossPool.Count() > 0)
+            {
+                yield return new WaitForSeconds(sosigSpawnTick);
+
+                int bossCount = Mathf.CeilToInt(currentLevel.bossCount);
+
+                for (int i = 0; i < bossCount; i++)
+                {
+                    Transform spot = AttackSupplyPoint().GetBossSpawn();
+                    SpawnGuardSosig(spot, currentLevel);
+                    yield return new WaitForSeconds(sosigSpawnTick);
+                }
+            }
+
             //Sniper Setup
             if (currentLevel.sniperCount > 0 && currentLevel.sniperPool.Count() > 0)
             {
@@ -1451,21 +1466,6 @@ namespace SupplyRaid
                         }
                     }
                     */
-                }
-            }
-
-            //Boss Setup
-            if (currentLevel.bossCount > 0 && currentLevel.bossPool.Count() > 0)
-            {
-                yield return new WaitForSeconds(sosigSpawnTick);
-
-                int bossCount = Mathf.CeilToInt(currentLevel.bossCount);
-
-                for (int i = 0; i < bossCount; i++)
-                {
-                    Transform spot = AttackSupplyPoint().GetBossSpawn();
-                    SpawnGuardSosig(spot, currentLevel);
-                    yield return new WaitForSeconds(sosigSpawnTick);
                 }
             }
 
