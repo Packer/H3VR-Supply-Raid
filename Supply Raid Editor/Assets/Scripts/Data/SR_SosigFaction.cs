@@ -75,7 +75,7 @@ namespace Supply_Raid_Editor
     [System.Serializable]
     public class SosigPool
     {
-        public SosigEnemyID[] sosigEnemyID;
+        public int[] sosigEnemyID;
 
         public int Count()
         {

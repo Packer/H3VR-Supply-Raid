@@ -22,6 +22,7 @@ namespace SupplyRaid
         public GameObject togglePagesButton;
         [HideInInspector, Tooltip("0 = Rearm \n1 = Speed Loader\n2 = Clip\n3 Round")] 
         private bool[] purchaseButtons = new bool[4];
+        private SR_GenericButton[] ammoButtons = new SR_GenericButton[28];
 
         public GameObject[] ammoTypeButtons = new GameObject[28];    //Ammo Enum Length
 
@@ -153,21 +154,10 @@ namespace SupplyRaid
                     //Description
                     btn.fvrObject = rounds[i];
                     btn.textB.text = rounds[i].DisplayName;
-                    //Debug.Log(rounds[i].DisplayName + " : ItemID: " + rounds[i].ItemID);
-
-                    //rounds[i].RoundType;
-                    //int ammoCount = AM.STypeClassLists[ammoList[i].roundType].Count;
                     FireArmRoundClass classType = GetFirearmRoundClassFromType(rounds[i].ItemID, rounds[i].RoundType);
-                    //FireArmRoundClass classType = AM.STypeClassLists[rounds[i].RoundType][i];
-
-                    //List<FireArmRoundClass> classes;
-                    //AM.STypeClassLists.TryGetValue(rounds[i].RoundType, out classes);
-
-                    //Debug.Log(i + " Classtype: " + classType);
-
                     AmmoEnum ammo = SR_Global.GetAmmoEnum(classType);
-                    //Debug.Log(i + " Ammo Enum: " + ammo);
                     btn.index = (int)ammo;  //index (Cost)
+                    btn.genericButton = ammoButtons[(int)ammo]; //Ammo Page button for hiding ammo count
 
                     //Cost Text
                     if (purchasedAmmoTypes[(int)ammo])
@@ -252,10 +242,14 @@ namespace SupplyRaid
 
         public void Setup()
         {
+            ammoButtons = new SR_GenericButton[ammoTypeButtons.Length];
+
             //Ammo Types
             for (int i = 0; i < ammoTypeButtons.Length; i++)
             {
                 SR_GenericButton btn = ammoTypeButtons[i].GetComponent<SR_GenericButton>();
+
+                ammoButtons[i] = btn;
                 //btn.index = i;
                 if (SR_Manager.instance.character.ammoUpgradeCost[i] == 0)
                 {

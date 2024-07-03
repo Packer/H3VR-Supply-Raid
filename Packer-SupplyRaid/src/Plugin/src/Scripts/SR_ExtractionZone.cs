@@ -62,7 +62,8 @@ namespace SupplyRaid
         void UpdateScan()
         {
             //Waiting for Next Scan
-
+            if (GM.CurrentPlayerBody == null)
+                return;
 
             //Inside Zone - Every update if inside
             if (playerInZone)

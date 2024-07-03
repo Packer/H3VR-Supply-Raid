@@ -31,6 +31,10 @@ namespace Supply_Raid_Editor
         public string lastFactionDirectory = "";
         public string lastItemDirectory = "";
 
+
+        [Header("Custom Sosigs")]
+        public List<Sprite> customSosigs = new List<Sprite>();
+
         //Loaded Categories from mod folder
         public List<SR_ItemCategory> loadedCategories = new List<SR_ItemCategory>();
 
@@ -46,6 +50,7 @@ namespace Supply_Raid_Editor
         // Start is called before the first frame update
         void Start()
         {
+            //Debug.Log(Application.dataPath);
             modPath = PlayerPrefs.GetString("ModPath", Application.dataPath);
 
             lastCharacterDirectory = PlayerPrefs.GetString("lastCharacterDirectory");
@@ -71,19 +76,44 @@ namespace Supply_Raid_Editor
                 tex.LoadImage(fileData); //..this will auto-resize the texture dimensions.
                                          //if (tex.texelSize.x > 256)
                                          //    tex.Resize(256, 256);
+                tex.name = Path.GetFileName(path);
             }
 
             if (tex == null)
             {
-                LogError("Texture Not Found at path: " + path);
+                Log("Texture Not Found at path: " + path);
                 return null;
             }
             Sprite NewSprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0), 100.0f);
-
+            NewSprite.name = Path.GetFileName(path);
             Log("Loaded External Image at " + path);
             return NewSprite;
         }
 
+        
+        public void LoadCustomSosigs()
+        {
+            string modFolder = Application.dataPath + "/../" + "CustomSosigs";
+
+            modFolder =  Directory.CreateDirectory(modFolder).FullName;
+            Log("Mod Folder is at: " + modFolder);
+
+            List<string> directories = Directory.GetFiles(modFolder, "*.png", SearchOption.AllDirectories).ToList();
+
+            Debug.Log("Count: " + directories.Count);
+            if (directories.Count == 0)
+                return;
+
+            //Load up each of our categories
+            for (int i = 0; i < directories.Count; i++)
+            {
+                Sprite newSprite = LoadSprite(directories[i]);
+
+                if (!customSosigs.Contains(newSprite))
+                    customSosigs.Add(newSprite);
+            }
+        }
+        
 
         public bool OnLoadDialogue(JSONTypeEnum loadType)
         {

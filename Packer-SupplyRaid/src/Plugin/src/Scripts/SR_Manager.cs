@@ -60,19 +60,26 @@ namespace SupplyRaid
         public int attackSupplyID = 0;
         [HideInInspector, Tooltip("The supply point the players menus are at")]
         public int playerSupplyID = 0;
+        private int playerSupplyIndex = 0;
         [HideInInspector]
         public int supplyOrderIndex = 0;
         [HideInInspector]
         public List<int> supplyOrder = new List<int>();
         public List<SR_SupplyPoint> supplyPoints = new List<SR_SupplyPoint>();
 
-        // Trackers
+        // Trackers---------------------------
+
+        //Max Enemies On Screen
+        private int aliveDefenders = 0;
+        private int reserveDefenders = 0;
+
+        //Max Squad Enemies On Screen
+        private int aliveSquad = 0;
+
+        //Other Stats
         private bool ignoreKillStat = false;
-        private int currentDefenders = 0;
-        private int remainDefenders = 0;
         private float rabbitHoleTimer = 0;
 
-        private int currentSquad = 0;
         private bool spawningSquad = false;
         List<int> squadGroups = new List<int>();
         List<int> squadIFFs = new List<int>();
@@ -110,11 +117,14 @@ namespace SupplyRaid
         public static float sosigSightMultiplier = 1;
         private float sosigSightMultiplierLast = 1;
         public SosigSettings sosigGuard = new SosigSettings();
+        public float guardDistance = 10;
         public SosigSettings sosigSniper = new SosigSettings();
         public SosigSettings sosigPatrol = new SosigSettings();
         public SosigSettings sosigSquad = new SosigSettings();
         private float sosigSpawnTick = 0.9f;
         public float squadSpawnTimerMultiplier = 1;
+        [HideInInspector]
+        public float sosigExplodeTime = 5;
 
         private LayerMask enviromentLayer;
 
@@ -390,18 +400,6 @@ namespace SupplyRaid
             */
         }
 
-        void LoadBGM()
-        {
-            /*
-            //BGM
-            if (SupplyRaidPlugin.bgmEnabled)
-            {
-                BGM.SpawnPanel(spawnMenu.transform.position + Vector3.up, spawnMenu.transform.rotation);
-                BGM.InitializeSoundtrackInterface();
-            }
-            */
-        }
-
         void OnDisable()
         {
             //Events
@@ -420,9 +418,15 @@ namespace SupplyRaid
                 CaptureHotkey();
 
                 stats.GameTime += Time.deltaTime;
+
+                //Spawn Defenders
                 UpdateRabbithole();
+
+                //Spawn Squads
                 if(squadDelayTimer <= Time.time)
                     UpdateSquadSpawner();
+
+                //Update Sosigs Vision
                 UpdateSosigs();
             }
         }
@@ -504,7 +508,7 @@ namespace SupplyRaid
                 SR_Networking.instance.ServerRunning_Send();
             }
 
-            //Delay Rabbit Hole by 5 seconds
+            //Force Delay Rabbit Hole by 5 seconds initially
             rabbitHoleTimer = 5;
             squadRespawnTimer = 5;
 
@@ -512,17 +516,6 @@ namespace SupplyRaid
             Debug.Log("Supply Raid: Launched Game");
             if (LaunchedEvent != null)
                 LaunchedEvent.Invoke();
-
-            //DEBUG
-            //StartCoroutine(SR_Global.SpawnAllLevelSosigs());
-
-            /*
-            //BGM
-            if (SupplyRaidPlugin.bgmEnabled)
-            {
-                BGM.SetTakeMusic(CurrentCaptures);
-            }
-            */
         }
 
         void SetupSupplyPoints()
@@ -534,7 +527,7 @@ namespace SupplyRaid
             //Error, not enough supply points
             if (supplyPoints.Count < 2)
             {
-                Debug.LogError("Supply Raid: There are less than 2 supply points on the map, map will stop working.");
+                Debug.LogError("Supply Raid: There are less than 2 supply points on the map, LOAD STOPPED please restart scene or goto main menu");
                 return;
             }
 
@@ -546,48 +539,54 @@ namespace SupplyRaid
             //Setup Supply Order
             //-------------------------------------------------------
 
-            if (profile.captureOrder == 0) //RANDOM ORDER
+            if (profile.captureOrder == 0) //RANDOM ORDER    --------------------------------
             {
-                //Random Order
-                while (true)
-                {
-                    int id = Random.Range(0, supplyPoints.Count);
-                    if (!supplyOrder.Contains(id))
-                    {
-                        supplyOrder.Add(id);
-                        Debug.Log("Supply ID:" + id + " - index: " + (supplyOrder.Count - 1));
-                    }
+                List<SR_SupplyPoint> orderRandom = new List<SR_SupplyPoint>();
+                List<SR_SupplyPoint> orderSP = new List<SR_SupplyPoint>();
 
-                    if (supplyOrder.Count >= supplyPoints.Count)
-                        break;
-                }
-            }
-            else if (profile.captureOrder == 1) //RANDOM
-            {
-                playerSupplyID = Random.Range(0, supplyPoints.Count);
-                attackSupplyID = Random.Range(0, supplyPoints.Count);
-
-                //Debug.LogError("Supply Points Count: " + supplyPoints.Count);
-                //Debug.LogError("Player: " + playerSupplyID + " - Attack: " + attackSupplyID);
-            }
-            else if (profile.captureOrder == 2) //ORDERED
-            {
-                //Ordered
+                //Populate with all NONE NEXT paths
                 for (int i = 0; i < supplyPoints.Count; i++)
                 {
-                    //Add all supply points in order
-                    supplyOrder.Add(i);
+                    if (supplyPoints[i].previousSupplyPoint == null)
+                        orderSP.Add(supplyPoints[i]);
                 }
-            }
 
-            //-------------------------------------------------------
-            //Forced Spawn Supply
-            //-------------------------------------------------------
-            if (supplyOrder.Count > 0)
-            {
-                //Ordered
+                //Randomize Order of Non-paths
+                while (true)
+                {
+                    int id = Random.Range(0, orderSP.Count);
+
+                    if (!orderRandom.Contains(orderSP[id]))
+                    {
+                        orderRandom.Add(orderSP[id]);
+                    }
+
+                    if (orderRandom.Count >= orderSP.Count)
+                        break;
+                }
+
+                //Add our paths to our random order
+                for (int x = 0; x < orderRandom.Count; x++)
+                {
+                    supplyOrder.Add(orderRandom[x].index);
+
+                    if (orderRandom[x].nextSupplyPoint)
+                    {
+                        SR_SupplyPoint scannedSP = orderRandom[x].nextSupplyPoint;
+                        while (scannedSP != null)
+                        {
+                            if (scannedSP)
+                                supplyOrder.Add(scannedSP.index);
+
+                            scannedSP = scannedSP.nextSupplyPoint;
+                        }
+                    }
+                }
+
+                //FORCED SPAWN SUPPLY
                 for (int i = 0; i < supplyOrder.Count; i++)
                 {
+                    //If any supply point is forceFirstSpawn break out and use it
                     if (supplyPoints[supplyOrder[i]].forceFirstSpawn)
                     {
                         supplyOrderIndex = i;
@@ -595,38 +594,13 @@ namespace SupplyRaid
                         if (supplyOrderIndex >= supplyOrder.Count)
                             supplyOrderIndex = 0;
 
+                        playerSupplyIndex = supplyOrderIndex;
                         playerSupplyID = supplyOrder[supplyOrderIndex];
                         break;
                     }
                 }
-            }
-            else
-            {
-                //Random
-                for (int i = 0; i < supplyPoints.Count; i++)
-                {
-                    if (supplyPoints[i].forceFirstSpawn)
-                    {
-                        playerSupplyID = i;
-                        break;
-                    }
-                }
-            }
 
-            //-------------------------------------------------------
-            //FIRST ATTACK POINTS
-            //-------------------------------------------------------
-            if (profile.captureOrder == 1) //RANDOM
-            {
-                while (playerSupplyID == attackSupplyID)
-                {
-                    attackSupplyID = Random.Range(0, supplyPoints.Count);
-                    //Debug.LogError("Attack: " + attackSupplyID);
-                }
-            }
-            else //ORDERED
-            {
-                //Change the attack Supply ID via the OrderIndex
+                //FIRST ATTACK POINT
                 int playerSupply = supplyOrderIndex;
                 while (playerSupply == supplyOrderIndex)
                 {
@@ -637,14 +611,85 @@ namespace SupplyRaid
                 }
 
                 //Attack position next on the supply order
+                playerSupplyID = supplyOrder[supplyOrderIndex];
                 attackSupplyID = supplyOrder[supplyOrderIndex];
+            }
+            else if (profile.captureOrder == 1) //RANDOM    --------------------------------
+            {
+                playerSupplyID = Random.Range(0, supplyPoints.Count);
+                attackSupplyID = Random.Range(0, supplyPoints.Count);
+
+                //FORCED SPAWN SUPPLY
+                for (int i = 0; i < supplyPoints.Count; i++)
+                {
+                    if (supplyPoints[i].forceFirstSpawn)
+                    {
+                        playerSupplyID = i;
+                        break;
+                    }
+                }
+
+                playerSupplyIndex = playerSupplyID;
+
+                //FIRST ATTACK POINT
+                while (playerSupplyID == attackSupplyID)
+                {
+                    attackSupplyID = Random.Range(0, supplyPoints.Count);
+                }
+            }
+            else if (profile.captureOrder == 2) //ORDERED    --------------------------------
+            {
+                List<SR_SupplyPoint> orderSP = new List<SR_SupplyPoint>();
+
+                //Populate with all NONE NEXT paths
+                for (int i = 0; i < supplyPoints.Count; i++)
+                {
+                    if (supplyPoints[i].previousSupplyPoint == null)
+                        orderSP.Add(supplyPoints[i]);
+                }
+
+                //Add our paths to our order
+                for (int x = 0; x < orderSP.Count; x++)
+                {
+                    supplyOrder.Add(orderSP[x].index);
+
+                    if (orderSP[x].nextSupplyPoint)
+                    {
+                        SR_SupplyPoint scannedSP = orderSP[x].nextSupplyPoint;
+                        while (scannedSP != null)
+                        {
+                            if (scannedSP)
+                                supplyOrder.Add(scannedSP.index);
+
+                            scannedSP = scannedSP.nextSupplyPoint;
+                        }
+                    }
+                }
+
+                //Ordered - Start at 0
+                supplyOrderIndex = 0;
+
+                //FORCED SPAWN SUPPLY
+                for (int i = 0; i < supplyPoints.Count; i++)
+                {
+                    //Get Force First Spawn
+                    if (supplyPoints[i].forceFirstSpawn)
+                    {
+                        playerSupplyIndex = supplyOrderIndex = i;
+                        break;
+                    }
+                }
+
+                //Attack position next on the supply order
+                playerSupplyID = supplyOrder[supplyOrderIndex];
+                attackSupplyID = supplyOrder[supplyOrderIndex]; //Same as supply Point intentionally
             }
 
             //STATIC SUPPLY POINT, REMOVE IT FROM THE LIST
             if (forceStaticPlayerSupplyPoint)
             {
                 if(supplyOrder.Count > 0)
-                    supplyOrder.Remove(playerSupplyID);
+                    supplyOrder.Remove(supplyOrder[playerSupplyIndex]);
             }
         }
 
@@ -667,9 +712,9 @@ namespace SupplyRaid
                 LootDrop(s);
 
             if (squadSosigs.Contains(s))
-                currentSquad--;
-            else
-                currentDefenders--;
+                aliveSquad--;
+            else if(!sosigSnipers.Contains(s))
+                aliveDefenders--;
 
             // Start a coroutine to respawn this sosig
             StartCoroutine(ClearSosig(sosig));
@@ -695,39 +740,6 @@ namespace SupplyRaid
                     SR_Global.SpawnLoot(item.InitializeLootTable(), item, spawns);
                 }
             }
-
-            /*
-            float lootSize = 1; //Default 100% chance of no loot
-
-            List<float> lootLow = new List<float>();
-            List<float> lootHigh = new List<float>();
-
-            //Collect all valid Loot
-            for (int i = 0; i < character.lootCategories.Count; i++)
-            {
-                //Loot
-                lootLow.Add(lootSize);
-                lootSize += character.lootCategories[i].chance;
-                lootHigh.Add(lootSize);
-            }
-
-            //Get Complete Loot Range
-            float lootRange = Random.Range(0f, lootSize);
-
-            //Loop through each low and high and compare with the 
-            for (int i = 0; i < lootLow.Count; i++)
-            {
-                if (lootRange >= lootLow[i] && 
-                    lootRange < lootHigh[i])
-                {
-                    //Spawn Loot
-                    SR_ItemCategory item = itemCategories[character.lootCategories[i].GetIndex()];
-                    Transform[] spawns = new Transform[] { s.transform, s.transform, s.transform, s.transform, s.transform };
-                    SR_Global.SpawnLoot(item.InitializeLootTable(), item, spawns);
-                    return;
-                }
-            }
-            */
         }
 
         private void PlayerDeathEvent(bool killedSelf)
@@ -809,12 +821,6 @@ namespace SupplyRaid
 
         private IEnumerator ClearSosig(Sosig sosig)
         {
-            // Wait for 5 seconds then splode the Sosig
-            yield return new WaitForSeconds(5f);
-
-            if (sosig != null)
-                sosig.ClearSosig();
-
             if (sosigs.Contains(sosig))
                 sosigs.Remove(sosig);
 
@@ -836,7 +842,11 @@ namespace SupplyRaid
             if (sosigSquads.Contains(sosig))
                 sosigSquads.Remove(sosig);
 
+            // Wait for 5 seconds then splode the Sosig
+            yield return new WaitForSeconds(sosigExplodeTime);
 
+            if (sosig != null)
+                sosig.ClearSosig();
 
             // Wait a little bit after before checking Complete
             yield return new WaitForSeconds(sosigSpawnTick);
@@ -860,14 +870,6 @@ namespace SupplyRaid
             Debug.Log("Supply Raid: Captured Point: " + CurrentCaptures);
 
             CurrentCaptures++;
-
-            /*
-            //BGM
-            if (SupplyRaidPlugin.bgmEnabled)
-            {
-                BGM.SetTakeMusic(CurrentCaptures);
-            }
-            */
 
             if (inEndless)
                 endlessLevel++;
@@ -1134,79 +1136,43 @@ namespace SupplyRaid
             //Error Check, only 1 or less supply points, don't do while loop
             if (supplyPoints.Count > 1)
             {
-                /*
-                if (AttackSupplyPoint().nextSupplyPoints.Length > 0)
-                {
-                    int spIndex = Random.Range(0, AttackSupplyPoint().nextSupplyPoints.Length);
+                SR_SupplyPoint playerSP = LastSupplyPoint();
+                //SR_SupplyPoint prevSP = supplyPoints[attackSupplyID].previousSupplyPoint;
+                //SR_SupplyPoint nextSP = supplyPoints[playerSupplyID].nextSupplyPoint;
 
-                    //Loop through each supply point until it matches
-                    for (int i = 0; i < supplyPoints.Count; i++)
-                    {
-                        if (supplyPoints[i] == AttackSupplyPoint().nextSupplyPoints[spIndex])
-                        {
-                            attackSupplyID = i;
-                            break;
-                        }
-                    }
-
-                }
-                */
                 if (profile.captureOrder == 1) //Random
                 {
-                    //int oldAttackID = attackSupplyID;
                     while (playerSupplyID == attackSupplyID)
                     {
-                        //Debug.Log("Set Level Server SP While");
-                        attackSupplyID = Random.Range(0, supplyPoints.Count);
+                        //Enforce Paths
+                        int randomPoint = Random.Range(0, supplyPoints.Count);
+                        SR_SupplyPoint randSP = supplyPoints[randomPoint];
 
-                        if (attackSupplyID == playerSupplyID 
-                            && supplyPoints[playerSupplyID].nextSupplyPoints != null
-                            && supplyPoints[playerSupplyID].nextSupplyPoints.Length > 0)
+                        //Valid Path Supply Point
+                        if (randSP.previousSupplyPoint
+                            && randSP.previousSupplyPoint == playerSP)
                         {
-                            int randomPath = Random.Range(0, supplyPoints[playerSupplyID].nextSupplyPoints.Length);
-                            int randomID = supplyPoints[playerSupplyID].nextSupplyPoints[randomPath].index;
-                            attackSupplyID = randomID;
+                            attackSupplyID = randomPoint;
+                            break;
                         }
+                        else if (randSP.previousSupplyPoint
+                            && randSP.previousSupplyPoint != playerSP)  //Invalid Path Supply Point
+                        {
+                            continue;
+                        }
+                        else //Randomize next supply point
+                            attackSupplyID = randomPoint;
                     }
                 }
-                else
+                else   //Ordered & Random Ordered
                 {
-                    int breakNumber = 0;    //Just in case it wants to loop forever
-                    //Ordered & Random Ordered
-                    while(breakNumber < 100)
-                    {
-                        if (supplyOrderIndex + 1 < supplyOrder.Count())
-                            supplyOrderIndex++;
-                        else
-                            supplyOrderIndex = 0;
+                    if (supplyOrderIndex + 1 < supplyOrder.Count())
+                        supplyOrderIndex++;
+                    else
+                        supplyOrderIndex = 0;
 
-                        attackSupplyID = supplyOrder[supplyOrderIndex];
-
-                        //Deviation Paths
-                        bool isValid = false;
-                        if (supplyPoints[playerSupplyID].previousSupplyPoints != null 
-                            && supplyPoints[attackSupplyID].previousSupplyPoints.Length > 0)
-                        {
-                            for (int i = 0; i < supplyPoints[attackSupplyID].previousSupplyPoints.Length; i++)
-                            {
-                                if (playerSupplyID == supplyPoints[attackSupplyID].previousSupplyPoints[i].index)
-                                {
-                                    isValid = true;
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                            isValid = true;
-
-                        if (isValid)
-                            breakNumber = 1000;
-                        
-                        breakNumber++;
-                    }
+                    attackSupplyID = supplyOrder[supplyOrderIndex];
                 }
-
-                //Debug.Log("Supply Raid: Post Supply Setup");
 
                 //Update Capture Zone
                 captureZone.MoveCaptureZone(AttackSupplyPoint().captureZone);
@@ -1409,114 +1375,59 @@ namespace SupplyRaid
             //Assign Team (Random)
             _spawnOptions.IFF = teamID;
 
+            //Initial Spawn Limit
+            int maxEnemies = profile.maxEnemies;
+            Debug.Log("Capping at: " + maxEnemies);
+
             //Enemy Level Count
-            int enemyCount = Mathf.CeilToInt(currentLevel.enemiesTotal * profile.playerCount);
+            int enemyCount = Mathf.Clamp(Mathf.CeilToInt(currentLevel.enemiesTotal * profile.playerCount), 1, maxEnemies);
 
-            //Boss Setup
-            if (currentLevel.bossCount > 0 && currentLevel.bossPool.Count() > 0)
+            int bossCount = currentLevel.bossCount;
+            int sniperCount = Mathf.CeilToInt(currentLevel.sniperCount * profile.playerCount);
+            int guardCount = Mathf.CeilToInt(currentLevel.guardCount * profile.playerCount);
+
+            int totalCount = Mathf.Clamp(currentLevel.bossCount + sniperCount + guardCount, 1, maxEnemies);
+
+            Debug.Log("Total at: " + totalCount);
+
+            for (int i = 0; i < totalCount; i++)
             {
-                yield return new WaitForSeconds(sosigSpawnTick);
-
-                int bossCount = Mathf.CeilToInt(currentLevel.bossCount);
-
-                for (int i = 0; i < bossCount; i++)
+                //Boss Setup
+                if (bossCount > 0 && currentLevel.bossPool.Count() > 0)
                 {
+                    yield return new WaitForSeconds(sosigSpawnTick);
+
                     Transform spot = AttackSupplyPoint().GetBossSpawn();
-                    SpawnGuardSosig(spot, currentLevel);
+                    SpawnGuardSosig(spot, currentLevel, true);
+                    maxEnemies--;
+                    bossCount--;
                     yield return new WaitForSeconds(sosigSpawnTick);
                 }
-            }
 
-            //Sniper Setup
-            if (currentLevel.sniperCount > 0 && currentLevel.sniperPool.Count() > 0)
-            {
-                //List<Transform> usedSpots = new List<Transform>();
-
-                int sniperCount = Mathf.CeilToInt(currentLevel.sniperCount * profile.playerCount);
-                for (int i = 0; i < sniperCount; i++)
+                //Sniper Setup
+                if (sniperCount > 0 && currentLevel.sniperPool.Count() > 0)
                 {
                     Transform spot = AttackSupplyPoint().GetRandomSniperSpawn();
                     SpawnSniperSosig(spot, spot.position, spot.rotation, currentLevel);
+                    maxEnemies--;
+                    sniperCount--;
+                    yield return new WaitForSeconds(sosigSpawnTick);
+                }
+
+                //Guard Setup
+                if (guardCount > 0 && currentLevel.guardPool.Count() > 0)
+                {
                     yield return new WaitForSeconds(sosigSpawnTick);
 
-                    /*
-                    //While we haven't filled all the spots
-                    while (true)
-                    {
-                        Debug.Log("Defender While");
-                        Transform spot = AttackSupplyPoint().GetRandomSniperSpawn();
-
-                        if ((usedSpots.Count >= AttackSupplyPoint().sniperPoints.Count))
-                        {
-                            usedSpots.Clear();
-                            yield return new WaitForSeconds(sosigSpawnTick);
-                        }
-
-                        //Already in use, continue
-                        if (usedSpots.Contains(spot))
-                            continue;
-                        else if (spot != null)
-                        {
-                            enemyCount--;
-                            usedSpots.Add(spot);
-                            SpawnSniperSosig(spot.position, spot.rotation, currentLevel);
-
-                            yield return new WaitForSeconds(sosigSpawnTick);
-                            break;
-                        }
-                    }
-                    */
-                }
-            }
-
-            //Guard Setup
-            if (currentLevel.guardCount > 0 && currentLevel.guardPool.Count() > 0)
-            {
-                yield return new WaitForSeconds(sosigSpawnTick);
-                //List<Transform> usedSpots = new List<Transform>();
-
-                int guardCount = Mathf.CeilToInt(currentLevel.guardCount * profile.playerCount);
-                for (int i = 0; i < guardCount; i++)
-                {
                     Transform spot = AttackSupplyPoint().GetRandomGuardSpawn();
                     SpawnGuardSosig(spot, currentLevel);
+                    maxEnemies--;
+                    guardCount--;
                     yield return new WaitForSeconds(sosigSpawnTick);
-
-
-                    /*
-                    //While we haven't filled all the spots
-                    while (true)
-                    {
-                        Debug.Log("Guard While");
-                        Debug.Log("spotCount = " + usedSpots.Count);
-                        Transform spot = AttackSupplyPoint().GetRandomGuardSpawn();
-
-                        if (usedSpots.Count >= AttackSupplyPoint().guardPoints.Count)
-                        {
-                            Debug.Log("Guard While Clear");
-                            usedSpots.Clear();
-                            yield return new WaitForSeconds(1f);
-                        }
-
-                        //Already in use, continue
-                        if (usedSpots.Contains(spot))
-                        {
-                            Debug.Log("Guard While Continue");
-                            continue;
-                        }
-                        else if(spot != null)
-                        {
-                            Debug.Log("Guard While Enemy COunt");
-                            enemyCount--;
-                            usedSpots.Add(spot);
-                            SpawnGuardSosig(spot.position, spot.rotation, currentLevel);
-                            yield return new WaitForSeconds(1f);
-                            break;
-                        }
-                    }
-                    */
                 }
             }
+
+
 
             yield return new WaitForSeconds(sosigSpawnTick);
 
@@ -1524,36 +1435,32 @@ namespace SupplyRaid
                 yield break;
 
             //Patrol Setup
-            int minGroupSize = currentLevel.minPatrolSize;
-
             List<int> groups = new List<int>();
-            bool filling = true;
-            while (filling)
+
+            while (true)
             {
+                Debug.Log("Making Group " + enemyCount);
                 int newGroup;
-                if (enemyCount > minGroupSize)
+                if (enemyCount > currentLevel.minPatrolSize)
                 {
-                    newGroup = minGroupSize + Random.Range(0, Mathf.CeilToInt(enemyCount / 3));
+                    newGroup = currentLevel.minPatrolSize + Random.Range(0, Mathf.CeilToInt(enemyCount / 3));
                     enemyCount -= newGroup;
+                    Debug.Log("Interdasting Group " + newGroup);
                 }
                 else
                 {
-                    //Remainding Enemies
+                    //Remaining Enemies
                     newGroup = enemyCount;
                     enemyCount = 0;
+                    Debug.Log("Interdasting Group " + newGroup);
                 }
 
                 groups.Add(newGroup);
+                Debug.Log("Left over Group " + enemyCount);
                 if (enemyCount <= 0)
-                    filling = false;
+                    break;  //Break out of while loop
             }
 
-            int enemiesTotal = 0;
-
-            for (int i = 0; i < groups.Count; i++)
-            {
-                enemiesTotal += groups[i];
-            }
 
             bool sharePaths = false;
             //Make sure we have enough paths
@@ -1562,9 +1469,11 @@ namespace SupplyRaid
 
             List<int> usedPaths = new List<int>();
 
+            Debug.Log("MAX eee: " + maxEnemies);
             //For each Patrol Path, create even amount of sosigs
             for (int y = 0; y < groups.Count; y++)
             {
+                Debug.Log("MAX gghh: " + maxEnemies);
                 int pathID = 0;
                 PatrolPath pp = null;
                 if (sharePaths)
@@ -1590,44 +1499,50 @@ namespace SupplyRaid
 
                 _spawnOptions.SosigTargetPosition = AttackSupplyPoint().patrolPaths[pathID].patrolPoints[patrolPoint].position;
 
+                /*
                 // Spawn Sosig group in Square
-                int count = groups[y];
-                int d = Mathf.FloorToInt(Mathf.Sqrt(count));    //Single Dimension of Units (x * x) etc
+                int d = Mathf.FloorToInt(Mathf.Sqrt(groups[y]));    //Single Dimension of Units (x * x) etc
                 int extra = 0;  //Remaining Units
-                if (d * d < count)
-                    extra = count - (d * d);
+                if (d * d < groups[y])
+                    extra = groups[y] - (d * d);
 
+                */
                 Transform newPos;
-                for (int z = 0, i = 0; z < d + extra; z++)
+
+                int count = groups[y];
+                int enemiesTotal;
+                Debug.Log("Group: " + y + " " + groups[y]);
+
+                for (int i = 0; i < count; i++)
                 {
-                    for (int x = 0; x < d; x++, i++)
+                    //Stop if nothing is running or we hit the enemy cap
+                    if (!gameRunning || maxEnemies <= 0)
                     {
-                        if (i < count)
+                        enemiesTotal = 0;
+                        for (int x = 0; x < groups.Count; x++)
                         {
-                            if (forcePatrolInitialSpawnOnRabbitHoles)
-                                newPos = AttackSupplyPoint().GetRandomSosigSpawn();
-                            else
-                                newPos = AttackSupplyPoint().patrolPaths[pathID].patrolPoints[patrolPoint];
-
-                            SpawnPatrolSosig(
-                                newPos,
-                                pp,
-                                currentLevel);
-
-                            enemiesTotal--;
-
-                            yield return new WaitForSeconds(sosigSpawnTick);
-
-                            //Stop if nothing is running or we hit the enemy cap
-                            if (!gameRunning || currentDefenders >= profile.maxEnemies)
-                            {
-                                remainDefenders = enemiesTotal;
-                                //Debug.Log("Remaining Enemies: " + remainEnemies);
-
-                                yield break;
-                            }
+                            enemiesTotal += groups[x];
                         }
+
+                        Debug.Log("Enemies Left at: " + enemiesTotal);
+                        reserveDefenders = enemiesTotal;
+                        yield break;
                     }
+
+                    if (forcePatrolInitialSpawnOnRabbitHoles)
+                        newPos = AttackSupplyPoint().GetRandomSosigSpawn();
+                    else
+                        newPos = AttackSupplyPoint().patrolPaths[pathID].patrolPoints[patrolPoint];
+
+                    SpawnPatrolSosig(
+                        newPos,
+                        pp,
+                        currentLevel);
+
+                    maxEnemies--;
+                    groups[y]--;
+                    Debug.Log("MAX en: " + maxEnemies);
+                    yield return new WaitForSeconds(sosigSpawnTick);
                 }
             }
         }
@@ -1677,7 +1592,7 @@ namespace SupplyRaid
                 infiniteEnemies = false;
 
             //No more spawning enemies
-            if (!infiniteEnemies && remainDefenders <= 0)
+            if (!infiniteEnemies && reserveDefenders <= 0)
                 return;
 
             //Do once a second check
@@ -1693,10 +1608,10 @@ namespace SupplyRaid
                     maxEnemies = GetFactionLevel().enemiesTotal; //Max Extra Enemies in infinite mode
 
                 //If a enemy slot has freed up
-                if (currentDefenders < maxEnemies)
+                if (aliveDefenders < maxEnemies)
                 {
                     if(!infiniteEnemies)
-                        remainDefenders--;
+                        reserveDefenders--;
 
                     SpawnRabbitholeSosig(GetFactionLevel());
                 }
@@ -1723,7 +1638,7 @@ namespace SupplyRaid
                 squadRespawnTimer = GetFactionLevel().enemySpawnTimer;
 
                 //Enough room to spawn more - Max Onscreen - Current alive = remaining
-                if (squadGroups[0] > profile.maxSquadEnemies - currentSquad)
+                if (squadGroups[0] > profile.maxSquadEnemies - aliveSquad)
                 {
                     //Not enough space to spawn next group
                     return;
@@ -1860,7 +1775,7 @@ namespace SupplyRaid
             return new Vector3(x * 1 - ((d / 2) * 1), 0, -z * 1);
         }
 
-        void SpawnGuardSosig(Transform point, FactionLevel currentLevel)
+        void SpawnGuardSosig(Transform point, FactionLevel currentLevel, bool isBoss = false)
         {
             //Error Check
             if (currentLevel == null)
@@ -1874,7 +1789,13 @@ namespace SupplyRaid
             position.x += Random.Range(-scale.x, scale.x);
             position.z += Random.Range(-scale.z, scale.z);
 
-            Sosig sosig = CreateSosig(_spawnOptions, position, point.rotation, currentLevel.guardPool, currentLevel.name);
+            Sosig sosig 
+                = CreateSosig(
+                    _spawnOptions, 
+                    position, 
+                    point.rotation, 
+                    isBoss ? currentLevel.bossPool : currentLevel.guardPool, 
+                    currentLevel.name);
 
             if (sosig == null)
             {
@@ -1882,14 +1803,13 @@ namespace SupplyRaid
                 return;
             }
 
-
             sosig.m_pathToPoint = position;
             sosig.SetCurrentOrder(Sosig.SosigOrder.GuardPoint);
             sosig.SetMovementSpeed(Sosig.SosigMoveSpeed.Still);
             sosig.MoveSpeed = Sosig.SosigMoveSpeed.Still;
             sosig.SetAssaultSpeed(Sosig.SosigMoveSpeed.Crawling);
-            sosig.SetGuardInvestigateDistanceThreshold(10);
-            sosig.CoverSearchRange = 10;
+            sosig.SetGuardInvestigateDistanceThreshold(guardDistance);
+            sosig.CoverSearchRange = guardDistance;
             sosig.m_guardPoint = position;
             sosig.m_guardDominantDirection = point.rotation.eulerAngles;
 
@@ -1897,7 +1817,7 @@ namespace SupplyRaid
             sosigGuard.AssignToSosig(sosig);
 
             sosigs.Add(sosig);
-            currentDefenders++;
+            aliveDefenders++;
             defenderSosigs.Add(sosig);
             sosigGuards.Add(sosig);
         }
@@ -1991,7 +1911,7 @@ namespace SupplyRaid
             sosigPatrol.AssignToSosig(sosig);
 
             sosigs.Add(sosig);
-            currentDefenders++;
+            aliveDefenders++;
             defenderSosigs.Add(sosig);
             sosigPatrols.Add(sosig);
         }
@@ -2016,7 +1936,7 @@ namespace SupplyRaid
                 return;
             }
 
-            currentSquad++;
+            aliveSquad++;
 
             //Randomize in the sosig Squad Waypoint scale
             sosig.m_pathToPoint = target.position + new Vector3(
@@ -2213,10 +2133,10 @@ namespace SupplyRaid
         void ClearSosigs()
         {
             ignoreKillStat = true;
-            remainDefenders = 0;
-            currentDefenders = 0;
+            reserveDefenders = 0;
+            aliveDefenders = 0;
 
-            currentSquad = 0;
+            aliveSquad = 0;
 
             for (int i = 0; i < sosigs.Count; i++)
             {

@@ -298,6 +298,7 @@ namespace SupplyRaid
                 objectCount += table.Loot.Count;
 
             //Random Select from Table Loot and Group IDs
+            Random.InitState(System.DateTime.Now.Second * System.DateTime.Now.Minute);
             int index = Random.Range(0, objectCount);
 
             //Group IDs

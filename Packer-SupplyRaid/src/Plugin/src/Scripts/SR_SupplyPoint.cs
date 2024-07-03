@@ -33,10 +33,10 @@ namespace SupplyRaid
         [Tooltip("NOT IMPLEMENTED: Used for determining what the next supply point might be.")]
         public SupplySizeEnum supplySize = SupplySizeEnum.Medium;
 
-        [Tooltip("Leave empty for random supply points, list Forces next supply points to be randomly selected from this list")]
-        public SR_SupplyPoint[] nextSupplyPoints;
-        [Tooltip("Leave empty for if this has no specific supply points this connects to")]
-        public SR_SupplyPoint[] previousSupplyPoints;
+        [Tooltip("Enforces the next supply point to be this Next Supply Point")]
+        public SR_SupplyPoint nextSupplyPoint;
+        [Tooltip("Enforces that this Supply Point cannot be selected unless the Previous Supply Point has been captured")]
+        public SR_SupplyPoint previousSupplyPoint;
 
         [Tooltip("Player Spawn/Respawn point")]
         public Transform respawn;
@@ -200,6 +200,15 @@ namespace SupplyRaid
 
 		void OnDrawGizmos()
         {
+            if (previousSupplyPoint)
+            {
+                Vector3 arrowPos = Vector3.Lerp(transform.position, previousSupplyPoint.transform.position, 0.05f);
+                Debug.DrawLine(transform.position, arrowPos + Vector3.up, Color.yellow);
+                Debug.DrawLine(transform.position, arrowPos - Vector3.up, Color.yellow);
+
+                Debug.DrawLine(transform.position, previousSupplyPoint.transform.position, Color.yellow);
+            }
+
             Vector3 spawnSize;
 
             if (sosigSpawns != null)
@@ -219,6 +228,7 @@ namespace SupplyRaid
             //Squad Waypoint
             if (squadPoint != null)
             {
+                Gizmos.matrix = Matrix4x4.identity;
                 Gizmos.color = Color.yellow;
                 Gizmos.DrawLine(squadPoint.position + Vector3.up, squadPoint.position + Vector3.up + squadPoint.forward);
 
@@ -227,7 +237,7 @@ namespace SupplyRaid
                 Gizmos.DrawSphere(squadPoint.position + (Vector3.up * 1.75f), 0.25f);
 
                 spawnSize = new Vector3(squadPoint.localScale.x * spawnRadius, 0.1f, squadPoint.localScale.z * spawnRadius);
-                Gizmos.matrix = Matrix4x4.TRS(squadPoint.position, squadPoint.rotation, spawnSize);
+                Gizmos.matrix = Matrix4x4.TRS(squadPoint.position, Quaternion.identity, spawnSize);
                 Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
             }
 
@@ -245,7 +255,7 @@ namespace SupplyRaid
                     Gizmos.DrawSphere(guardPoints[i].position + (Vector3.up * 1.75f), 0.25f);
 
                     spawnSize = new Vector3(guardPoints[i].lossyScale.x * spawnRadius, 0.1f, guardPoints[i].lossyScale.z * spawnRadius);
-                    Gizmos.matrix = Matrix4x4.TRS(guardPoints[i].position, guardPoints[i].rotation, spawnSize);
+                    Gizmos.matrix = Matrix4x4.TRS(guardPoints[i].position, Quaternion.identity, spawnSize);
                     Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
                 }
             }

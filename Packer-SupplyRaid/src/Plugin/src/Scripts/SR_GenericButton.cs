@@ -15,6 +15,7 @@ namespace SupplyRaid
         public Text textB;
         public GameObject go;
         public FVRObject fvrObject;
+        public SR_GenericButton genericButton;
 
         public void SelectCharacter()
         {
@@ -136,6 +137,9 @@ namespace SupplyRaid
                         SR_AmmoSpawner.instance.purchasedAmmoTypes[index] = true;
                         if(text)
                             text.text = ""; //Blank Cost because we own it
+
+                        if (genericButton && genericButton.text)
+                            genericButton.text.text = "";   //Blank Ammo menu button as well
 
                         SR_Manager.PlayPointsGainSFX();
                     }

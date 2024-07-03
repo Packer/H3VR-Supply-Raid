@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Supply_Raid_Editor;
 
 public class LibraryManager : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class LibraryManager : MonoBehaviour
     public GameObject libraryMenu;
 
     public List<Sprite> sosigs = new List<Sprite>();
+    private List<Sprite> sosigCollection = new List<Sprite>();
 
     public Transform itemContent;
     private List<GenericButton> itemButtons = new List<GenericButton>();
@@ -22,15 +24,22 @@ public class LibraryManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
+
+        //Base Game Sosigs
+        sosigCollection.Clear();
+        sosigCollection.AddRange(sosigs);
+
+        //Custom Sosigs
+        DataManager.instance.LoadCustomSosigs();
+        sosigCollection.AddRange(DataManager.instance.customSosigs);
     }
-
-
 
     public void OpenSosigLibrary(InputField field)
     {
         selectedInputfield = field;
         libraryMenu.SetActive(true);
-        SetupLibrary(sosigs, true);
+
+        SetupLibrary(sosigCollection, true);
     }
 
     public void CloseLibrary(bool empty)

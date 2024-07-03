@@ -185,8 +185,7 @@ namespace Supply_Raid_Editor
             else
                 LoadFaction();
         }
-
-
+        
         void LoadFaction()
         {
             if (DataManager.instance.OnLoadDialogue(JSONTypeEnum.Faction))
