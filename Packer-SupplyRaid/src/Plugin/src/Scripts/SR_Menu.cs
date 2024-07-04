@@ -333,12 +333,15 @@ namespace SupplyRaid
             if (faction == null)
                 return;
 
-            factionTitle.text = faction.name;
-            factionDescription.text = faction.description;
-            factionThumbnail.sprite = faction.Thumbnail();
+            if(factionTitle)
+                factionTitle.text = faction.name;
+            if(factionDescription)
+                factionDescription.text = faction.description;
+            if(factionThumbnail)
+                factionThumbnail.sprite = faction.Thumbnail();
 
             //Network Faction - Mostly for icon displaying
-            if(SupplyRaidPlugin.h3mpEnabled)
+            if(SupplyRaidPlugin.h3mpEnabled && SR_Networking.instance)
                 SR_Networking.instance.GameOptions_Send();
         }
 
