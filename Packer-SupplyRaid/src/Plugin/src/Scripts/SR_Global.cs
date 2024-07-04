@@ -13,7 +13,7 @@ namespace SupplyRaid
     {
         public static Sprite LoadSprite(string path)
         {
-            //Debug.Log("Supply Raid - Loading: " + path);
+            //Debug.Log("Supply Raid: Loading: " + path);
             Texture2D tex = null;
 
             byte[] fileData;
@@ -27,7 +27,7 @@ namespace SupplyRaid
 
             if (tex == null)
             {
-                Debug.LogError("Supply Raid - Texture Not Found: " + path);
+                Debug.LogError("Supply Raid: Texture Not Found: " + path);
                 return null;
             }
             Sprite NewSprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0), 100.0f);
@@ -37,7 +37,7 @@ namespace SupplyRaid
 
         public static IEnumerator SpawnAllLevelSosigs()
         {
-            Debug.Log("Supply Raid - Spawning all Sosigs");
+            Debug.Log("Supply Raid: Spawning all Sosigs");
             Transform spawnPoint = SR_Manager.AttackSupplyPoint().respawn;
             List<SosigEnemyID> idList = new List<SosigEnemyID>();
 
@@ -93,7 +93,7 @@ namespace SupplyRaid
         }
         public static void SpawnTempSosig(SosigEnemyID id, Transform spawnPoint)
         {
-            Debug.Log("Supply Raid - Spawning: " + (int)id + " - " + id);
+            Debug.Log("Supply Raid: Spawning: " + (int)id + " - " + id);
 
             Sosig sosig =
                 Sodalite.Api.SosigAPI.Spawn(
@@ -129,7 +129,7 @@ namespace SupplyRaid
             {
                 if (count >= pool.Length)
                 {
-                    Debug.LogError("Supply Raid - Faction level " + SR_Manager.GetFactionLevel().name + " has no valid SosigEnemyIDs, Not Spawning Sosigs");
+                    Debug.LogError("Supply Raid: Faction level " + SR_Manager.GetFactionLevel().name + " has no valid SosigEnemyIDs, Not Spawning Sosigs");
                     return id;
                 }
 
@@ -340,7 +340,7 @@ namespace SupplyRaid
                     //Try to find the weapon ID
                     if (!IM.OD.TryGetValue(idGroup[z], out mainObject))
                     {
-                        Debug.Log("Supply Raid - Cannot find object with id: " + idGroup[z]);
+                        Debug.Log("Supply Raid: Cannot find object with id: " + idGroup[z]);
                         continue;
                     }
 
@@ -361,9 +361,9 @@ namespace SupplyRaid
                     else
                     {
                         if (itemCategory != null)
-                            Debug.Log("Supply Raid - NO OBJECT FOUND IN ITEM CATEGORY: " + itemCategory.name);
+                            Debug.Log("Supply Raid: NO OBJECT FOUND IN ITEM CATEGORY: " + itemCategory.name);
                         else
-                            Debug.Log("Supply Raid - NO OBJECT FOUND ");
+                            Debug.Log("Supply Raid: NO OBJECT FOUND ");
                         return false;
                     }
                 }
@@ -784,18 +784,9 @@ namespace SupplyRaid
                         mags.RemoveAt(i);
                 }
 
-                /*
-                //add Compatible Magazines to Mag Collection
-                for (int i = 0; i < ammoCollection.Count; i++)
-                {
-                    if (!mags.Contains(ammoCollection[i]))
-                        mags.Add(ammoCollection[i]);
-                }
-                */
-
                 if (mags.Count == 0)
                 {
-                    Debug.Log("No Mags");
+                    //Debug.Log("No Mags");
                     return null;
                 }
 
@@ -807,9 +798,6 @@ namespace SupplyRaid
             if (o.CompatibleClips != null && o.CompatibleClips.Count > 0 
                 || o.ClipType != FireArmClipType.None)
             {
-                
-                //List<FVRObject> ammoCollection = o.CompatibleClips == null ? new List<FVRObject>() : o.CompatibleClips;
-
                 //Populate Clips
                 List<FVRObject> clips = new List<FVRObject>(ManagerSingleton<IM>.Instance.odicTagCategory[FVRObject.ObjectCategory.Clip]);
                 for (int i = clips.Count - 1; i >= 0; i--)
@@ -818,17 +806,9 @@ namespace SupplyRaid
                         clips.RemoveAt(i);
                 }
 
-                /*
-                for (int i = 0; i < ammoCollection.Count; i++)
-                {
-                    if (!clips.Contains(ammoCollection[i]))
-                        clips.Add(ammoCollection[i]);
-                }
-                */
-
                 if (clips.Count == 0)
                 {
-                    Debug.Log("No Clips");
+                    //Debug.Log("No Clips");
                     return null;
                 }
 
@@ -1049,7 +1029,7 @@ namespace SupplyRaid
                 if (IM.OD.TryGetValue(itemIDs[i], out mainObject))
                     input.Add(mainObject);
                 else
-                    Debug.Log("Supply Raid Custom Sosig - Could not find " + itemIDs);
+                    Debug.Log("Supply Raid: Could not find " + itemIDs);
             }
         }
 

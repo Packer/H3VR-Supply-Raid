@@ -161,7 +161,7 @@ namespace SupplyRaid
                     }
                 }
                 else
-                    Debug.LogError("Supply Raid - No Icon found for category " + tabContainers[i].name);
+                    Debug.LogError("Supply Raid: No Icon found for category " + tabContainers[i].name);
             }
 
             //Populate Tabs with Buy Buttons

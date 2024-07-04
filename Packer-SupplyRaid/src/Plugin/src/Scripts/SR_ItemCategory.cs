@@ -98,7 +98,7 @@ namespace SupplyRaid
         {
             if (thumbnailPath == "")
             {
-                Debug.LogError("Supply Raid - Thumbnail not defined for Item category: " + name);
+                Debug.LogError("Supply Raid: Thumbnail not defined for Item category: " + name);
                 return null;
             }
 
@@ -340,7 +340,7 @@ namespace SupplyRaid
             //Remove GLOBAL character subtractions from character list
             table = SR_Global.RemoveGlobalSubtractionOnTable(table);
 
-            //Debug.Log("Supply Raid - Loot Table Post " + name + " | Size: " + table.Loot.Count);
+            //Debug.Log("Supply Raid: Loot Table Post " + name + " | Size: " + table.Loot.Count);
 
             return table;
         }

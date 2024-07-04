@@ -92,17 +92,13 @@ namespace SupplyRaid
         /// </summary>
         public void CleanSupplyPoint()
         {
-            Debug.Log("Guard Points pre clean: " + guardPoints.Count);
             List<Transform> cleanList = guardPoints.Distinct().ToList();
             guardPoints = cleanList;
-            Debug.Log("Guard Points POST clean: " + guardPoints.Count);
 
             cleanList.Clear();
 
-            Debug.Log("Sniper Points pre clean: " + sniperPoints.Count);
             cleanList = sniperPoints.Distinct().ToList();
             sniperPoints = cleanList;
-            Debug.Log("Sniper Points POST clean: " + sniperPoints.Count);
 
         }
 

@@ -53,7 +53,7 @@ namespace SupplyRaid
 
                 if (localAssetBundle == null)
                 {
-                    Debug.LogError("Failed to load Supply Raid AssetBundle");
+                    Debug.LogError("Supply Raid: Failed to load Supply Raid AssetBundle");
                     yield break;
                 }
 
@@ -66,7 +66,7 @@ namespace SupplyRaid
 
             if (assetRequest == null)
             {
-                Debug.LogError("Supply Raid - Missing SR Assets");
+                Debug.LogError("Supply Raid: Missing SR Assets");
                 yield break;
             }
 
@@ -94,7 +94,7 @@ namespace SupplyRaid
 
             if (directories.Count == 0)
             {
-                Debug.LogError("No Item Categories were found!");
+                Debug.LogError("Supply Raid: No Item Categories were found!");
                 return null;
             }
 
@@ -116,7 +116,7 @@ namespace SupplyRaid
                     }
                     catch (Exception ex)
                     {
-                        Debug.Log(ex.Message);
+                        Debug.Log("Supply Raid: " + ex.Message);
                         return null;
                     }
 
@@ -138,7 +138,7 @@ namespace SupplyRaid
 
             if (directories.Count == 0)
             {
-                Debug.LogError("No Factions were found!");
+                Debug.LogError("Supply Raid: No Factions were found!");
                 return null;
             }
 
@@ -160,7 +160,7 @@ namespace SupplyRaid
                     }
                     catch (Exception ex)
                     {
-                        Debug.Log(ex.Message);
+                        Debug.Log("Supply Raid: " + ex.Message);
                         return null;
                     }
 
@@ -182,7 +182,7 @@ namespace SupplyRaid
 
             if (directories.Count == 0)
             {
-                Debug.LogError("No Characters were found!");
+                Debug.LogError("Supply Raid: No Characters were found!");
                 return null;
             }
 
@@ -209,7 +209,7 @@ namespace SupplyRaid
                     }
                     catch (Exception ex)
                     {
-                        Debug.Log(ex.Message);
+                        Debug.Log("Supply Raid: " + ex.Message);
                         return null;
                     }
 
@@ -361,7 +361,7 @@ namespace SupplyRaid
                 catch (Exception ex)
                 {
                     FistVR.SM.PlayGlobalUISound(FistVR.SM.GlobalUISound.Error, FistVR.GM.CurrentPlayerBody.transform.position);
-                    Debug.Log(ex.Message);
+                    Debug.Log("Supply Raid: " + ex.Message);
                     return null;
                 }
             }

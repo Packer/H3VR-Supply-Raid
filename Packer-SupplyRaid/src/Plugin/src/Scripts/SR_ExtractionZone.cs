@@ -68,10 +68,8 @@ namespace SupplyRaid
             //Inside Zone - Every update if inside
             if (playerInZone)
             {
-                Debug.Log("InZone");
                 if (!WithinZone(GM.CurrentPlayerBody.Head.position))
                 {
-                    Debug.Log("Player Left Zone");
                     playerInZone = false;
                     extractTimer = 0;
                     nextScan = 0;
@@ -85,7 +83,6 @@ namespace SupplyRaid
                     //Extract the player
                     if (extractTimer >= timeToExtract)
                     {
-                        Debug.Log("EXTRACTED");
                         nextScan = 0;
                         extractTimer = 0;
                         playerInZone = false;
@@ -100,7 +97,6 @@ namespace SupplyRaid
             {
                 if (WithinZone(GM.CurrentPlayerBody.Head.position))
                 {
-                    Debug.Log("Player Entered Zone");
                     playerInZone = true;
                     nextScan = 0;
                     return;

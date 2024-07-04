@@ -89,6 +89,8 @@ namespace SupplyRaid
             //Hide Adapters if not enabled
             if (adaptersButton && SR_Manager.Character().attachmentsCost[(int)FVRObject.OTagAttachmentFeature.Adapter] <= -1)
                 adaptersButton.SetActive(false);
+
+            SelectMenu(menuAttachments);
         }
 
         private void Update()
@@ -138,7 +140,7 @@ namespace SupplyRaid
         {
             if (itemObject == null)
             {
-                Debug.LogError("Could not generate button with missing FVRObject");
+                Debug.LogError("Supply Raid: Could not generate button with missing FVRObject");
                 return null;
             }
 

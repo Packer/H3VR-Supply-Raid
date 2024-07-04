@@ -39,7 +39,7 @@ namespace SupplyRaid
         {
             if (thumbnailPath == "")
             {
-                Debug.LogError("Thumbnail not defined for character : " + category + "/" + name);
+                Debug.LogError("Supply Raid: Thumbnail not defined for character : " + category + "/" + name);
                 return null;
             }
 

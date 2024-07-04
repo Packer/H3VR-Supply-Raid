@@ -74,16 +74,8 @@ namespace SupplyRaid
         /// <param name="clientID"></param>
         void OnPlayerJoined(int clientID)
         {
-            Debug.Log(">>>>>>>>> OnPlayerJoined: " + clientID);
             if (clientID == 0)
                 return;
-
-            /*
-            //Update all the clients whe a new player joins
-            LevelUpdate_Send(false);
-            GameOptions_Send();
-            ServerRunning_Send();
-            */
         }
 		
         void SetupPacketTypes()
@@ -233,7 +225,7 @@ namespace SupplyRaid
             packet.Write(gameComplete);
             ServerSend.SendTCPDataToAll(packet, true);
 
-            Debug.Log("Supply Raid Host - Level Update: " + SR_Manager.instance.CurrentCaptures);
+            Debug.Log("Supply Raid: Host - Level Update: " + SR_Manager.instance.CurrentCaptures);
         }
 
         //Level Update Receive
@@ -262,7 +254,7 @@ namespace SupplyRaid
                 SR_Manager.instance.SetLevel_Client(totalCaptures, supply, lastSupply, endless);
 
 
-            Debug.Log("Supply Raid Client - Level Update: " + totalCaptures);
+            Debug.Log("Supply Raid: Client - Level Update: " + totalCaptures);
         }
 
         //GameOptions Send ----------------------------------------------
@@ -325,7 +317,7 @@ namespace SupplyRaid
             if (!Networking.ServerRunning() || Networking.IsHost())
                 return;
 
-            Debug.Log("Client Sending CaptureZone");
+            Debug.Log("Networking: Client Sending Captured Zone");
 
             Packet packet = new Packet(capturedZone_ID);
                 ClientSend.SendTCPData(packet, true);
@@ -334,7 +326,7 @@ namespace SupplyRaid
         //Captured Received
         void CapturedZone_Handler(int clientID, Packet packet)
         {
-            Debug.Log("Received Client Captured zone");
+            Debug.Log("Networking: Received Client Captured zone");
             if(SR_Manager.instance.captureProtection <= 0)
                 SR_Manager.instance.CapturedPoint();
         }
@@ -397,7 +389,7 @@ namespace SupplyRaid
             if (!Networking.ServerRunning() || Networking.IsHost())
                 return;
 
-            Debug.Log("Client Sending Request Sync");
+            Debug.Log("Networking: Client Sending Request Sync");
 
             Packet packet = new Packet(requestSync_ID);
             ClientSend.SendTCPData(packet, true);
@@ -406,7 +398,7 @@ namespace SupplyRaid
         //RequestSync Received TODO make corouteen
         void RequestSync_Handler(int clientID, Packet packet)
         {
-            Debug.Log("Received Client Request Sync");
+            Debug.Log("Networking: Received Client Request Sync");
 
             GameOptions_Send();
             LevelUpdate_Send(SR_Manager.instance.gameCompleted);

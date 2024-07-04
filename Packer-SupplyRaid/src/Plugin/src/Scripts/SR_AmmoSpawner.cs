@@ -181,7 +181,7 @@ namespace SupplyRaid
                 }
                 else 
                 {
-                    Debug.Log("Supply Raid - No ID found for rounds");
+                    Debug.Log("Supply Raid: No ID found for rounds");
                 }
             }
         }

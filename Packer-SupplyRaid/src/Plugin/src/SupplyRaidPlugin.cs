@@ -54,7 +54,7 @@ namespace SupplyRaid
         {
 			if (next != null && next.name.Contains("TakeAndHold_Lobby"))
 			{
-				Logger.LogInfo("Supply Raid - Found TnH Lobby, Adding Supply Raid button");
+				Logger.LogInfo("Supply Raid: Found TnH Lobby, Adding Supply Raid button");
                 loadTnH = false;
                 CreateTnHButton();
             }
@@ -71,7 +71,7 @@ namespace SupplyRaid
 
             if (TnHm != null || TnHoverRide != null)
             {
-                Logger.LogInfo("Supply Raid - TnH manger found, attempting to convert");
+                Logger.LogInfo("Supply Raid: TnH manger found, attempting to convert");
                 GameObject goSR = Instantiate(new UnityEngine.GameObject());
 				goSR.AddComponent<SR_TNH>().tnhManager = TnHm;
 				goSR.GetComponent<SR_TNH>().tnHOverideManager = TnHoverRide;

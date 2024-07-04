@@ -124,7 +124,7 @@ namespace SupplyRaid
 
                 if (startGearIndex[x] == -1)
                 { 
-                    Debug.LogError("Supply Raid - Missing character start gear index: " + x);
+                    Debug.LogError("Supply Raid: Missing character start gear index: " + x);
                 }
             }
 
@@ -144,7 +144,7 @@ namespace SupplyRaid
 
                 if (purchaseCategories[i].GetIndex() == -1)
                 {
-                    Debug.Log("Supply Raid - Purchase Category " + purchaseCategories[i].itemCategory + " could not set item Category");
+                    Debug.Log("Supply Raid: Purchase Category " + purchaseCategories[i].itemCategory + " could not set item Category");
                     removeCategory.Add(purchaseCategories[i]);
                 }
             }
@@ -175,7 +175,7 @@ namespace SupplyRaid
 
                 if (lootCategories[i].GetIndex() == -1)
                 {
-                    Debug.Log("Supply Raid - Purchase Category " + lootCategories[i].itemCategory + " could not set item Category");
+                    Debug.Log("Supply Raid: Purchase Category " + lootCategories[i].itemCategory + " could not set item Category");
                     removeLootCategory.Add(lootCategories[i]);
                 }
             }
@@ -209,7 +209,7 @@ namespace SupplyRaid
         {
             if (thumbnailPath == "")
             {
-                Debug.LogError("Supply Raid - Thumbnail not defined for character : " + category + "/" + name);
+                Debug.LogError("Supply Raid: Thumbnail not defined for character : " + category + "/" + name);
                 return null;
             }
 

@@ -60,7 +60,9 @@ namespace SupplyRaid
             {
                 tnHOverideManager.gameObject.SetActive(false);
             }
-              
+
+            //Clear anything spawned
+            VaultSystem.ClearExistingSaveableObjects(true);
 
             //Generate Our Supply Raid Content
             Instantiate(new GameObject()).AddComponent<SR_ModLoader>();

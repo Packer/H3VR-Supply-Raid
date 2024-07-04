@@ -595,7 +595,7 @@ namespace SupplyRaid
                 if (content == null)
                 {
                     //No category, continue
-                    Debug.LogError(SR_Manager.instance.characters[i].name + " does not have a defined category");
+                    Debug.LogError("Supply Raid:" + SR_Manager.instance.characters[i].name + " does not have a defined category");
                     continue;
                 }
 
@@ -641,7 +641,7 @@ namespace SupplyRaid
                 if (content == null)
                 {
                     //No category, continue
-                    Debug.LogError(SR_Manager.instance.factions[i].name + " does not have a defined category");
+                    Debug.LogError("Supply Raid: " + SR_Manager.instance.factions[i].name + " does not have a defined category");
                     continue;
                 }
 

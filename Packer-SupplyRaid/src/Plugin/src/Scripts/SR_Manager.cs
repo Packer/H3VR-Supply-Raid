@@ -364,7 +364,7 @@ namespace SupplyRaid
             factions = SR_ModLoader.LoadFactions();
             characters = SR_ModLoader.LoadCharacters();
 
-            Debug.Log("Supply Raid - Items Count:" + itemCategories.Count + " Factions Count: " + factions.Count +  " Characters Count: " + characters.Count);
+            Debug.Log("Supply Raid: Items Count:" + itemCategories.Count + " Factions Count: " + factions.Count +  " Characters Count: " + characters.Count);
 
             //Characters
             for (int i = 0; i < characters.Count; i++)
@@ -821,6 +821,12 @@ namespace SupplyRaid
 
         private IEnumerator ClearSosig(Sosig sosig)
         {
+            // Wait for 5 seconds then splode the Sosig
+            yield return new WaitForSeconds(sosigExplodeTime);
+
+            if (sosig != null)
+                sosig.ClearSosig();
+
             if (sosigs.Contains(sosig))
                 sosigs.Remove(sosig);
 
@@ -842,11 +848,6 @@ namespace SupplyRaid
             if (sosigSquads.Contains(sosig))
                 sosigSquads.Remove(sosig);
 
-            // Wait for 5 seconds then splode the Sosig
-            yield return new WaitForSeconds(sosigExplodeTime);
-
-            if (sosig != null)
-                sosig.ClearSosig();
 
             // Wait a little bit after before checking Complete
             yield return new WaitForSeconds(sosigSpawnTick);
@@ -904,7 +905,7 @@ namespace SupplyRaid
             if (SR_ResultsMenu.instance != null)
                 SR_ResultsMenu.instance.UpdateResults();
             else
-                Debug.Log("Missing Results");
+                Debug.Log("Supply Raid: Missing Results");
 
             //TODO play game complete sound
             PlayCompleteSFX();
@@ -1285,7 +1286,7 @@ namespace SupplyRaid
 
             if (spawnPoint == null || currentLevel == null)
             {
-                Debug.LogError("Supply Raid - Missing spawnPoint or currentLevel");
+                Debug.LogError("Supply Raid: Missing spawnPoint or currentLevel");
                 yield break;
             }
 
@@ -1332,7 +1333,7 @@ namespace SupplyRaid
 
             if (target == null)
             {
-                Debug.LogError("ERROR: Cannot find Target supply point in SpawnSquadSosigs");
+                Debug.LogError("Supply Raid: Cannot find Target supply point in SpawnSquadSosigs");
                 yield break;
             }
 
@@ -1377,7 +1378,6 @@ namespace SupplyRaid
 
             //Initial Spawn Limit
             int maxEnemies = profile.maxEnemies;
-            Debug.Log("Capping at: " + maxEnemies);
 
             //Enemy Level Count
             int enemyCount = Mathf.Clamp(Mathf.CeilToInt(currentLevel.enemiesTotal * profile.playerCount), 1, maxEnemies);
@@ -1388,7 +1388,6 @@ namespace SupplyRaid
 
             int totalCount = Mathf.Clamp(currentLevel.bossCount + sniperCount + guardCount, 1, maxEnemies);
 
-            Debug.Log("Total at: " + totalCount);
 
             for (int i = 0; i < totalCount; i++)
             {
@@ -1439,24 +1438,20 @@ namespace SupplyRaid
 
             while (true)
             {
-                Debug.Log("Making Group " + enemyCount);
                 int newGroup;
                 if (enemyCount > currentLevel.minPatrolSize)
                 {
                     newGroup = currentLevel.minPatrolSize + Random.Range(0, Mathf.CeilToInt(enemyCount / 3));
                     enemyCount -= newGroup;
-                    Debug.Log("Interdasting Group " + newGroup);
                 }
                 else
                 {
                     //Remaining Enemies
                     newGroup = enemyCount;
                     enemyCount = 0;
-                    Debug.Log("Interdasting Group " + newGroup);
                 }
 
                 groups.Add(newGroup);
-                Debug.Log("Left over Group " + enemyCount);
                 if (enemyCount <= 0)
                     break;  //Break out of while loop
             }
@@ -1469,11 +1464,9 @@ namespace SupplyRaid
 
             List<int> usedPaths = new List<int>();
 
-            Debug.Log("MAX eee: " + maxEnemies);
             //For each Patrol Path, create even amount of sosigs
             for (int y = 0; y < groups.Count; y++)
             {
-                Debug.Log("MAX gghh: " + maxEnemies);
                 int pathID = 0;
                 PatrolPath pp = null;
                 if (sharePaths)
@@ -1499,19 +1492,9 @@ namespace SupplyRaid
 
                 _spawnOptions.SosigTargetPosition = AttackSupplyPoint().patrolPaths[pathID].patrolPoints[patrolPoint].position;
 
-                /*
-                // Spawn Sosig group in Square
-                int d = Mathf.FloorToInt(Mathf.Sqrt(groups[y]));    //Single Dimension of Units (x * x) etc
-                int extra = 0;  //Remaining Units
-                if (d * d < groups[y])
-                    extra = groups[y] - (d * d);
-
-                */
                 Transform newPos;
-
                 int count = groups[y];
                 int enemiesTotal;
-                Debug.Log("Group: " + y + " " + groups[y]);
 
                 for (int i = 0; i < count; i++)
                 {
@@ -1524,7 +1507,6 @@ namespace SupplyRaid
                             enemiesTotal += groups[x];
                         }
 
-                        Debug.Log("Enemies Left at: " + enemiesTotal);
                         reserveDefenders = enemiesTotal;
                         yield break;
                     }
@@ -1541,7 +1523,6 @@ namespace SupplyRaid
 
                     maxEnemies--;
                     groups[y]--;
-                    Debug.Log("MAX en: " + maxEnemies);
                     yield return new WaitForSeconds(sosigSpawnTick);
                 }
             }
@@ -1625,7 +1606,7 @@ namespace SupplyRaid
 
             if (squadIFFs.Count == 0)
             {
-                Debug.LogError("Supply Raid - no IFF been set");
+                Debug.LogError("Supply Raid: no IFF been set");
                 return;
             }
 
@@ -1760,14 +1741,14 @@ namespace SupplyRaid
 
             if (sosigSpawn == null)
             {
-                Debug.LogError("Supply Raid - Missing Rabbithole spawn position " + pathID);
+                Debug.LogError("Supply Raid: Missing Rabbithole spawn position " + pathID);
                 return;
             }
 
             SpawnPatrolSosig(sosigSpawn,
                                 pp,
                                 currentLevel);
-            //Debug.Log("Supply Raid - Rabbithole Sosig " + sosigSpawn.position);
+            //Debug.Log("Supply Raid: Rabbithole Sosig " + sosigSpawn.position);
         }
 
         Vector3 GetSquaredPosition(int x, int z, int d)
@@ -1780,7 +1761,7 @@ namespace SupplyRaid
             //Error Check
             if (currentLevel == null)
             {
-                Debug.Log("Supply Raid - Missing Guard Spawn Data");
+                Debug.Log("Supply Raid: Missing Guard Spawn Data");
                 return;
             }
 
@@ -1799,7 +1780,7 @@ namespace SupplyRaid
 
             if (sosig == null)
             {
-                Debug.LogError("Supply Raid - No Guard Sosig to Spawn");
+                Debug.LogError("Supply Raid: No Guard Sosig to Spawn");
                 return;
             }
 
@@ -1827,7 +1808,7 @@ namespace SupplyRaid
             //Error Check
             if (currentLevel == null)
             {
-                Debug.Log("Supply Raid - Missing Sniper Spawn Data");
+                Debug.Log("Supply Raid: Missing Sniper Spawn Data");
                 return;
             }
 
@@ -1841,7 +1822,7 @@ namespace SupplyRaid
 
             if (sosig == null)
             {
-                Debug.LogError("Supply Raid - No Sniper Sosig to Spawn");
+                Debug.LogError("Supply Raid: No Sniper Sosig to Spawn");
                 return;
             }
 
@@ -1873,7 +1854,7 @@ namespace SupplyRaid
             //Error Check
             if (pp == null || currentLevel == null)
             {
-                Debug.Log("Supply Raid - Missing Patrol Spawn Data");
+                Debug.Log("Supply Raid: Missing Patrol Spawn Data");
                 return;
             }
 
@@ -1886,7 +1867,7 @@ namespace SupplyRaid
 
             if (sosig == null)
             {
-                Debug.LogError("Supply Raid - No Patrol Sosig to Spawn");
+                Debug.LogError("Supply Raid: No Patrol Sosig to Spawn");
                 return;
             }
 
@@ -1921,7 +1902,7 @@ namespace SupplyRaid
             //Error Check
             if (spawnSupply == null || spawnSupply.squadPoint == null || currentLevel == null)
             {
-                Debug.Log("Supply Raid - Missing Squad Spawn Data");
+                Debug.Log("Supply Raid: Missing Squad Spawn Data");
                 return;
             }
 
@@ -1932,7 +1913,7 @@ namespace SupplyRaid
 
             if (sosig == null)
             {
-                Debug.LogError("Supply Raid - No Squad Sosig to Spawn");
+                Debug.LogError("Supply Raid: No Squad Sosig to Spawn");
                 return;
             }
 
@@ -1990,12 +1971,12 @@ namespace SupplyRaid
 
         public Sosig CreateSosig(SosigAPI.SpawnOptions spawnOptions, Vector3 position, Quaternion rotation, SosigPool pool, string poolName)
         {
-            //Debug.Log("Supply Raid - Spawning Sosig at position: " + position);
+            //Debug.Log("Supply Raid: Spawning Sosig at position: " + position);
 
             //Get Valid Sosig ID
             if (pool.Count() <= 0)
             {
-                Debug.LogError("Supply Raid - No squad enemy IDs assigned to faction level " + poolName);
+                Debug.LogError("Supply Raid: No squad enemy IDs assigned to faction level " + poolName);
                 return null;
             }
 
@@ -2003,7 +1984,7 @@ namespace SupplyRaid
 
             if (id == SosigEnemyID.None)
             {
-                Debug.LogError("Supply Raid - No valid squad enemy IDs in faction level " + poolName);
+                Debug.LogError("Supply Raid: No valid squad enemy IDs in faction level " + poolName);
                 return null;
             }
 
@@ -2253,7 +2234,7 @@ namespace SupplyRaid
         {
             if (instance == null)
             {
-                Debug.Log("There is no Supply Raid Manager loaded in this scene");
+                Debug.Log("Supply Raid: There is no Supply Raid Manager loaded in this scene");
                 return 0;
             }
 
@@ -2267,7 +2248,7 @@ namespace SupplyRaid
         {
             if (instance == null)
             {
-                Debug.Log("There is no Supply Raid Manager loaded in this scene");
+                Debug.Log("Supply Raid: There is no Supply Raid Manager loaded in this scene");
                 return;
             }
 
