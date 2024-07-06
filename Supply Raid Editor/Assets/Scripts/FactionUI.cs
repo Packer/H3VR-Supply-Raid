@@ -57,6 +57,7 @@ namespace Supply_Raid_Editor
 
         //PATROL
         [SerializeField] InputField levelMinPatrolSize;
+        [SerializeField] InputField levelMaxPatrolSize;
         [SerializeField] Transform levelPatrolContent;
         public List<PointsUI> patrolList = new List<PointsUI>();
 
@@ -299,6 +300,7 @@ namespace Supply_Raid_Editor
 
             //Patrol
             levelMinPatrolSize.SetTextWithoutNotify(level.minPatrolSize.ToString());
+            levelMaxPatrolSize.SetTextWithoutNotify(level.maxPatrolSize.ToString());
 
             if (level.patrolPool == null)
                 level.patrolPool = new SosigPool();
@@ -391,6 +393,7 @@ namespace Supply_Raid_Editor
 
             //Patrol
             level.minPatrolSize = int.Parse(levelMinPatrolSize.text);
+            level.maxPatrolSize = int.Parse(levelMaxPatrolSize.text);
             level.patrolPool = new SosigPool();
             level.patrolPool.sosigEnemyID = new int[patrolList.Count];
             for (int x = 0; x < patrolList.Count; x++)

@@ -59,6 +59,7 @@ namespace Supply_Raid_Editor
 
         //PATROL
         public int minPatrolSize = 2;
+        public int maxPatrolSize = -1;
         public SosigPool patrolPool;
 
         //A Squad is a group of sosigs that spawn at a random supply point then move towards the capture supply point.
