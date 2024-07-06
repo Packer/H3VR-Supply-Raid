@@ -149,8 +149,7 @@ namespace SupplyRaid
                 int powerIndex = (int)m_detectedMag.ObjectWrapper.TagFirearmRoundPower;
                 float multiplier = SR_Manager.instance.character.powerMultiplier[powerIndex];
 
-                costDuplicate
-                    = SR_Manager.Character().GetRoundCost(
+                costDuplicate = SR_Manager.Character().GetRoundCost(
                         SR_Manager.instance.character.duplicateMagazineCost,
                         m_detectedMag.m_capacity,
                         multiplier);

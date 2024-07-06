@@ -1064,6 +1064,7 @@ MonoBehaviour:
   subtractivePage: {fileID: 908485909}
   itemThumbnail: {fileID: 228109505}
   itemName: {fileID: 1875535184}
+  category: {fileID: 73254332}
   minCapacity: {fileID: 2020881450}
   maxCapacity: {fileID: 666424289}
   minLevel: {fileID: 1675889555}
@@ -1704,6 +1705,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1449082102283593548, guid: f997de2f3f2ba9249980488cee2fb333, type: 3}
   m_PrefabInstance: {fileID: 59817993}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &73254332 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1388294218989494939, guid: 4f55f7e74bc02cf48ad39b1bfc4ff7bd, type: 3}
+  m_PrefabInstance: {fileID: 1719332161}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &77710096
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2644,7 +2656,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7863198439538180566, guid: 97b9dc2bebf61134db42b05d197c1f57, type: 3}
       propertyPath: m_Name
-      value: SubtractiveIDsTitle
+      value: RightPanelTitle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 97b9dc2bebf61134db42b05d197c1f57, type: 3}
@@ -3164,7 +3176,7 @@ GameObject:
   - component: {fileID: 147869625}
   - component: {fileID: 147869624}
   m_Layer: 5
-  m_Name: SubtractiveIDs
+  m_Name: RightPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7205,8 +7217,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 160, y: -138.28516}
-  m_SizeDelta: {x: 256.00003, y: 128}
+  m_AnchoredPosition: {x: 160, y: -126}
+  m_SizeDelta: {x: 256, y: 154}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &335566836
 MonoBehaviour:
@@ -14756,6 +14768,7 @@ MonoBehaviour:
   categoryPath: 
   itemCategory:
     name: Item Category
+    category: 
     minCapacity: -1
     maxCapacity: -1
     minLevel: -1
@@ -14799,6 +14812,7 @@ MonoBehaviour:
   lastCharacterDirectory: 
   lastFactionDirectory: 
   lastItemDirectory: 
+  customSosigs: []
   loadedCategories: []
   debugLine: {fileID: 1621776299}
 --- !u!4 &597142098
@@ -33707,7 +33721,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6745787501110056088, guid: 97b9dc2bebf61134db42b05d197c1f57, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 24.00003
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 6745787501110056088, guid: 97b9dc2bebf61134db42b05d197c1f57, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -39846,7 +39860,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 501904701157035618, guid: 4f55f7e74bc02cf48ad39b1bfc4ff7bd, type: 3}
       propertyPath: m_Name
-      value: NameTitle
+      value: CategoryTitle
       objectReference: {fileID: 0}
     - target: {fileID: 1615747631379591033, guid: 4f55f7e74bc02cf48ad39b1bfc4ff7bd, type: 3}
       propertyPath: m_Text
@@ -39854,7 +39868,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3321160003226035055, guid: 4f55f7e74bc02cf48ad39b1bfc4ff7bd, type: 3}
       propertyPath: m_Name
-      value: Name_InputField
+      value: Category_InputField
       objectReference: {fileID: 0}
     - target: {fileID: 3924173520416496428, guid: 4f55f7e74bc02cf48ad39b1bfc4ff7bd, type: 3}
       propertyPath: m_AnchorMax.x
@@ -50987,6 +51001,7 @@ MonoBehaviour:
   inputField: {fileID: 8961714464437032540}
   category:
     name: 
+    category: 
     minCapacity: -1
     maxCapacity: -1
     minLevel: -1
@@ -51152,6 +51167,7 @@ MonoBehaviour:
   inputField: {fileID: 8961714463327741242}
   category:
     name: 
+    category: 
     minCapacity: -1
     maxCapacity: -1
     minLevel: -1

@@ -535,6 +535,12 @@ namespace SupplyRaid
             if (forceCaptureOrder != -1)
                 profile.captureOrder = forceCaptureOrder;
 
+            //Clean Supply Order
+            for (int i = 0; i < supplyPoints.Count; i++)
+            {
+                supplyPoints[i].index = i;
+            }
+
             //-------------------------------------------------------
             //Setup Supply Order
             //-------------------------------------------------------
@@ -595,6 +601,7 @@ namespace SupplyRaid
                             supplyOrderIndex = 0;
 
                         playerSupplyIndex = supplyOrderIndex;
+
                         playerSupplyID = supplyOrder[supplyOrderIndex];
                         break;
                     }
@@ -819,6 +826,14 @@ namespace SupplyRaid
             }
         }
 
+        public void AddCustomSosig(Sosig sosig, bool isDefender = false)
+        {
+            sosigs.Add(sosig);
+
+            if (isDefender)
+                defenderSosigs.Add(sosig);
+        }
+
         private IEnumerator ClearSosig(Sosig sosig)
         {
             // Wait for 5 seconds then splode the Sosig
@@ -965,6 +980,8 @@ namespace SupplyRaid
         void MovePanelsToLastSupply()
         {
             buyMenu.SetPositionAndRotation(LastSupplyPoint().buyMenu.position, LastSupplyPoint().buyMenu.rotation);
+            if (SR_BuyMenu.instance)
+                SR_BuyMenu.instance.UpdateBuyItems();
 
             ammoStation.SetPositionAndRotation(LastSupplyPoint().ammoStation.position, LastSupplyPoint().ammoStation.rotation);
 
@@ -1055,6 +1072,8 @@ namespace SupplyRaid
 
         public void SetLevel_Client(int totalCaptures, int attackSupply, int playerSupply, bool isEndless)
         {
+            captureProtection = 10;
+
             //New Player catchup
             if (CurrentCaptures == 0 && totalCaptures >= 2)
             {
@@ -1074,7 +1093,7 @@ namespace SupplyRaid
             attackSupplyID = attackSupply;
             playerSupplyID = playerSupply;
             inEndless = isEndless;
-
+            
             //Update Panels
             MovePanelsToLastSupply();
 
@@ -1441,7 +1460,20 @@ namespace SupplyRaid
                 int newGroup;
                 if (enemyCount > currentLevel.minPatrolSize)
                 {
-                    newGroup = currentLevel.minPatrolSize + Random.Range(0, Mathf.CeilToInt(enemyCount / 3));
+                    if (currentLevel.maxPatrolSize <= 0)
+                    {
+                        //Legacy
+                        newGroup = currentLevel.minPatrolSize + Random.Range(0, Mathf.CeilToInt(enemyCount / 3));
+                    }
+                    else
+                    {
+                        //New maxPatrolSize
+                        if (enemyCount >= currentLevel.maxPatrolSize)
+                            newGroup = Random.Range(currentLevel.minPatrolSize, currentLevel.maxPatrolSize);
+                        else
+                            newGroup = Random.Range(currentLevel.minPatrolSize, enemyCount);
+                    }
+
                     enemyCount -= newGroup;
                 }
                 else
@@ -1703,8 +1735,12 @@ namespace SupplyRaid
 
                         Transform spawnPoint = AttackSupplyPoint().sosigSpawns[index];
 
-                        Vector3 headPosition = GM.CurrentPlayerBody.Head.position + (GM.CurrentPlayerBody.Head.forward * 0.5f);
                         Vector3 spawnPosition = spawnPoint.position + (Vector3.up * 1.7f);
+                        Vector3 scale = (spawnPoint.localScale * AttackSupplyPoint().spawnRadius) / 2;
+                        spawnPosition.x += Random.Range(-scale.x, scale.x);
+                        spawnPosition.z += Random.Range(-scale.z, scale.z);
+
+                        Vector3 headPosition = GM.CurrentPlayerBody.Head.position + (GM.CurrentPlayerBody.Head.forward * 0.5f);
 
                         //Make sure the player isn't within range
                         if (SR_Global.Distance2D(headPosition, spawnPosition) >= AttackSupplyPoint().playerNearby)

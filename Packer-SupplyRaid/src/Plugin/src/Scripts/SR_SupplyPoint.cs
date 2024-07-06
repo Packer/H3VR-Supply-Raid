@@ -217,6 +217,10 @@ namespace SupplyRaid
                     Gizmos.DrawSphere(sosigSpawns[i].position + (Vector3.up * 0.125f), 0.25f);
                     Gizmos.DrawSphere(sosigSpawns[i].position + Vector3.up, 0.25f);
                     Gizmos.DrawSphere(sosigSpawns[i].position + (Vector3.up * 1.75f), 0.25f);
+
+                    spawnSize = new Vector3(sosigSpawns[i].localScale.x * spawnRadius, 0.1f, sosigSpawns[i].localScale.z * spawnRadius);
+                    Gizmos.matrix = Matrix4x4.TRS(sosigSpawns[i].position, Quaternion.identity, spawnSize);
+                    Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
                 }
             }
 

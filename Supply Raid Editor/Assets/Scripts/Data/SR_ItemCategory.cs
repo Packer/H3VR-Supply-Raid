@@ -9,6 +9,7 @@ namespace Supply_Raid_Editor
     public class SR_ItemCategory
     {
         public string name;
+        public string category = "";
 
         [Tooltip("Magazine/Clip Min Capacity for this loot table")]
         public int minCapacity = -1;

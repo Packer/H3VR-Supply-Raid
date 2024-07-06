@@ -336,7 +336,7 @@ namespace SupplyRaid
 
             if (directories.Count == 0)
             {
-                Debug.LogError("Supply Raid: No profiles were found!");
+                Debug.Log("Supply Raid: No profiles were found!");
                 return null;
             }
 

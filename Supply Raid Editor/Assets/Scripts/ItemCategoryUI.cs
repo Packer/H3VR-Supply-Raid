@@ -21,6 +21,7 @@ namespace Supply_Raid_Editor
         [Header("Input Fields")]
         public Image itemThumbnail;
         public InputField itemName;
+        public InputField category;
         public InputField minCapacity;
         public InputField maxCapacity;
         public InputField minLevel;
@@ -112,6 +113,9 @@ namespace Supply_Raid_Editor
 
             //Name
             item.name = itemName.text;
+
+            //Category
+            item.category = category.text;
 
             //Capacity
             item.minCapacity = int.Parse(minCapacity.text);
@@ -276,6 +280,9 @@ namespace Supply_Raid_Editor
 
             //Name
             itemName.text = item.name;
+
+            //Category
+            category.text = item.category;
 
             //Capacity
             minCapacity.text = item.minCapacity.ToString();

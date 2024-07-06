@@ -12,6 +12,13 @@ namespace SupplyRaid
     {
         public static SR_BuyMenu instance;
 
+        public class CategoryButton
+        {
+            public GameObject categoryButton;
+            public SR_ItemCategory itemCategory;
+        }
+        public List<CategoryButton> categoryItems = new List<CategoryButton>();
+
         [Header("Spawn Points")]
         [SerializeField] Transform[] spawnPoints;
 
@@ -167,6 +174,10 @@ namespace SupplyRaid
             //Populate Tabs with Buy Buttons
             for (int i = 0; i < purchaseCategories.Count; i++)
             {
+                if (purchaseCategories[i].ItemCategory().objectGroups.Count == 0
+                    && lootTables[i].Loot.Count == 0)
+                    continue;
+
                 //Populate all menus
                 for (int x = 0; x < tabContainers.Length; x++)
                 {
@@ -181,8 +192,35 @@ namespace SupplyRaid
                         newBtn.text.text = purchaseCategories[i].cost.ToString();
                         newBtn.name = purchaseCategories[i].ItemCategory().name;
 
+                        //Level management
+                        CategoryButton cBtn = new CategoryButton();
+                        cBtn.itemCategory = purchaseCategories[i].ItemCategory();
+                        cBtn.categoryButton = newBtn.gameObject;
+                        categoryItems.Add(cBtn);
+
                         break;
                     }
+                }
+            }
+            UpdateBuyItems();
+        }
+
+        public void UpdateBuyItems()
+        {
+            for (int i = 0; i < categoryItems.Count; i++)
+            {
+                if (categoryItems[i] != null)
+                {
+                    //If -1, always true
+                    if ((categoryItems[i].itemCategory.minLevel == -1 ||
+                        categoryItems[i].itemCategory.minLevel <= SR_Manager.instance.CurrentCaptures)
+                        && (categoryItems[i].itemCategory.maxLevel == -1 ||
+                        categoryItems[i].itemCategory.maxLevel >= SR_Manager.instance.CurrentCaptures))
+                    {
+                        categoryItems[i].categoryButton.SetActive(true);
+                    }
+                    else
+                        categoryItems[i].categoryButton.SetActive(false);
                 }
             }
         }

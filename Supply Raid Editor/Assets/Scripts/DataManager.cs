@@ -67,6 +67,10 @@ namespace Supply_Raid_Editor
         {
             Texture2D tex = null;
 
+            //Clean path
+            path = Path.GetFullPath(path);
+            path = path.Replace("%20", " ");
+
             byte[] fileData;
 
             if (File.Exists(path) && tex == null)
@@ -228,8 +232,8 @@ namespace Supply_Raid_Editor
                     LoadFaction(loader.text);
                     yield return null;
                     MenuManager.instance.factionLoaded = true;
-                    MenuManager.instance.OpenFactionPanel();
                     FactionUI.instance.LoadFaction();
+                    MenuManager.instance.OpenFactionPanel();
 
                     url = url.Remove(url.Length - 4) + "png";
                     url = url.Remove(0, 8);

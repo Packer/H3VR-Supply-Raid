@@ -118,6 +118,8 @@ namespace SupplyRaid
         //PATROL
         [Tooltip("The minimum size for Patrol Groups")]
         public int minPatrolSize = 2;
+        [Tooltip("The minimum size for Patrol Groups")]
+        public int maxPatrolSize = -1;
         [Tooltip("The sosig ID pool for patrols")]
         public SosigPool patrolPool;
 
