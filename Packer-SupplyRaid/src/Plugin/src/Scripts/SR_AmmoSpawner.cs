@@ -837,7 +837,8 @@ namespace SupplyRaid
                             || SR_Manager.instance.character.ammoUpgradeCost[(int)ammoList[i].roundClasses[x].ammo] <= -1)
                             continue;
 
-                        if (SR_Manager.instance.character.ammoUpgradeCost[(int)ammoList[i].roundClasses[x].ammo] >= 0)
+                        if (SR_Manager.instance.character.ammoUpgradeCost[(int)ammoList[i].roundClasses[x].ammo] >= 0
+                            && ammoPage.activeSelf == true)
                         {
                             //Debug.Log("BUTTON ACTIVE!");
                             ammoTypeButtons[(int)ammoList[i].roundClasses[x].ammo].SetActive(true);
@@ -853,7 +854,7 @@ namespace SupplyRaid
             }
 
             //Selection
-            if (ammoList.Count > 0)
+            if (ammoList.Count > 0 && ammoPage.activeSelf == true)
             {
                 SetSelectionIcon((int)selectedAmmoType);
             }

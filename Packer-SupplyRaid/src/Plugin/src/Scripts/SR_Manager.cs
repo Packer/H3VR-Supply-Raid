@@ -2188,7 +2188,7 @@ namespace SupplyRaid
             List<FVRObject.OTagEra> eras = new List<FVRObject.OTagEra>
             {
                 FVRObject.OTagEra.Modern,
-                FVRObject.OTagEra.PostWar,
+                FVRObject.OTagEra.PostWar
             };
 
             List<FVRObject.OTagFirearmMount> mounts = new List<FVRObject.OTagFirearmMount>
@@ -2206,10 +2206,26 @@ namespace SupplyRaid
             {
                 FVRObject.OTagSet.Real,
                 FVRObject.OTagSet.TNH,
+                FVRObject.OTagSet.GroundedFictional
             };
 
             lt_RequiredAttachments.Initialize(type, eras, null, null, null, null, null, mounts, null, features, null, null, null, null, -1, -1);
             lt_RequiredAttachments = SR_Global.RemoveGlobalSubtractionOnTable(lt_RequiredAttachments);
+
+            //Tag Set Removal
+            if (set != null && set.Count > 0)
+            {
+                for (int num = lt_RequiredAttachments.Loot.Count - 1; num >= 0; num--)
+                {
+                    FVRObject fVRObject = lt_RequiredAttachments.Loot[num];
+                    if (set != null && !set.Contains(fVRObject.TagSet))
+                    {
+                        lt_RequiredAttachments.Loot.RemoveAt(num);
+                        continue;
+                    }
+                }
+            }
+
         }
 
         //----------------------------------------------------------------------

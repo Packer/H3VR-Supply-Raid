@@ -2354,6 +2354,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4752348930207630045, guid: 1d56c0a9acf8dda4f892ec204a586a0b, type: 3}
+      propertyPath: m_ContentType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752348930207630045, guid: 1d56c0a9acf8dda4f892ec204a586a0b, type: 3}
+      propertyPath: m_KeyboardType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752348930207630045, guid: 1d56c0a9acf8dda4f892ec204a586a0b, type: 3}
+      propertyPath: m_CharacterValidation
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752348930207630045, guid: 1d56c0a9acf8dda4f892ec204a586a0b, type: 3}
       propertyPath: m_OnDidEndEdit.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}

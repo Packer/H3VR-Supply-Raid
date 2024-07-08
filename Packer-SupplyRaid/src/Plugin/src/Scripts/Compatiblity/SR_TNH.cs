@@ -157,12 +157,19 @@ namespace SupplyRaid
                 validPanels.AddRange(tnhSP.SpawnPoints_Sosigs_Defense);
                 validPanels.AddRange(tnhSP.SpawnPoints_Turrets);
 
+                
+
                 //Sosig Postisons
                 validSosigPoints.Add(tnhSP.SpawnPoint_PlayerSpawn);
                 validSosigPoints.AddRange(tnhSP.SpawnPoints_Boxes);
                 validSosigPoints.AddRange(tnhSP.SpawnPoints_Sosigs_Defense);
                 validSosigPoints.AddRange(tnhSP.SpawnPoints_Turrets);
                 validSosigPoints.AddRange(tnhSP.SpawnPoints_Panels);
+
+                for (int i = 0; i < tnhSP.CoverPoints.Count; i++)
+                {
+                    validSosigPoints.Add(tnhSP.CoverPoints[i].transform);
+                }
 
                 for (int i = validSosigPoints.Count - 1; i >= 0; i--)
                 {
