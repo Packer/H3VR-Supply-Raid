@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afed54a239594b8abd631a8047a54987, type: 3}
+  m_Name: SupplyRaidMenu_BP
+  m_EditorClassIdentifier: 
+  PackageName: SupplyRaidMenu
+  Author: Danny
+  Version: 0.0.4
+  Icon: {fileID: 2800000, guid: 0f23047dc5c163b40a39ada2642bc410, type: 3}
+  ReadMe: {fileID: 102900000, guid: 0ef972042aeb3144a87158168db7cdbc, type: 3}
+  WebsiteURL: 
+  Description: 
+  AdditionalDependencies: []
+  StripNamespaces: 1
+  AdditionalNamespaces: []
+  ApplyHarmonyPatches: 1
+  BuildItems:
+  - {fileID: 11400000, guid: f46a48b063187194bbe330c736daab35, type: 2}
+  BuildAction: 2
+  OutputProfile: 
