@@ -14,6 +14,7 @@ public class LibraryManager : MonoBehaviour
 
     public List<Sprite> sosigs = new List<Sprite>();
     private List<Sprite> sosigCollection = new List<Sprite>();
+    public InputField searchInput;
 
     public Transform itemContent;
     private List<GenericButton> itemButtons = new List<GenericButton>();
@@ -86,6 +87,27 @@ public class LibraryManager : MonoBehaviour
 
             itemButtons.Add(btn);
         }
+    }
+
+    public void SearchName()
+    {
+        if (searchInput.text == "")
+        {
+            for (int i = 0; i < itemButtons.Count; i++)
+            {
+                itemButtons[i].gameObject.SetActive(true);
+            }
+            return;
+        }
+
+        for (int i = 0; i < itemButtons.Count; i++)
+        {
+            if (itemButtons[i].description.Contains(searchInput.text, System.StringComparison.OrdinalIgnoreCase))
+                itemButtons[i].gameObject.SetActive(true);
+            else
+                itemButtons[i].gameObject.SetActive(false);
+        }
+
     }
 
     public void SortByName()

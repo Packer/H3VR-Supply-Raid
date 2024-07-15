@@ -156,6 +156,7 @@ namespace Supply_Raid_Editor
         void NewItemCategory()
         {
             ItemCategoryUI.instance.CreateItemCategory();
+            DataManager.SetDefaultFileName(JSONTypeEnum.ItemCategory);
             itemLoaded = true;
         }
 
@@ -173,6 +174,7 @@ namespace Supply_Raid_Editor
         void NewFaction()
         {
             DataManager.instance.faction = new SR_SosigFaction();
+            DataManager.SetDefaultFileName(JSONTypeEnum.Faction);
             FactionUI.instance.CreateNewFaction();
             factionLoaded = true;
         }
@@ -286,6 +288,7 @@ namespace Supply_Raid_Editor
         void NewCharacter()
         {
             DataManager.instance.character = new SR_CharacterPreset();
+            DataManager.SetDefaultFileName(JSONTypeEnum.Character);
             characterLoaded = true;
 
             CharacterUI.instance.NewCharacter();

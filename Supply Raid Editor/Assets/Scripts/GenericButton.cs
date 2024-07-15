@@ -27,6 +27,7 @@ public class GenericButton : MonoBehaviour
 
     public void OpenLevelGroup()
     {
+        Debug.Log("Opening " + (toggle ? "endless" : "Level"));
         if (toggle)  //Endless
             FactionUI.instance.OpenEndlessLevel(index);
         else
@@ -40,6 +41,6 @@ public class GenericButton : MonoBehaviour
         else
             DataManager.Faction().levels.RemoveAt(index);
 
-        FactionUI.instance.OpenLevels(toggle);
+        FactionUI.instance.OpenLevels();
     }
 }

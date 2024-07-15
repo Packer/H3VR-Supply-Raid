@@ -191,7 +191,6 @@ namespace SupplyRaid
             {
                 respawn.position = rayHit.point + (Vector3.up * 0.05f);
             }
-
         }
 
 		void OnDrawGizmos()
@@ -211,6 +210,7 @@ namespace SupplyRaid
             {
                 for (int i = 0; i < sosigSpawns.Length; i++)
                 {
+                    Gizmos.matrix = Matrix4x4.identity;
                     Gizmos.color = new Color(1f, 0.5f, 0, 1f);
                     Gizmos.DrawLine(sosigSpawns[i].position, sosigSpawns[i].position + sosigSpawns[i].forward + Vector3.up * 0.125f);
 

@@ -209,6 +209,25 @@ namespace Supply_Raid_Editor
             return true;
         }
 
+        public static void SetDefaultFileName(JSONTypeEnum type)
+        {
+            switch (type)
+            {
+                case JSONTypeEnum.Character:
+                    instance.lastCharacterDirectory = Path.GetDirectoryName(instance.lastCharacterDirectory) + "/New Character.cpsr";
+                    PlayerPrefs.SetString("lastCharacterDirectory", instance.lastCharacterDirectory);
+                    break;
+                case JSONTypeEnum.Faction:
+                    instance.lastFactionDirectory = Path.GetDirectoryName(instance.lastFactionDirectory) + "/New Faction.sfsr";
+                    PlayerPrefs.SetString("lastFactionDirectory", instance.lastFactionDirectory);
+                    break;
+                case JSONTypeEnum.ItemCategory:
+                    instance.lastItemDirectory = Path.GetDirectoryName(instance.lastItemDirectory) + "/New Item Category.icsr";
+                    PlayerPrefs.SetString("lastItemDirectory", instance.lastItemDirectory);
+                    break;
+            }
+        }
+
         private IEnumerator OutputRoutine(string url, JSONTypeEnum loadType)
         {
             var loader = new WWW(url);
@@ -262,25 +281,25 @@ namespace Supply_Raid_Editor
             {
                 case JSONTypeEnum.Faction:
                     path = StandaloneFileBrowser.SaveFilePanel(
-                        "Save Faction", 
-                        lastFactionDirectory, 
-                        saveName, 
+                        "Save Faction",
+                        Path.GetDirectoryName(lastFactionDirectory),
+                        Path.GetFileName(lastFactionDirectory), 
                         "sfsr");
                     break;
                 case JSONTypeEnum.ItemCategory:
                     path = StandaloneFileBrowser.SaveFilePanel(
-                        "Save Item Category", 
-                        lastCharacterDirectory, 
-                        saveName, 
+                        "Save Item Category",
+                        Path.GetDirectoryName(lastCharacterDirectory),
+                        Path.GetFileName(lastCharacterDirectory), 
                         "icsr");
                     break;
 
                 case JSONTypeEnum.Character:
                 default:
                     path = StandaloneFileBrowser.SaveFilePanel(
-                        "Save Character", 
-                        lastCharacterDirectory, 
-                        saveName, 
+                        "Save Character",
+                        Path.GetDirectoryName(lastCharacterDirectory),
+                        Path.GetFileName(lastCharacterDirectory), 
                         "cpsr");
                     break;
             }

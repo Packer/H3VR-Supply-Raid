@@ -62,7 +62,7 @@ namespace SupplyRaid
 			if (!loadTnH)
 				return;
 
-            FistVR.TNH_Manager TnHm = FindObjectOfType<FistVR.TNH_Manager>();
+            TNH_Manager TnHm = FindObjectOfType<TNH_Manager>();
 			Atlas.MappingComponents.TakeAndHold.TNH_ManagerOverride TnHoverRide = null;
             if (TnHm == null)
             {
@@ -72,10 +72,15 @@ namespace SupplyRaid
             if (TnHm != null || TnHoverRide != null)
             {
                 Logger.LogInfo("Supply Raid: TnH manger found, attempting to convert");
-                GameObject goSR = Instantiate(new UnityEngine.GameObject());
+                GameObject goSR = Instantiate(new GameObject());
 				goSR.AddComponent<SR_TNH>().tnhManager = TnHm;
 				goSR.GetComponent<SR_TNH>().tnHOverideManager = TnHoverRide;
             }
+
+			if (h3mpEnabled && loadTnH)
+			{
+				//Todo stop H3MP breaking stuff on
+			}
         }
 
 		private void CreateTnHButton()

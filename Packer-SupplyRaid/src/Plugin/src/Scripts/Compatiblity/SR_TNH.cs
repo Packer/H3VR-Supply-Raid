@@ -76,6 +76,8 @@ namespace SupplyRaid
             //Generate Supply Points then load our assets
             yield return StartCoroutine(SetupSupplyPoints());
 
+            yield return StartCoroutine(SetupSupplyPointsHold());
+
             //Load our Assets
             StartCoroutine(SR_ModLoader.LoadSupplyRaidAssets());
         }
@@ -157,8 +159,6 @@ namespace SupplyRaid
                 validPanels.AddRange(tnhSP.SpawnPoints_Sosigs_Defense);
                 validPanels.AddRange(tnhSP.SpawnPoints_Turrets);
 
-                
-
                 //Sosig Postisons
                 validSosigPoints.Add(tnhSP.SpawnPoint_PlayerSpawn);
                 validSosigPoints.AddRange(tnhSP.SpawnPoints_Boxes);
@@ -237,6 +237,137 @@ namespace SupplyRaid
                 //Patrols
                 PatrolPath[] patrols = new PatrolPath[2];
                                 
+                for (int z = 0; z < patrols.Length; z++)
+                {
+                    patrols[z] = new PatrolPath();
+                    patrols[z].patrolPoints.AddRange(validSosigPoints);
+
+                    //Reverse order after each list
+                    validSosigPoints.Reverse();
+                }
+                sp.patrolPaths = patrols;
+            }
+        }
+
+        public IEnumerator SetupSupplyPointsHold()
+        {
+            yield return null;
+
+            //Collection of valid positions for everything
+            List<Transform> validPanels = new List<Transform>();
+            List<Transform> validSosigPoints = new List<Transform>();
+
+            //Supply Point for each supply point
+            for (int x = 0; x < tnhManager.HoldPoints.Count; x++)
+            {
+                TNH_HoldPoint tnhHP = tnhManager.HoldPoints[x];
+
+                //Valid Content
+                validPanels.Clear();
+                validSosigPoints.Clear();
+
+                //Panel Positions --
+                validPanels.Add(tnhHP.m_systemNode.NodeCenter);
+                for (int i = 0; i < tnhHP.CoverPoints.Count; i++)
+                {
+                    //Cover barriers
+                    validPanels.Add(tnhHP.CoverPoints[i].transform);
+                }
+
+                validPanels.AddRange(tnhHP.SpawnPoints_Sosigs_Defense);
+                validPanels.AddRange(tnhHP.SpawnPoints_Turrets);
+
+                //Sosig Postisons --
+                for (int y = 0; y < tnhHP.AttackVectors.Count; y++)
+                {
+                    validSosigPoints.AddRange(tnhHP.AttackVectors[y].SpawnPoints_Sosigs_Attack);
+                    validSosigPoints.Add(tnhHP.AttackVectors[y].GrenadeVector);
+                }
+
+                validSosigPoints.AddRange(tnhHP.SpawnPoints_Sosigs_Defense);
+                validSosigPoints.AddRange(tnhHP.SpawnPoints_Turrets);
+
+                for (int i = 0; i < tnhHP.CoverPoints.Count; i++)
+                {
+                    validSosigPoints.Add(tnhHP.CoverPoints[i].transform);
+                }
+
+                validSosigPoints.Add(tnhHP.m_systemNode.NodeCenter);
+
+                for (int i = validSosigPoints.Count - 1; i >= 0; i--)
+                {
+                    if (validSosigPoints[i] == null)
+                        validSosigPoints.RemoveAt(i);
+                }
+                //------------------------
+
+                SR_SupplyPoint sp = Instantiate(new GameObject()).AddComponent<SR_SupplyPoint>();
+                sp.name = "SupplyPoint_" + x;
+
+                if (tnhHP.GetComponent<AtlasSupplyPoint>())
+                {
+                    Debug.Log("Supply Raid: Found First Spawn Atlas");
+                    if (tnhHP.GetComponent<AtlasSupplyPoint>().ForceSpawnHere)
+                        sp.forceFirstSpawn = true;
+                }
+                else if (tnhHP.GetComponent("WurstMod.MappingComponents.TakeAndHold.ForcedSpawn"))
+                {
+                    Debug.Log("Supply Raid: Found First Spawn Wurst");
+                    sp.forceFirstSpawn = true;
+                }
+
+                //Key Points
+                sp.respawn = tnhHP.m_systemNode.NodeCenter;
+
+                Transform bounds = null;
+                Vector3 boundsScale = new Vector3();
+                for (int i = 0; i < tnhHP.Bounds.Count; i++)
+                {
+                    if (tnhHP.Bounds[i].localScale.x > boundsScale.x 
+                        || tnhHP.Bounds[i].localScale.y > boundsScale.y 
+                        || tnhHP.Bounds[i].localScale.z > boundsScale.z)
+                    {
+                        bounds = tnhHP.Bounds[i];
+                    }
+                }
+
+                sp.captureZone = bounds;
+                sp.squadPoint = tnhHP.m_systemNode.NodeCenter;
+
+                //Panels
+                sp.buyMenu = TryGetLocation(validPanels, 0);
+                sp.buyMenu.transform.Rotate(0, 90, 0);
+
+                sp.ammoStation = TryGetLocation(validPanels, 3);
+                sp.ammoStation.transform.Rotate(0, 90, 0);
+
+                sp.attachmentStation = TryGetLocation(validPanels, 1);
+                sp.attachmentStation.transform.Rotate(0, 90, 0);
+
+                sp.recycler = TryGetLocation(validPanels, 2);
+                sp.recycler.transform.Rotate(0, 90, 0);
+
+                sp.duplicator = TryGetLocation(validPanels, 4);
+                sp.duplicator.transform.Rotate(0, 90, 0);
+
+                //Sosig Spawn points
+
+                //Rabbit Holes
+                sp.sosigSpawns = new Transform[4]; ;
+                for (int z = 0; z < sp.sosigSpawns.Length; z++)
+                {
+                    sp.sosigSpawns[z] = TryGetLocation(validSosigPoints, z);
+                }
+
+                //Snipers - Use Turret spawns else defense sosigs spawns
+                sp.sniperPoints.AddRange(validSosigPoints);
+
+                //Guards - Use Box spawns
+                sp.guardPoints.AddRange(validSosigPoints);
+
+                //Patrols
+                PatrolPath[] patrols = new PatrolPath[2];
+
                 for (int z = 0; z < patrols.Length; z++)
                 {
                     patrols[z] = new PatrolPath();

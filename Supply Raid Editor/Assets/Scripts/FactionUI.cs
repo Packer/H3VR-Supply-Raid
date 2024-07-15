@@ -10,7 +10,6 @@ namespace Supply_Raid_Editor
         [SerializeField] GameObject infomationPanel;
         public Image thumbnail;
 
-
         [Header("-INFOMATION-")]
         [SerializeField] InputField factionName;
         [SerializeField] InputField description;
@@ -26,6 +25,7 @@ namespace Supply_Raid_Editor
         [SerializeField] GameObject levelGroupPanel;
         [SerializeField] GameObject levelsPrefab;
         [SerializeField] Text levelsTitle;
+        [SerializeField] Text groupTitle;
         private List<GenericButton> levelButtons = new List<GenericButton>();
 
         private int levelIndex = -1;
@@ -83,6 +83,8 @@ namespace Supply_Raid_Editor
             levelPanel.SetActive(false);
             infomationPanel.SetActive(false);
 
+            SaveLevel(levelIndex);
+
             switch (i)
             {
                 default:
@@ -93,13 +95,13 @@ namespace Supply_Raid_Editor
                     levelsTitle.text = "Levels:";
                     levelPanel.SetActive(true);
                     levelEndless = false;
-                    OpenLevels(false);
+                    OpenLevels();
                     break;
                 case 2:
                     levelsTitle.text = "Endless:";
                     levelPanel.SetActive(true);
                     levelEndless = true;
-                    OpenLevels(true);
+                    OpenLevels();
                     break;
             }
         }
@@ -123,11 +125,12 @@ namespace Supply_Raid_Editor
             else
                 DataManager.Faction().levels.Add(addLevel);
 
-            OpenLevels(levelEndless);
+            OpenLevels();
         }
 
-        public void OpenLevels(bool endless)
+        public void OpenLevels()
         {
+            levelIndex = -1;
             //Clear all old levels
             for (int i = 0; i < levelButtons.Count; i++)
             {
@@ -137,15 +140,14 @@ namespace Supply_Raid_Editor
             levelButtons.Clear();
 
             //Spawn in new levels
-
-            List<FactionLevel> levels = endless ? DataManager.Faction().endless : DataManager.Faction().levels;
+            List<FactionLevel> levels = levelEndless ? DataManager.Faction().endless : DataManager.Faction().levels;
 
             for (int i = 0; i < levels.Count; i++)
             {
                 GenericButton btn = Instantiate(levelsPrefab, levelsPrefab.transform.parent).GetComponent<GenericButton>();
                 btn.gameObject.SetActive(true);
                 btn.index = i;
-                btn.toggle = endless;
+                btn.toggle = levelEndless;
                 btn.go.GetComponent<Text>().text = i.ToString();
                 btn.text.text = levels[i].name;
                 levelButtons.Add(btn);
@@ -153,7 +155,6 @@ namespace Supply_Raid_Editor
 
             //Disable Levels Panel (Right Side)
             levelGroupPanel.SetActive(false);
-            levelIndex = -1;
         }
 
 
@@ -185,8 +186,8 @@ namespace Supply_Raid_Editor
         //Open Level
         public void OpenLevel(int i)
         {
-            if (levelIndex > -1)
-                SaveLevel(levelIndex);
+            //Debug.Log("Open " + levelEndless);
+            SaveLevel(levelIndex);
 
             levelGroupPanel.SetActive(true);
             levelIndex = i;
@@ -197,8 +198,8 @@ namespace Supply_Raid_Editor
         //Open Endless Level
         public void OpenEndlessLevel(int i)
         {
-            if(levelIndex > -1)
-                SaveLevel(levelIndex);
+            //Debug.Log("end Open " + levelEndless);
+            SaveLevel(levelIndex);
 
             levelGroupPanel.SetActive(true);
             levelIndex = i;
@@ -245,7 +246,7 @@ namespace Supply_Raid_Editor
             }
             squadList.Clear();
 
-
+            UpdateGroupName();
             levelName.SetTextWithoutNotify(level.name);
             levelEnemiesTotal.SetTextWithoutNotify(level.enemiesTotal.ToString());
             levelInfiniteEnemies.SetIsOnWithoutNotify(level.infiniteEnemies);
@@ -307,7 +308,6 @@ namespace Supply_Raid_Editor
             if (level.patrolPool.sosigEnemyID == null)
                 level.patrolPool.sosigEnemyID = new int[0];
 
-
             for (int i = 0; i < level.patrolPool.sosigEnemyID.Length; i++)
             {
                 NewPoolItem((int)PoolEnum.Patrol);
@@ -338,6 +338,14 @@ namespace Supply_Raid_Editor
             levelPanel.SetActive(true);
         }
 
+        public void UpdateGroupName()
+        {
+            if (levelEndless)
+                groupTitle.text = levelIndex + ": " + DataManager.Faction().endless[levelIndex].name;
+            else
+                groupTitle.text = levelIndex + ": " + DataManager.Faction().levels[levelIndex].name;
+        }
+
         public void UpdateOpenLevel()
         {
             SaveLevel(levelIndex);
@@ -345,6 +353,11 @@ namespace Supply_Raid_Editor
 
         public void SaveLevel(int i)
         {
+            if (i < 0 
+                || (levelEndless ? DataManager.Faction().endless.Count : DataManager.Faction().levels.Count) <= 0)
+                return;
+
+            //Debug.Log("Save " + levelEndless);
             FactionLevel level;
             
             if(levelEndless)
@@ -366,7 +379,7 @@ namespace Supply_Raid_Editor
             for (int x = 0; x < bossList.Count; x++)
             {
                 if(bossList[x].inputField.text != "")
-                    level.bossPool.sosigEnemyID[i] = int.Parse(bossList[x].inputField.text);
+                    level.bossPool.sosigEnemyID[x] = int.Parse(bossList[x].inputField.text);
             }
 
             //Guards
@@ -424,6 +437,24 @@ namespace Supply_Raid_Editor
             else
                 DataManager.Faction().levels[levelIndex] = level;
 
+            UpdateGroupNames();
+        }
+
+        void UpdateGroupNames()
+        {
+            int count;
+            if (levelEndless)
+                count = DataManager.Faction().endless.Count;
+            else
+                count = DataManager.Faction().levels.Count;
+
+            for (int i = 0; i < count; i++)
+            {
+                if (levelEndless)
+                    levelButtons[i].text.text = DataManager.Faction().endless[i].name;
+                else
+                    levelButtons[i].text.text = DataManager.Faction().levels[i].name;
+            }
         }
 
         public enum PoolEnum
