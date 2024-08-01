@@ -10,7 +10,7 @@ namespace SupplyRaid
         public int startLevel = 0;
         public float playerCount = 1;
 
-        public int maxEnemies = 12;
+        public int maxEnemies = 10;
         public int maxSquadEnemies = 8;
 
         public int captures = 5;

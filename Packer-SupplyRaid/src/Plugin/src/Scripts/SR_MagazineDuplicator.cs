@@ -14,6 +14,10 @@ namespace SupplyRaid
         [SerializeField] Text duplicateCostText;
         [SerializeField] Text magazineCostText;
 
+        [SerializeField] Text upgradeCapacityText;
+        [SerializeField] Text duplicateCapacityText;
+        [SerializeField] Text magazineCapacityText;
+
         [SerializeField] Image duplicateBtn;
         [SerializeField] Image upgradeBtn;
         [SerializeField] Image magazineBtn;
@@ -97,6 +101,11 @@ namespace SupplyRaid
             m_detectedMag = null;
             m_detectedFirearms.Clear();
 
+            //Default to blank
+            duplicateCapacityText.text = "";
+            magazineCapacityText.text = "";
+            upgradeCapacityText.text = "";
+
             for (int i = 0; i < num; i++)
             {
                 if (colbuffer[i].attachedRigidbody != null)
@@ -154,6 +163,9 @@ namespace SupplyRaid
                         m_detectedMag.m_capacity,
                         multiplier);
 
+                if (costDuplicate == 0)
+                    costDuplicate = Mathf.CeilToInt(SR_Manager.instance.character.duplicateMagazineCost);
+
                 //Can duplicate Magazine
                 SetDuplicateStatus(true);
 
@@ -193,6 +205,9 @@ namespace SupplyRaid
                         SR_Manager.instance.character.upgradeMagazineCost,
                         magazineUpgrade.MagazineCapacity,
                         multiplier);
+
+                    if (costUpgrade == 0)
+                        costUpgrade = Mathf.CeilToInt(SR_Manager.instance.character.upgradeMagazineCost);
 
                     if (magazineUpgrade.ItemID == m_detectedMag.ObjectWrapper.ItemID)
                     {
@@ -246,11 +261,14 @@ namespace SupplyRaid
             if (costDuplicate < 0)
             {
                 duplicateBtn.transform.parent.gameObject.SetActive(false);
+                duplicateCapacityText.text = "";
             }
             else
             {
                 duplicateBtn.sprite = statusImages[status ? 0 : 1];
                 duplicateCostText.text = costDuplicate.ToString();
+                if(m_detectedMag != null)
+                    duplicateCapacityText.text = "[" + m_detectedMag.m_capacity.ToString() + "]";
                 canDuplicate = status;
             }
         }
@@ -285,12 +303,15 @@ namespace SupplyRaid
             if (costUpgrade < 0)
             {
                 upgradeBtn.transform.parent.gameObject.SetActive(false);
+                upgradeCapacityText.text = "";
                 return;
             }
             else
             {
                 upgradeBtn.sprite = statusImages[status ? 0 : 1];
                 upgradeCostText.text = costUpgrade.ToString();
+                if(magazineUpgrade)
+                    upgradeCapacityText.text = "[" + magazineUpgrade.MagazineCapacity.ToString() + "]";
                 canUpgrade = status;
             }
         }
@@ -344,6 +365,7 @@ namespace SupplyRaid
             //Disabled Button
             if (SR_Manager.instance.character.newMagazineCost < 0)
             {
+                magazineCapacityText.text = "";
                 magazineBtn.transform.parent.gameObject.SetActive(false);
                 return;
             }
@@ -358,6 +380,7 @@ namespace SupplyRaid
                 magazineBtn.sprite = statusImages[1];
                 canBuyNewMag = false;
                 magazineCostText.text = "";
+                magazineCapacityText.text = "";
                 return;
             }
 
@@ -384,6 +407,7 @@ namespace SupplyRaid
                 magazineBtn.sprite = statusImages[1];
                 canBuyNewMag = false;
                 magazineCostText.text = "";
+                magazineCapacityText.text = "";
                 return;
             }
 
@@ -396,6 +420,11 @@ namespace SupplyRaid
                 newMagazine.MagazineCapacity,
                 multiplier);
 
+            if (costMagazine == 0)
+                costMagazine = Mathf.CeilToInt(SR_Manager.instance.character.newMagazineCost);
+
+            if (newMagazine != null)
+                magazineCapacityText.text = "[" + newMagazine.MagazineCapacity.ToString() + "]";
             magazineCostText.text = costMagazine.ToString();
         }
 

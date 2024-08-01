@@ -82,8 +82,8 @@ namespace SupplyRaid
         public List<FVRObject.OTagThrownType> thrownTypes = new List<FVRObject.OTagThrownType>();
         public List<FVRObject.OTagThrownDamageType> thrownDamage = new List<FVRObject.OTagThrownDamageType>();
         public List<FVRObject.OTagFirearmCountryOfOrigin> countryOfOrigins = new List<FVRObject.OTagFirearmCountryOfOrigin>();
-        public int firstYearMin = -1;
-        public int firstYearMax = -1;
+        public int yearFirst = -1;
+        public int yearLast = -1;
 
         [Header("Subtraction Items")]
         [Tooltip("These defined ObjectIDs will be subtracted from the category pool")]
@@ -247,12 +247,12 @@ namespace SupplyRaid
             }
 
             //Min Year
-            if (firstYearMin != -1)
+            if (yearFirst != -1)
             {
                 for (int num = table.Loot.Count - 1; num >= 0; num--)
                 {
                     FVRObject fVRObject = table.Loot[num];
-                    if(fVRObject.TagFirearmFirstYear < firstYearMin)
+                    if(fVRObject.TagFirearmFirstYear < yearFirst)
                     {
                         table.Loot.RemoveAt(num);
                         continue;
@@ -261,12 +261,12 @@ namespace SupplyRaid
             }
 
             //Max Year
-            if (firstYearMax != -1)
+            if (yearLast != -1)
             {
                 for (int num = table.Loot.Count - 1; num >= 0; num--)
                 {
                     FVRObject fVRObject = table.Loot[num];
-                    if (fVRObject.TagFirearmFirstYear > firstYearMax)
+                    if (fVRObject.TagFirearmFirstYear > yearLast)
                     {
                         table.Loot.RemoveAt(num);
                         continue;

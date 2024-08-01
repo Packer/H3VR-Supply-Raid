@@ -189,6 +189,18 @@ namespace SupplyRaid
                     Mod.CustomPacketHandlerReceived += ServerRunning_Received;
                 }
 
+                //Update Stats
+                if (Mod.registeredCustomPacketIDs.ContainsKey("SR_UpdateStats"))
+                {
+                    updateStats_ID = Mod.registeredCustomPacketIDs["SR_UpdateStats"];
+                    Mod.customPacketHandlers[updateStats_ID] = UpdateStats_Handler;
+                }
+                else
+                {
+                    ClientSend.RegisterCustomPacketType("SR_UpdateStats");
+                    Mod.CustomPacketHandlerReceived += UpdateStats_Received;
+                }
+
                 //Request Sync
                 if (Mod.registeredCustomPacketIDs.ContainsKey("SR_RequestSync"))
                 {

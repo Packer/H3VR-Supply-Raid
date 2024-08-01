@@ -76,6 +76,8 @@ namespace Supply_Raid_Editor
         public List<FVRObject.OTagThrownType> thrownTypes = new List<FVRObject.OTagThrownType>();
         public List<FVRObject.OTagThrownDamageType> thrownDamage = new List<FVRObject.OTagThrownDamageType>();
         public List<FVRObject.OTagFirearmCountryOfOrigin> countryOfOrigins = new List<FVRObject.OTagFirearmCountryOfOrigin>();
+        public int yearFirst = -1;
+        public int yearLast = -1;
 
         [Header("Subtraction Items")]
         [Tooltip("These defined ObjectIDs will be subtracted from the category pool")]

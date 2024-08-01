@@ -28,6 +28,9 @@ namespace Supply_Raid_Editor
         public InputField maxLevel;
         public Dropdown categoryDropdown;
         public Toggle requiredAttachments;
+        public Dictionary<string, FVRObject.OTagFirearmCountryOfOrigin> countries = new Dictionary<string, FVRObject.OTagFirearmCountryOfOrigin>();
+        public InputField firstYear;
+        public InputField lastYear;
 
         private void Awake()
         {
@@ -247,17 +250,21 @@ namespace Supply_Raid_Editor
                 item.thrownDamage.Add((FVRObject.OTagThrownDamageType)tables[14].dropdowns[i].value);
             }
 
-
             item.countryOfOrigins.Clear();
             for (int i = 0; i < tables[15].dropdowns.Count; i++)
             {
-                FVRObject.OTagFirearmCountryOfOrigin origin = FVRObject.OTagFirearmCountryOfOrigin.None;
-                origin = 
-                    (FVRObject.OTagFirearmCountryOfOrigin)
-                    Enum.GetValues(origin.GetType()).GetValue(tables[14].dropdowns[i].value);
 
-                item.countryOfOrigins.Add(origin);
+                FVRObject.OTagFirearmCountryOfOrigin origin = FVRObject.OTagFirearmCountryOfOrigin.None;
+                string itemName = tables[15].tagList[tables[15].dropdowns[i].value];
+                Debug.Log(itemName);
+                countries.TryGetValue(itemName, out origin);
+
+                if(!item.countryOfOrigins.Contains(origin))
+                    item.countryOfOrigins.Add(origin);
             }
+
+            item.yearFirst = int.Parse(firstYear.text);
+            item.yearLast = int.Parse(lastYear.text);
 
             //Update UI
             UpdateUI();
@@ -438,6 +445,9 @@ namespace Supply_Raid_Editor
                 countryOfOriginsList.Add(index);
             }
 
+            firstYear.text = item.yearFirst.ToString();
+            lastYear.text = item.yearLast.ToString();
+
             if (lastGroupUI != null)
                 OpenObjectGroup(lastGroupUI);
 
@@ -529,6 +539,13 @@ namespace Supply_Raid_Editor
             GenerateTable(tables[13], "THROWN TYPE", Enum.GetNames(typeof(FVRObject.OTagThrownType)));
             GenerateTable(tables[14], "THROWN DAMAGE", Enum.GetNames(typeof(FVRObject.OTagThrownDamageType)));
             GenerateTable(tables[15], "COUNTRY OF ORIGIN", Enum.GetNames(typeof(FVRObject.OTagFirearmCountryOfOrigin)));
+
+            //Countries
+            foreach (int item in Enum.GetValues(typeof(FVRObject.OTagFirearmCountryOfOrigin)))
+            {
+                string enumName = Enum.GetName(typeof(FVRObject.OTagFirearmCountryOfOrigin), item);
+                countries.Add(enumName, (FVRObject.OTagFirearmCountryOfOrigin)item);
+            }
         }
 
         public void GenerateTable(ItemTableContent table, string title, string[] enumList)
@@ -544,6 +561,7 @@ namespace Supply_Raid_Editor
                 tables[i].ClearAllDropdowns();
             }
         }
+
         void SetupDropdown(ItemTableContent table, List<int> array)
         {
             //Eras

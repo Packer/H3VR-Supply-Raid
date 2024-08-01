@@ -385,9 +385,13 @@ namespace SupplyRaid
 
             enviromentLayer = LayerMask.NameToLayer("Enviroment");
 
-            //TODO set active to true for when we have instructions
+            //TODO set active to true for when we have instructions - UH OH LEGACY
             if(SR_HelpMenu.instance)
                 SR_HelpMenu.instance.SetActive(false);
+
+            //Lets not blowout everyones eardrums
+            if (globalAudio)
+                globalAudio.volume = 0.5f;
 
             //Random the Random
             Random.InitState((int)Time.realtimeSinceStartup);
@@ -2346,7 +2350,9 @@ namespace SupplyRaid
         public static void PlayErrorSFX()
         {
             if (instance != null)
+            {
                 instance.globalAudio.PlayOneShot(instance.audioError);
+            }
         }
         public static void PlayCompleteSFX()
         {
