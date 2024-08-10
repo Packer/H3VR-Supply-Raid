@@ -53,9 +53,9 @@ namespace Supply_Raid_Editor
             //Debug.Log(Application.dataPath);
             modPath = PlayerPrefs.GetString("ModPath", Application.dataPath);
 
-            lastCharacterDirectory = PlayerPrefs.GetString("lastCharacterDirectory");
-            lastFactionDirectory = PlayerPrefs.GetString("lastFactionDirectory");
-            lastItemDirectory = PlayerPrefs.GetString("lastItemDirectory");
+            lastCharacterDirectory = PlayerPrefs.GetString("lastCharacterDirectory", Application.dataPath);
+            lastFactionDirectory = PlayerPrefs.GetString("lastFactionDirectory", Application.dataPath);
+            lastItemDirectory = PlayerPrefs.GetString("lastItemDirectory", Application.dataPath);
         }
 
         // Update is called once per frame
