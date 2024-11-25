@@ -6,5 +6,4 @@ Gamemode for H3VR
 [Thunderstore](https://thunderstore.io/c/h3vr/p/Packer/SupplyRaid/)
 [Versions](https://thunderstore.io/c/h3vr/p/Packer/SupplyRaid/versions/)
 
-[![alt Logo](https://github.com/Packer/H3VR-Supply-Raid/blob/main/LICENSES/SupplyRaid-Logo.png?raw=true)
-
+![alt Logo](https://github.com/Packer/H3VR-Supply-Raid/blob/main/LICENSES/SupplyRaid-Logo.png?raw=true)
