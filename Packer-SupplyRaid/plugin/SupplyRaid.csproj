@@ -1,0 +1,80 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <!-- Plugin name, version, etc. -->
+    <!-- TODO: Change these values! -->
+    <PropertyGroup>
+        <AssemblyName>Packer.SupplyRaid</AssemblyName>
+        <Version>1.2.5</Version>
+        <Authors>Packer</Authors>
+        <AssemblyTitle>SupplyRaid</AssemblyTitle>
+        <Description>Supply Raid(SR) Gamemode, with native H3MP integration</Description>
+        <PackageProjectUrl>https://github.com/Packer/H3VR-Supply-Raid</PackageProjectUrl>
+    </PropertyGroup>
+
+    <!-- Probably don't need to touch these -->
+    <PropertyGroup>
+        <TargetFramework>net35</TargetFramework>
+        <Nullable>disable</Nullable>
+        <LangVersion>latest</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <IsPackable>false</IsPackable>
+        <PlatformTarget>x64</PlatformTarget>
+        <Optimize>true</Optimize>
+        <DebugSymbols>false</DebugSymbols>
+        <DebugType>None</DebugType>
+    </PropertyGroup>
+
+    <!-- Debug configuration overrides -->
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <Optimize>false</Optimize>
+        <DefineConstants>DEBUG;</DefineConstants>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+    </PropertyGroup>
+
+    <!-- Project references -->
+    <ItemGroup>
+        <!-- Required to compile .NET Framerowk 3.5 libraries -->
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net35" Version="1.0.3">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+
+        <!-- Automatically generates a BepInEx plugin from the values at the top of this file -->
+        <PackageReference Include="BepInEx.AutoPlugin" Version="1.1.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+
+        <!-- References to Unity, BepInEx, and the publicized H3 libraries -->
+        <PackageReference Include="UnityEngine" Version="5.6.1" />
+        <PackageReference Include="BepInEx.Core" Version="5.4.17" />
+        <PackageReference Include="H3VR.GameLibs" Version="0.114.1" />
+    </ItemGroup>
+    <ItemGroup>
+      <Reference Include="Atlas">
+        <HintPath>..\libs\Atlas.dll</HintPath>
+      </Reference>
+      <Reference Include="H3MP">
+        <HintPath>..\libs\H3MP.dll</HintPath>
+      </Reference>
+      <Reference Include="Sodalite">
+        <HintPath>..\libs\Sodalite.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <!-- When in debug mode, also build mono debugging symbols (Only available on Windows) -->
+    <Target Name="MonoDebugSymbols" AfterTargets="PostBuildEvent" Condition="'$(DebugType)' == 'full' AND '$(OS)' == 'Windows_NT'">
+        <Exec Command="$(ProjectDir)../tools/pdb2mdb.exe $(ProjectDir)$(OutDir)$(AssemblyName).dll" />
+    </Target>
+
+    <!-- Build a thunderstore zip after a build (Only available on Windows) -->
+    <Target Name="PackageThunderstore" AfterTargets="MonoDebugSymbols" Condition="'$(OS)' == 'Windows_NT'">
+        <Exec Command="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NonInteractive -executionpolicy Unrestricted -command &quot;&amp; { ../tools/make_ts.ps1 -ProjectFilePath $(ProjectPath) -OutputPath $(ProjectDir)$(OutDir) } &quot;" LogStandardErrorAsError="True" ContinueOnError="False" />
+    </Target>
+
+    <!-- The 'clean' command won't cleanup stuff we make so do that here -->
+    <Target Name="CleanAdditionalStuff" AfterTargets="Clean">
+        <Delete Files="$(ProjectDir)$(OutDir)$(AssemblyName).dll.mdb" />
+        <Delete Files="$(ProjectDir)$(OutDir)$(AssemblyName).zip" />
+    </Target>
+</Project>
