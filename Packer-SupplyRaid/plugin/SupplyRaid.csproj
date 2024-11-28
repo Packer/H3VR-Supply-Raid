@@ -2,7 +2,7 @@
     <!-- Plugin name, version, etc. -->
     <!-- TODO: Change these values! -->
     <PropertyGroup>
-        <AssemblyName>Packer.SupplyRaid</AssemblyName>
+        <AssemblyName>SupplyRaid</AssemblyName>
         <Version>1.2.5</Version>
         <Authors>Packer</Authors>
         <AssemblyTitle>SupplyRaid</AssemblyTitle>
