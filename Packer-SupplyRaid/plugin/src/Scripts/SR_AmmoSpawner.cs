@@ -784,15 +784,23 @@ namespace SupplyRaid
             //Loop through entire list
             for (int i = 0; i < ammoList.Count; i++)
             {
+                if (ammoList[i] == null)
+                    continue;
+
                 //Loop Through Each of this RoundTypes Classes and see if we can find the equivalent
-                int ammoCount = AM.STypeClassLists[ammoList[i].roundType].Count;
+                List<FireArmRoundClass> firearmRounds;
+                AM.STypeClassLists.TryGetValue(ammoList[i].roundType, out firearmRounds);
+                if (firearmRounds == null)
+                    continue;
+
+                int ammoCount = firearmRounds.Count;
 
                 ammoList[i].roundClasses.Clear();
 
                 //Loop through all Round Classes (FMJ / AP / HE etc)
                 for (int x = 0; x < ammoCount; x++)
                 {
-                    FireArmRoundClass classType = AM.STypeClassLists[ammoList[i].roundType][x];
+                    FireArmRoundClass classType = firearmRounds[x];
 
                     AmmoClass newAmmo = new AmmoClass
                     {

@@ -1366,9 +1366,6 @@ namespace SupplyRaid
                 yield break;
             }
 
-            //Setup Team
-            _spawnOptions.IFF = iff;
-
             //Slight delay to allow other spawns
             yield return new WaitForSeconds(sosigSpawnTick);
             for (int i = 0; i < groupSize; i++)
@@ -1376,7 +1373,7 @@ namespace SupplyRaid
                 if (!gameRunning)
                     yield break;
 
-                SpawnSquadSosig(spawnPoint, target, currentLevel);
+                SpawnSquadSosig(spawnPoint, target, currentLevel, iff);
                 yield return new WaitForSeconds(sosigSpawnTick);
             }
 
@@ -1394,16 +1391,21 @@ namespace SupplyRaid
             spawningSquad = false;
         }
 
-        private IEnumerator SetupDefenderSosigs(FactionLevel currentLevel)
+        public int GetFactionIFF()
         {
             int teamID = (int)faction.teamID;
             if (teamID == -1) //Random
-                teamID = Random.Range(0,4);
-            else if(teamID == -2) //Random Enemy
+                teamID = Random.Range(0, 4);
+            else if (teamID == -2) //Random Enemy
                 teamID = Random.Range(1, 4);
 
+            return teamID;
+        }
+
+        private IEnumerator SetupDefenderSosigs(FactionLevel currentLevel)
+        {
             //Assign Team (Random)
-            _spawnOptions.IFF = teamID;
+            int teamID = _spawnOptions.IFF = GetFactionIFF();
 
             //Initial Spawn Limit
             int maxEnemies = profile.maxEnemies;
@@ -1426,7 +1428,7 @@ namespace SupplyRaid
                     yield return new WaitForSeconds(sosigSpawnTick);
 
                     Transform spot = AttackSupplyPoint().GetBossSpawn();
-                    SpawnGuardSosig(spot, currentLevel, true);
+                    SpawnGuardSosig(spot, currentLevel, true, teamID);
                     maxEnemies--;
                     bossCount--;
                     yield return new WaitForSeconds(sosigSpawnTick);
@@ -1436,7 +1438,7 @@ namespace SupplyRaid
                 if (sniperCount > 0 && currentLevel.sniperPool.Count() > 0)
                 {
                     Transform spot = AttackSupplyPoint().GetRandomSniperSpawn();
-                    SpawnSniperSosig(spot, spot.position, spot.rotation, currentLevel);
+                    SpawnSniperSosig(spot, spot.position, spot.rotation, currentLevel, teamID);
                     maxEnemies--;
                     sniperCount--;
                     yield return new WaitForSeconds(sosigSpawnTick);
@@ -1448,7 +1450,7 @@ namespace SupplyRaid
                     yield return new WaitForSeconds(sosigSpawnTick);
 
                     Transform spot = AttackSupplyPoint().GetRandomGuardSpawn();
-                    SpawnGuardSosig(spot, currentLevel);
+                    SpawnGuardSosig(spot, currentLevel, false, teamID);
                     maxEnemies--;
                     guardCount--;
                     yield return new WaitForSeconds(sosigSpawnTick);
@@ -1561,7 +1563,8 @@ namespace SupplyRaid
                     SpawnPatrolSosig(
                         newPos,
                         pp,
-                        currentLevel);
+                        currentLevel,
+                        teamID);
 
                     maxEnemies--;
                     groups[y]--;
@@ -1793,7 +1796,8 @@ namespace SupplyRaid
 
             SpawnPatrolSosig(sosigSpawn,
                                 pp,
-                                currentLevel);
+                                currentLevel,
+                                GetFactionIFF());
             //Debug.Log("Supply Raid: Rabbithole Sosig " + sosigSpawn.position);
         }
 
@@ -1802,7 +1806,7 @@ namespace SupplyRaid
             return new Vector3(x * 1 - ((d / 2) * 1), 0, -z * 1);
         }
 
-        void SpawnGuardSosig(Transform point, FactionLevel currentLevel, bool isBoss = false)
+        void SpawnGuardSosig(Transform point, FactionLevel currentLevel, bool isBoss = false, int teamID = 1)
         {
             //Error Check
             if (currentLevel == null)
@@ -1815,6 +1819,8 @@ namespace SupplyRaid
             Vector3 position = point.position;
             position.x += Random.Range(-scale.x, scale.x);
             position.z += Random.Range(-scale.z, scale.z);
+
+            _spawnOptions.IFF = teamID;
 
             Sosig sosig 
                 = CreateSosig(
@@ -1849,7 +1855,7 @@ namespace SupplyRaid
             sosigGuards.Add(sosig);
         }
 
-        void SpawnSniperSosig(Transform point, Vector3 position, Quaternion rotation, FactionLevel currentLevel)
+        void SpawnSniperSosig(Transform point, Vector3 position, Quaternion rotation, FactionLevel currentLevel, int teamID = 1)
         {
             //Error Check
             if (currentLevel == null)
@@ -1863,6 +1869,8 @@ namespace SupplyRaid
             position.x += Random.Range(-scale.x, scale.x);
             position.z += Random.Range(-scale.z, scale.z);
             //position.z += Random.Range(-zScale, zScale);
+
+            _spawnOptions.IFF = teamID;
 
             Sosig sosig = CreateSosig(_spawnOptions, position, rotation, currentLevel.sniperPool, currentLevel.name);
 
@@ -1895,7 +1903,7 @@ namespace SupplyRaid
             sosigSnipers.Add(sosig);
         }
 
-        void SpawnPatrolSosig(Transform point, PatrolPath pp, FactionLevel currentLevel)
+        void SpawnPatrolSosig(Transform point, PatrolPath pp, FactionLevel currentLevel, int teamID = 1)
         {
             //Error Check
             if (pp == null || currentLevel == null)
@@ -1908,6 +1916,8 @@ namespace SupplyRaid
             Vector3 scale = (point.localScale * AttackSupplyPoint().spawnRadius) / 2;
             position.x += Random.Range(-scale.x, scale.x);
             position.z += Random.Range(-scale.z, scale.z);
+
+            _spawnOptions.IFF = teamID;
 
             Sosig sosig = CreateSosig(_spawnOptions, position, point.rotation, currentLevel.patrolPool, currentLevel.name);
 
@@ -1943,7 +1953,7 @@ namespace SupplyRaid
             sosigPatrols.Add(sosig);
         }
 
-        void SpawnSquadSosig(SR_SupplyPoint spawnSupply, Transform target, FactionLevel currentLevel)
+        void SpawnSquadSosig(SR_SupplyPoint spawnSupply, Transform target, FactionLevel currentLevel, int teamID = 1)
         {
             //Error Check
             if (spawnSupply == null || spawnSupply.squadPoint == null || currentLevel == null)
@@ -1954,6 +1964,8 @@ namespace SupplyRaid
 
             //Place sosig on the squad point
             Transform sosigSpawn = spawnSupply.GetRandomSosigSpawn();
+
+            _spawnOptions.IFF = teamID;
 
             Sosig sosig = CreateSosig(_spawnOptions, sosigSpawn.position, sosigSpawn.rotation, currentLevel.squadPool, currentLevel.name);
 
