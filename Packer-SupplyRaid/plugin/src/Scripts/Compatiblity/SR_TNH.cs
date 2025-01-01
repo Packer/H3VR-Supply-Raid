@@ -15,6 +15,11 @@ namespace SupplyRaid
         public SR_Manager srManager;
         public TNH_ManagerOverride tnHOverideManager;
 
+        public static float maxBoundsSize = 10;
+        public static float spawnHalfExtent = 20;
+        public static float navRange = 30;
+
+
         public void Start()
         {
             if(tnHOverideManager)
@@ -75,8 +80,10 @@ namespace SupplyRaid
 
             //Generate Supply Points then load our assets
             yield return StartCoroutine(SetupSupplyPoints());
-
+            yield return null;
             yield return StartCoroutine(SetupSupplyPointsHold());
+
+            Debug.Log("Supply Raid: SR Supply Points Total: " + SR_Manager.instance.supplyPoints.Count);
 
             //Load our Assets
             StartCoroutine(SR_ModLoader.LoadSupplyRaidAssets());
@@ -136,11 +143,14 @@ namespace SupplyRaid
         {
             yield return null;
 
+            Debug.Log("Supply Raid: Found Supply Points - " + tnhManager.SupplyPoints.Count);
+
             Random.InitState(tnhManager.m_seed);
 
             //Collection of valid positions for everything
             List<Transform> validPanels = new List<Transform>();
             List<Transform> validSosigPoints = new List<Transform>();
+            List<Transform> validPatrolPoints = new List<Transform>();
 
             //Supply Point for each supply point
             for (int x = 0; x < tnhManager.SupplyPoints.Count; x++)
@@ -150,6 +160,7 @@ namespace SupplyRaid
                 //Valid Content
                 validPanels.Clear();
                 validSosigPoints.Clear();
+                validPatrolPoints.Clear();
 
                 //Panel Positions
                 validPanels.AddRange(tnhSP.SpawnPoints_Panels);
@@ -203,6 +214,10 @@ namespace SupplyRaid
                 sp.captureZone = tnhSP.Bounds;
                 sp.squadPoint = tnhSP.SpawnPoint_PlayerSpawn;
 
+                //Capture Time based on space
+                float largestSize = Mathf.Max(sp.captureZone.localScale.x, Mathf.Max(sp.captureZone.localScale.y, sp.captureZone.localScale.z)) * 1.5f;
+                sp.captureTime = Mathf.CeilToInt(Mathf.Clamp((sp.captureTime < largestSize ? largestSize : sp.captureTime), 20, 45));
+
                 //Panels
                 sp.buyMenu = TryGetLocation(validPanels, 0);
                 sp.buyMenu.transform.Rotate(0,90,0);
@@ -236,14 +251,34 @@ namespace SupplyRaid
 
                 //Patrols
                 PatrolPath[] patrols = new PatrolPath[2];
-                                
+
+                //Generate Custom Paths
+
+                for (int i = 0; i < 8; i++)
+                {
+                    Transform spot = new GameObject().transform;
+                    validPatrolPoints.Add(spot);
+                    spot.position = sp.captureZone.position;
+
+                    spot.position += new Vector3(
+                        Random.Range(-spawnHalfExtent, spawnHalfExtent),
+                        Random.Range(-spawnHalfExtent, spawnHalfExtent),
+                        Random.Range(-spawnHalfExtent, spawnHalfExtent));
+
+                    UnityEngine.AI.NavMeshHit hit;
+                    if (UnityEngine.AI.NavMesh.SamplePosition(spot.position, out hit, navRange, UnityEngine.AI.NavMesh.AllAreas))
+                    {
+                        spot.position = hit.position;
+                    }
+                }
+
                 for (int z = 0; z < patrols.Length; z++)
                 {
                     patrols[z] = new PatrolPath();
-                    patrols[z].patrolPoints.AddRange(validSosigPoints);
+                    patrols[z].patrolPoints.AddRange(validPatrolPoints);
 
                     //Reverse order after each list
-                    validSosigPoints.Reverse();
+                    validPatrolPoints.Reverse();
                 }
                 sp.patrolPaths = patrols;
             }
@@ -251,27 +286,39 @@ namespace SupplyRaid
 
         public IEnumerator SetupSupplyPointsHold()
         {
-            yield return null;
+            if (tnhManager == null || tnhManager.HoldPoints == null)
+                yield break;
+
+            Debug.Log("Supply Raid: Found Hold Points - " + tnhManager.HoldPoints.Count);
 
             //Collection of valid positions for everything
             List<Transform> validPanels = new List<Transform>();
             List<Transform> validSosigPoints = new List<Transform>();
+            List<Transform> validPatrolPoints = new List<Transform>();
+
 
             //Supply Point for each supply point
             for (int x = 0; x < tnhManager.HoldPoints.Count; x++)
             {
                 TNH_HoldPoint tnhHP = tnhManager.HoldPoints[x];
 
+                if (tnhHP == null)
+                    continue;
+
                 //Valid Content
                 validPanels.Clear();
                 validSosigPoints.Clear();
 
                 //Panel Positions --
-                validPanels.Add(tnhHP.m_systemNode.NodeCenter);
+                if(tnhHP.m_systemNode != null && tnhHP.m_systemNode.NodeCenter != null)
+                    validPanels.Add(tnhHP.m_systemNode.NodeCenter);
+
+
                 for (int i = 0; i < tnhHP.CoverPoints.Count; i++)
                 {
                     //Cover barriers
-                    validPanels.Add(tnhHP.CoverPoints[i].transform);
+                    if(tnhHP.CoverPoints[i] != null && tnhHP.CoverPoints[i].transform != null)
+                        validPanels.Add(tnhHP.CoverPoints[i].transform);
                 }
 
                 validPanels.AddRange(tnhHP.SpawnPoints_Sosigs_Defense);
@@ -280,8 +327,13 @@ namespace SupplyRaid
                 //Sosig Postisons --
                 for (int y = 0; y < tnhHP.AttackVectors.Count; y++)
                 {
-                    validSosigPoints.AddRange(tnhHP.AttackVectors[y].SpawnPoints_Sosigs_Attack);
-                    validSosigPoints.Add(tnhHP.AttackVectors[y].GrenadeVector);
+                    if (tnhHP.AttackVectors[y] != null)
+                    {
+                        if(tnhHP.AttackVectors[y].SpawnPoints_Sosigs_Attack.Count > 0)
+                            validSosigPoints.AddRange(tnhHP.AttackVectors[y].SpawnPoints_Sosigs_Attack);
+                        if(tnhHP.AttackVectors[y].GrenadeVector != null)
+                            validSosigPoints.Add(tnhHP.AttackVectors[y].GrenadeVector);
+                    }
                 }
 
                 validSosigPoints.AddRange(tnhHP.SpawnPoints_Sosigs_Defense);
@@ -289,10 +341,12 @@ namespace SupplyRaid
 
                 for (int i = 0; i < tnhHP.CoverPoints.Count; i++)
                 {
-                    validSosigPoints.Add(tnhHP.CoverPoints[i].transform);
+                    if (tnhHP.CoverPoints[i] != null && tnhHP.CoverPoints[i].transform != null)
+                        validSosigPoints.Add(tnhHP.CoverPoints[i].transform);
                 }
 
-                validSosigPoints.Add(tnhHP.m_systemNode.NodeCenter);
+                if (tnhHP.m_systemNode != null && tnhHP.m_systemNode.NodeCenter != null)
+                    validSosigPoints.Add(tnhHP.m_systemNode.NodeCenter);
 
                 for (int i = validSosigPoints.Count - 1; i >= 0; i--)
                 {
@@ -304,10 +358,11 @@ namespace SupplyRaid
                 SR_SupplyPoint sp = Instantiate(new GameObject()).AddComponent<SR_SupplyPoint>();
                 sp.name = "SupplyPoint_" + x;
 
-                if (tnhHP.GetComponent<AtlasSupplyPoint>())
+                AtlasSupplyPoint ASP = tnhHP.GetComponent<AtlasSupplyPoint>();
+                if (ASP != null)
                 {
                     Debug.Log("Supply Raid: Found First Spawn Atlas");
-                    if (tnhHP.GetComponent<AtlasSupplyPoint>().ForceSpawnHere)
+                    if (ASP.ForceSpawnHere)
                         sp.forceFirstSpawn = true;
                 }
                 else if (tnhHP.GetComponent("WurstMod.MappingComponents.TakeAndHold.ForcedSpawn"))
@@ -317,22 +372,60 @@ namespace SupplyRaid
                 }
 
                 //Key Points
-                sp.respawn = tnhHP.m_systemNode.NodeCenter;
+                if (tnhHP.m_systemNode != null && tnhHP.m_systemNode.NodeCenter != null)
+                    sp.respawn = tnhHP.m_systemNode.NodeCenter;
+                else
+                    sp.respawn = validSosigPoints[Random.Range(0, validSosigPoints.Count)];
 
+                //Use Level Bounds
                 Transform bounds = null;
-                Vector3 boundsScale = new Vector3();
+                Transform boundsBiggest = null;
+                Vector3 boundsScale = Vector3.zero;
                 for (int i = 0; i < tnhHP.Bounds.Count; i++)
                 {
-                    if (tnhHP.Bounds[i].localScale.x > boundsScale.x 
-                        || tnhHP.Bounds[i].localScale.y > boundsScale.y 
+                    if (tnhHP.Bounds[i].localScale.x > boundsScale.x
+                        || tnhHP.Bounds[i].localScale.y > boundsScale.y
                         || tnhHP.Bounds[i].localScale.z > boundsScale.z)
                     {
-                        bounds = tnhHP.Bounds[i];
+                        boundsBiggest = tnhHP.Bounds[i];
+
+                        if (tnhHP.Bounds[i].localScale.x <= maxBoundsSize
+                            || tnhHP.Bounds[i].localScale.y <= maxBoundsSize
+                            || tnhHP.Bounds[i].localScale.z <= maxBoundsSize)
+                        {
+                            bounds = tnhHP.Bounds[i];
+                        }
+                    }
+                }
+
+                if (bounds == null)
+                {
+                    bounds = Instantiate(new GameObject()).transform;
+                    bounds.localScale = Vector3.one * maxBoundsSize;
+
+                    if (tnhHP.m_systemNode != null && tnhHP.m_systemNode.NodeCenter != null)
+                        bounds.position = tnhHP.m_systemNode.NodeCenter.position;
+                    else
+                    {
+                        if (tnhHP.Bounds.Count > 0)
+                        {
+                            UnityEngine.AI.NavMeshHit hit;
+                            if (UnityEngine.AI.NavMesh.SamplePosition(tnhHP.Bounds[0].position, out hit, navRange, UnityEngine.AI.NavMesh.AllAreas))
+                            {
+                                bounds.position = hit.position;
+                            }
+                        }
+                        else
+                            bounds.position = tnhHP.transform.position;
                     }
                 }
 
                 sp.captureZone = bounds;
-                sp.squadPoint = tnhHP.m_systemNode.NodeCenter;
+                sp.squadPoint = sp.respawn;
+
+                //Capture Time based on space
+                float largestSize = Mathf.Max(bounds.localScale.x, Mathf.Max(bounds.localScale.y, bounds.localScale.z)) * 1.5f;
+                sp.captureTime = Mathf.CeilToInt(Mathf.Clamp((sp.captureTime < largestSize ? largestSize : sp.captureTime), 20, 45));
 
                 //Panels
                 sp.buyMenu = TryGetLocation(validPanels, 0);
@@ -368,15 +461,37 @@ namespace SupplyRaid
                 //Patrols
                 PatrolPath[] patrols = new PatrolPath[2];
 
+                //Generate Custom Paths
+
+                for (int i = 0; i < 8; i++)
+                {
+                    Transform spot = new GameObject().transform;
+                    validPatrolPoints.Add(spot);
+                    spot.position = sp.captureZone.position;
+
+                    spot.position += new Vector3(
+                        Random.Range(-spawnHalfExtent, spawnHalfExtent),
+                        Random.Range(-spawnHalfExtent, spawnHalfExtent) * 0.5f,
+                        Random.Range(-spawnHalfExtent, spawnHalfExtent));
+
+                    UnityEngine.AI.NavMeshHit hit;
+                    if (UnityEngine.AI.NavMesh.SamplePosition(spot.position, out hit, navRange, UnityEngine.AI.NavMesh.AllAreas))
+                    {
+                        spot.position = hit.position;
+                    }
+                }
+
                 for (int z = 0; z < patrols.Length; z++)
                 {
                     patrols[z] = new PatrolPath();
-                    patrols[z].patrolPoints.AddRange(validSosigPoints);
+                    patrols[z].patrolPoints.AddRange(validPatrolPoints);
 
                     //Reverse order after each list
-                    validSosigPoints.Reverse();
+                    validPatrolPoints.Reverse();
                 }
                 sp.patrolPaths = patrols;
+
+                yield return null;
             }
         }
     }

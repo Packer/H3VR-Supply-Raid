@@ -19,6 +19,7 @@ namespace SupplyRaid
         public Text healthMode;
         public Text respawn;
         public Text itemsDrop;
+        public Text sosigWeapons;
         public Text itemSpawner;
         public Text captureMode;
         public Text playerHand;
@@ -293,6 +294,12 @@ namespace SupplyRaid
             UpdateGameOptions();
         }
 
+        public void ChangeSosigWeapons()
+        {
+            SR_Manager.profile.sosigWeapons = !SR_Manager.profile.sosigWeapons;
+            UpdateGameOptions();
+        }
+
 		public void ChangeHand()
 		{
 			SR_Manager.profile.hand = !SR_Manager.profile.hand;
@@ -422,7 +429,10 @@ namespace SupplyRaid
             if(startLevel != null)
                 startLevel.text =   SR_Manager.profile.startLevel.ToString();
 
-            if(itemSpawner != null)
+            if(sosigWeapons != null)
+                sosigWeapons.text = SR_Manager.profile.sosigWeapons ? "Enabled" : "Disabled";
+
+            if (itemSpawner != null)
                 itemSpawner.text =  SR_Manager.profile.itemSpawner ? "Enabled" : "Disabled";
 
             if(captureMode != null)

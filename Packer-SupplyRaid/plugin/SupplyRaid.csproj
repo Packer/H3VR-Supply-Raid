@@ -3,7 +3,7 @@
     <!-- TODO: Change these values! -->
     <PropertyGroup>
         <AssemblyName>SupplyRaid</AssemblyName>
-        <Version>1.2.5</Version>
+        <Version>1.2.7</Version>
         <Authors>Packer</Authors>
         <AssemblyTitle>SupplyRaid</AssemblyTitle>
         <Description>Supply Raid(SR) Gamemode, with native H3MP integration</Description>

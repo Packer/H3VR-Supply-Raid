@@ -297,6 +297,8 @@ namespace SupplyRaid
 
             packet.Write(faction);
 
+            packet.Write(SR_Manager.profile.sosigWeapons);
+
             ServerSend.SendTCPDataToAll(packet, true);
         }
 
@@ -318,9 +320,11 @@ namespace SupplyRaid
             int optionMaxEnemies = packet.ReadInt();
             int optionSquadMaxEnemies = packet.ReadInt();
             string factionID = packet.ReadString();
+            bool sosigWeapons = packet.ReadBool();
 
             SR_Manager.instance.Network_GameOptions(optionPlayerCount, optionDifficulty, optionFreeBuyMenu, optionSpawnLocking, optionStartLevel,
-                optionPlayerHealth, optionItemSpawner, optionCaptureZone, optionOrder, optionCaptures, optionRespawn, optionItemsDrop, optionMaxEnemies, optionSquadMaxEnemies, factionID);
+                optionPlayerHealth, optionItemSpawner, optionCaptureZone, optionOrder, optionCaptures, optionRespawn, optionItemsDrop, optionMaxEnemies, 
+                optionSquadMaxEnemies, factionID, sosigWeapons);
         }
 
         //Captured Send ----------------------------------------------

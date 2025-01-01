@@ -709,8 +709,9 @@ namespace SupplyRaid
             //Stat Tracking before game management
             if (gameRunning && !ignoreKillStat)
             {
-                stats.Kills++;
-                if(SupplyRaidPlugin.h3mpEnabled)
+                if(stats != null)
+                    stats.Kills++;
+                if(SupplyRaidPlugin.h3mpEnabled && SR_Networking.instance)
                     SR_Networking.instance.UpdateStats_Send();
             }
 
@@ -2058,6 +2059,8 @@ namespace SupplyRaid
                     position,
                     rotation);
 
+            DisableSosigWeaponPickup(sosig);
+
             //Set Agents to quailty level
             NavMeshAgent agent = sosig.GetComponent<NavMeshAgent>();
 
@@ -2065,6 +2068,33 @@ namespace SupplyRaid
             agent.stoppingDistance = 1;
 
             return sosig;
+        }
+
+        public static void DisableSosigWeaponPickup(Sosig s)
+        {
+            //DO nothing if sosig weapons enabled
+            if (profile.sosigWeapons)
+                return;
+
+            foreach (var item in s.Inventory.Slots)
+            {
+                if (item.HeldObject == null)
+                    continue;
+
+                FVRPhysicalObject obj = item.HeldObject.GetComponent<FVRPhysicalObject>();
+                if (obj != null)
+                    obj.IsPickUpLocked = true;
+            }
+
+            foreach (var item in s.Hands)
+            {
+                if (item.HeldObject == null)
+                    continue;
+
+                FVRPhysicalObject obj = item.HeldObject.GetComponent<FVRPhysicalObject>();
+                if (obj != null)
+                    obj.IsPickUpLocked = true;
+            }
         }
 
         void ClearSosigs()
@@ -2313,7 +2343,7 @@ namespace SupplyRaid
         public void Network_GameOptions(
             float playerCount, float difficulty, bool freeBuyMenu, bool spawnLocking, int startLevel, int playerHealth,
             bool itemSpawner, bool captureZone, int order, int captures, bool respawn, int itemsDrop, int maxEnemies, int maxSquadEnemies,
-            string factionID)
+            string factionID, bool sosigWeapons = true)
         {
             profile.playerCount = playerCount;
             profile.difficulty = difficulty;
@@ -2329,6 +2359,7 @@ namespace SupplyRaid
             profile.itemsDrop = itemsDrop;
             profile.maxEnemies = maxEnemies;
             profile.maxSquadEnemies = maxSquadEnemies;
+            profile.sosigWeapons = sosigWeapons;
 
             SR_Menu.instance.SetFactionByName(factionID);
             //instance.factionID = factionID;

@@ -29,5 +29,6 @@ namespace SupplyRaid
 
         public string character = "";
         public string faction = "";
+        public bool sosigWeapons = true;
     }
 }

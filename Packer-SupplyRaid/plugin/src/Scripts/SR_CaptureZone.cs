@@ -27,6 +27,8 @@ namespace SupplyRaid
         void Start()
         {
             gameObject.SetActive(false);
+            if (SR_Manager.instance.captureZone != this)
+                gameObject.SetActive(false);
         }
 
         void Update()
