@@ -71,8 +71,8 @@ namespace SupplyRaid
         public int[] ammoUpgradeCost = new int[28];
 
         //Mod Table
-        [Tooltip("Cost of each attachment - 16 Attachment Types, if set to -1 disable")]
-        public int[] attachmentsCost = new int[16];
+        [Tooltip("Cost of each attachment - 17 Attachment Types, if set to -1 disable")]
+        public int[] attachmentsCost = new int[17];
 
         public List<string> startGearCategories = new List<string>();
         [Tooltip("(REQUIRED) What buy categories are available to this character")]

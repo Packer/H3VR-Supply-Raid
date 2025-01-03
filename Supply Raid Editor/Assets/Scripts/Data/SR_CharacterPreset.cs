@@ -73,8 +73,8 @@ namespace Supply_Raid_Editor
         public int[] ammoUpgradeCost = new int[28];
 
 //WMAU
-        [Tooltip("Cost of each attachment - 16 Attachment Types, if set to -1 disable")]
-        public int[] attachmentsCost = new int[16];
+        [Tooltip("Cost of each attachment - 17 Attachment Types, if set to -1 disable")]
+        public int[] attachmentsCost = new int[17];
 
 //Start Gear / Purchase Categories
         public List<string> startGearCategories = new List<string>();

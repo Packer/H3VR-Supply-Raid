@@ -45,8 +45,8 @@ namespace SupplyRaid
 
         [Header("Buttons")]
         [Tooltip("ironSights = 1 \n magnification = 2 \n reflex = 3 \n suppression = 4 \n stock = 5 \n laser = 6 \n illumination = 7 \n" +
-            " grip = 8 \n recoilMitigation = 10 \n barrelExtention = 11 \n adapter = 12 \n bayonet = 13 \n projectileWeapon = 14 \n bipod = 15")]
-        public TableButton[] buttons = new TableButton[16];
+            " grip = 8 \n recoilMitigation = 10 \n barrelExtention = 11 \n adapter = 12 \n bayonet = 13 \n projectileWeapon = 14 \n bipod = 15 \n Night Vision = 16")]
+        public TableButton[] buttons = new TableButton[17];
 
         //Rail AdapterButtons
         public Sprite defaultSprite;
@@ -81,9 +81,23 @@ namespace SupplyRaid
             }
             GenerateButtons();
 
+            //1.2.8 Night Vision legacy Support
+            if (buttons.Length != SR_Manager.instance.character.attachmentsCost.Length)
+            {
+                int[] newCosts = new int[buttons.Length];
+                for (int i = 0; i < newCosts.Length; i++)
+                {
+                    if (i >= SR_Manager.instance.character.attachmentsCost.Length)
+                        newCosts[i] = -1;   //Disable
+                    else
+                        newCosts[i] = SR_Manager.instance.character.attachmentsCost[i];
+                }
+                SR_Manager.instance.character.attachmentsCost = newCosts;
+            }
+
             for (int i = 0; i < buttons.Length; i++)
             {
-                buttons[i].button.text.text = SR_Manager.instance.character.attachmentsCost[i].ToString();
+                    buttons[i].button.text.text = SR_Manager.instance.character.attachmentsCost[i].ToString();
             }
 
             //Hide Adapters if not enabled
