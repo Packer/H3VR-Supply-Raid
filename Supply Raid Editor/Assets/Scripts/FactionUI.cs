@@ -128,6 +128,59 @@ namespace Supply_Raid_Editor
             OpenLevels();
         }
 
+        public void AddLevelCopy(int index)
+        {
+            FactionLevel lastLevel;
+
+            if (levelEndless)
+                lastLevel = DataManager.Faction().endless[index];
+            else
+                lastLevel = DataManager.Faction().levels[index];
+
+
+            FactionLevel addLevel = new FactionLevel();
+
+            addLevel.name = lastLevel.name;
+
+            addLevel.bossPool = new SosigPool();
+            addLevel.bossPool.sosigEnemyID = lastLevel.bossPool.sosigEnemyID;
+            addLevel.bossCount = lastLevel.bossCount;
+
+            addLevel.sniperPool = new SosigPool();
+            addLevel.sniperPool.sosigEnemyID = lastLevel.sniperPool.sosigEnemyID;
+            addLevel.sniperCount = lastLevel.sniperCount;
+
+            addLevel.guardPool = new SosigPool();
+            addLevel.guardPool.sosigEnemyID = lastLevel.guardPool.sosigEnemyID;
+            addLevel.guardCount = lastLevel.guardCount;
+
+            addLevel.patrolPool = new SosigPool();
+            addLevel.patrolPool.sosigEnemyID = lastLevel.patrolPool.sosigEnemyID;
+            addLevel.maxPatrolSize = lastLevel.maxPatrolSize;
+            addLevel.minPatrolSize = lastLevel.minPatrolSize;
+
+            addLevel.squadPool = new SosigPool();
+            addLevel.squadPool.sosigEnemyID = lastLevel.squadPool.sosigEnemyID;
+            addLevel.squadTeamRandomized = lastLevel.squadTeamRandomized;
+            addLevel.squadBehaviour = lastLevel.squadBehaviour;
+            addLevel.squadSizeMax = lastLevel.squadSizeMax;
+            addLevel.squadSizeMin = lastLevel.squadSizeMin;
+            addLevel.squadCount = lastLevel.squadCount;
+            addLevel.squadDelayTimer = lastLevel.squadDelayTimer;
+
+            addLevel.infiniteSquadEnemies = lastLevel.infiniteSquadEnemies;
+
+            addLevel.enemiesTotal = lastLevel.enemiesTotal;
+            addLevel.enemySpawnTimer = lastLevel.enemySpawnTimer;
+
+            if (levelEndless)
+                DataManager.Faction().endless.Add(addLevel);
+            else
+                DataManager.Faction().levels.Add(addLevel);
+
+            FactionUI.instance.OpenLevels();
+        }
+
         public void OpenLevels()
         {
             levelIndex = -1;

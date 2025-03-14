@@ -43,4 +43,9 @@ public class GenericButton : MonoBehaviour
 
         FactionUI.instance.OpenLevels();
     }
+
+    public void AddLevelCopy()
+    {
+        FactionUI.instance.AddLevelCopy(index);
+    }
 }
