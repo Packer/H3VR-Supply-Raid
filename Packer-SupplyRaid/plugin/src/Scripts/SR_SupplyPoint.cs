@@ -422,7 +422,11 @@ namespace SupplyRaid
             List<Vector3> newList =  new List<Vector3>();
 			foreach (Transform item in patrolPoints)
 			{
-				newList.Add(item.position);
+                Vector3 randomPoint = item.position;
+                randomPoint.x += Random.Range(-item.localScale.x, item.localScale.x);
+                randomPoint.z += Random.Range(-item.localScale.z, item.localScale.z);
+
+                newList.Add(randomPoint);
 
             }
 			return newList;

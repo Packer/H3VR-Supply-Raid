@@ -396,12 +396,19 @@ namespace SupplyRaid
             //Random the Random
             Random.InitState((int)Time.realtimeSinceStartup);
 
-            /*
             if (SupplyRaidPlugin.bgmEnabled)
             {
-                Invoke("LoadBGM", 0.25f);
+                Invoke(nameof(LoadBGM), 1f);
             }
-            */
+            
+        }
+
+        void LoadBGM()
+        {
+            Quaternion lookAt = Quaternion.Euler(-spawnMenu.forward);
+            BGM.BGM_Interface.SpawnPanel(spawnMenu.position + -spawnMenu.forward + Vector3.up, lookAt);
+            print("FOUND BGM!!!");
+
         }
 
         void OnDisable()
@@ -520,6 +527,11 @@ namespace SupplyRaid
             Debug.Log("Supply Raid: Launched Game");
             if (LaunchedEvent != null)
                 LaunchedEvent.Invoke();
+
+            if (SupplyRaidPlugin.bgmEnabled)
+            {
+                BGM.BGM_Interface.InitializeSoundtrackInterface();
+            }
         }
 
         void SetupSupplyPoints()
@@ -1327,14 +1339,35 @@ namespace SupplyRaid
                 target = AttackSupplyPoint().squadPoint;
             else if (currentLevel.squadBehaviour == SquadBehaviour.HuntPlayer)
             {
-                spawnPoint = AttackSupplyPoint();
+                //Same team, spawn in 'base'
+                if ((int)currentLevel.squadTeamRandomized == GetFactionIFF())
+                    spawnPoint = AttackSupplyPoint();
+                else
+                {
+                    SR_SupplyPoint newSpawn = null;
+                    int safety = 0;
+                    //Random Supply Point
+                    while (safety < 100)
+                    {
+                        //Debug.Log("Spawn Squads Sosigs While");
+                        newSpawn = supplyPoints[Random.Range(0, supplyPoints.Count)];
+
+                        //If not Player or Defender Supplypoint
+                        if (newSpawn != AttackSupplyPoint() || newSpawn != GetLastSupplyPoint() )
+                        {
+                            spawnPoint = newSpawn;
+                            break;
+                        }
+                        safety++;
+                    }
+                }
 
                 if (SupplyRaidPlugin.h3mpEnabled && Networking.ServerRunning())
                 {
                     //Multiplayer
                     int playerID = Random.Range(0, Networking.GetPlayerCount());
 
-                    if(playerID == Networking.GetPlayerCount())
+                    if (playerID == Networking.GetPlayerCount())
                         target = GM.CurrentPlayerBody.Head;
                     else
                         target = Networking.GetPlayer(playerID).head;
@@ -1467,6 +1500,10 @@ namespace SupplyRaid
 
             //Patrol Setup
             List<int> groups = new List<int>();
+
+            //Force min size to 1
+            if (currentLevel.minPatrolSize <= 0)
+                currentLevel.minPatrolSize = 1;
 
             while (true)
             {

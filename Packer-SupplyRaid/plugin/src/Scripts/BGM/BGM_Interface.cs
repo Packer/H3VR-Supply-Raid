@@ -1,6 +1,7 @@
-﻿/*
+﻿
 using TNHBGLoader;
 using TNHBGLoader.Soundtrack;
+using TNH_BGLoader;
 using UnityEngine;
 using FistVR;
 using SupplyRaid;
@@ -14,23 +15,34 @@ namespace BGM
         public static TrackSet Tracks;
         public static int Level = 0;
 
+        public static GameObject bgmPanelGO;
+
         public void Awake()
         {
             //Move to its own method if it breaks on awake
+            SoundtrackAPI.SelectedSoundtrackIndex = 0;
+            Debug.Log("IS THIS NULL "  + SoundtrackAPI.GetCurrentSoundtrack);
 
+            SoundtrackAPI.Soundtracks[SoundtrackAPI.SelectedSoundtrackIndex].AssembleMusicData();
+            //SoundtrackAPI.GetCurrentSoundtrack.AssembleMusicData();
             Initialize("tnh", SoundtrackAPI.GetCurrentSoundtrack, 1.5f, PluginMain.AnnouncerMusicVolume.Value / 4f);
-
+            //CurrentSoundtrack.AssembleMusicData();
             ClearQueue();
             Level = SR_Manager.instance.CurrentCaptures;
 
+            Debug.Log("POST :(");
             // Initialize holdmusic
             Tracks = SoundtrackAPI.GetSet("take", Level);
 
+            Debug.Log("POST A");
             // If the hold music has its own take theme, play it
             if (Tracks.Tracks.Any(x => x.Type == "take"))
                 QueueTake(Tracks);
             else //Otherwise, get a take theme.
                 QueueTake(SoundtrackAPI.GetSet("take", Level));
+            Debug.Log("POST B");
+            //Instance.PlayNextSongInQueue();
+            Instance.PlayNextTrackInQueueOfType(new[] { "intro", "lo", "phase0" });
         }
 
         public static void SetTakeMusic(int level)
@@ -81,13 +93,38 @@ namespace BGM
             panel.GetComponent<FVRPhysicalObject>().SetIsKinematicLocked(true);
             //make rawimage ui thing
             var rawimage = new GameObject();
-            var wait = rawimage.AddComponent<TNH_BGLoader.IconDisplayWaitForInit>();
+            var wait = rawimage.AddComponent<IconDisplayWaitForInit>();
             wait.panel = panel;
             wait.bgmpanel = bgmpanel;
+
+            //get the bank last loaded and set banknum to it; if it doesnt exist it just defaults to 0
+            if (!PluginMain.IsSoundtrack.Value)
+                for (int i = 0; i < BankAPI.LoadedBankLocations.Count; i++)
+                    if (System.IO.Path.GetFileNameWithoutExtension(BankAPI.LoadedBankLocations[i]) == PluginMain.LastLoadedBank.Value)
+                    {
+                        BankAPI.SwapBank(i);
+                        break;
+                    }
+
+            if (PluginMain.IsSoundtrack.Value)
+            {
+                SoundtrackAPI.EnableSoundtrackFromGUID(PluginMain.LastLoadedSoundtrack.Value);
+            }
+            bgmpanel.SetIcon();
+
+            bgmPanelGO = panel;
+            //set last loaded announcer
+            AnnouncerAPI.CurrentAnnouncerIndex = AnnouncerAPI.GetAnnouncerIndexFromGUID(PluginMain.LastLoadedAnnouncer.Value);
             Debug.Log("SpawnPanel End");
+
         }
+
         public static void InitializeSoundtrackInterface()
         {
+            //Game Started, destroy the panel
+            BankAPI.NukeSongSnippets();
+            Destroy(bgmPanelGO);
+
             Debug.Log("InitializeSoundtrackInterface Start");
             Instance = Instantiate(new GameObject()).AddComponent<BGM_Interface>();
             Debug.Log("InitializeSoundtrackInterface End");
@@ -96,4 +133,3 @@ namespace BGM
 
     }
 }
-*/

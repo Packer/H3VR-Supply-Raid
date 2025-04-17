@@ -60,6 +60,9 @@
       <Reference Include="Sodalite">
         <HintPath>..\libs\Sodalite.dll</HintPath>
       </Reference>
+      <Reference Include="PTNHBGML">
+        <HintPath>..\libs\PTNHBGML.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
     <!-- When in debug mode, also build mono debugging symbols (Only available on Windows) -->
