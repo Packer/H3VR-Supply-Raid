@@ -86,7 +86,7 @@ namespace SupplyRaid
             Debug.Log("Supply Raid: SR Supply Points Total: " + SR_Manager.instance.supplyPoints.Count);
 
             //Load our Assets
-            StartCoroutine(SR_ModLoader.LoadSupplyRaidAssets());
+            StartCoroutine(SR_ModLoader.LoadSupplyRaidAssets(true));
         }
 
         void SetupManager()

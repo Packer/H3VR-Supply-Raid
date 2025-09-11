@@ -1,15 +1,17 @@
 ﻿//using BGM;
-using TNHBGLoader.Soundtrack;
+//using TNHBGLoader.Soundtrack;
 using UnityEngine;
 using FistVR;
 namespace BGM;
 
 public class BGM
 {
+    /*
     public static BGM_Interface SetupBGM(GameObject mgr)
     {
         return mgr.AddComponent<BGM_Interface>();
     }
+    */
 
     public static void SetTakeMusic(int level)
     {
@@ -40,6 +42,6 @@ public class BGM
 
     public static void InitializeSoundtrackInterface()
     {
-        BGM_Interface.InitializeSoundtrackInterface();
+        //BGM_Interface.InitializeSoundtrackInterface();
     }
 }

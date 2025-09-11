@@ -166,5 +166,10 @@ namespace SupplyRaid
         {
             SR_Menu.instance.SetProfile(text.text);
         }
+
+        public void SelectMap()
+        {
+            SR_MapSelector.instance.SelectMap(index);
+        }
     }
 }

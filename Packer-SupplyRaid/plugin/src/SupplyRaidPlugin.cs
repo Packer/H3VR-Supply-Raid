@@ -6,13 +6,14 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using FistVR;
+using System.Collections;
 
 namespace SupplyRaid
 {
 	[BepInPlugin(PluginInfo.GUID, PluginInfo.NAME, PluginInfo.VERSION)]
 	[BepInProcess("h3vr.exe")]
 	[BepInDependency("VIP.TommySoucy.H3MP", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("dll.potatoes.ptnhbgml", BepInDependency.DependencyFlags.SoftDependency)]
+    //[BepInDependency("dll.potatoes.ptnhbgml", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(AtlasConstants.Guid, AtlasConstants.Version)]
     public class SupplyRaidPlugin : BaseUnityPlugin
 	{
@@ -26,7 +27,7 @@ namespace SupplyRaid
 		{
             AtlasPlugin.Loaders["supplyraid"] = new SandboxLoader();
             h3mpEnabled = Chainloader.PluginInfos.ContainsKey("VIP.TommySoucy.H3MP");
-			bgmEnabled = Chainloader.PluginInfos.ContainsKey("dll.potatoes.ptnhbgml");
+			//bgmEnabled = Chainloader.PluginInfos.ContainsKey("dll.potatoes.ptnhbgml");
 
             SceneManager.activeSceneChanged += ChangedActiveScene;
         }
@@ -42,14 +43,22 @@ namespace SupplyRaid
 
         private void ChangedActiveScene(Scene current, Scene next)
         {
-			if (next != null && next.name.Contains("TakeAndHold_Lobby"))
+			if (next == null)
+				return;
+
+			if (next.name.Contains("TakeAndHold_Lobby"))
 			{
 				Logger.LogInfo("Supply Raid: Found TnH Lobby, Adding Supply Raid button");
-                loadTnH = false;
-                CreateTnHButton();
-            }
+				loadTnH = false;
+				CreateTnHButton();
+			}
+			else if (next.name.Contains("MainMenu3"))
+			{
+				//Spawn our map selector
+				StartCoroutine(CreateMapMenu(new Vector3(-1.25f, 1.5f, 0f), new Vector3(35f, 270f, 0f)));
+			}
 
-			if (!loadTnH)
+            if (!loadTnH)
 				return;
 
             TNH_Manager TnHm = FindObjectOfType<TNH_Manager>();
@@ -72,6 +81,19 @@ namespace SupplyRaid
 				//Todo stop H3MP breaking stuff on
 			}
         }
+
+        public IEnumerator CreateMapMenu(Vector3 position, Vector3 rotation)
+		{
+
+			//Load our Assets
+			yield return StartCoroutine(SR_ModLoader.LoadSupplyRaidAssets(false));
+
+			//Didn't load assets, don't try to spawn them
+			if (SR_ModLoader.srAssets == null || SR_ModLoader.srAssets.srMapSelector == null)
+				yield break;
+
+			GameObject mapMenu = Instantiate(SR_ModLoader.srAssets.srMapSelector.gameObject, position, Quaternion.Euler(rotation));
+		}
 
 		private void CreateTnHButton()
 		{

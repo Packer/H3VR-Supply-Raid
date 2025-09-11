@@ -20,5 +20,6 @@ namespace SupplyRaid
         public SR_ResultsMenu srResultsMenu;
         public SR_SpawnMenu srSpawnMenu;
         public SR_SpawnStation srSpawnStation;
+        public SR_MapSelector srMapSelector;
     }
 }

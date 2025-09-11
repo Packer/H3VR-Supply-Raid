@@ -1051,6 +1051,8 @@ MonoBehaviour:
   text: {fileID: 0}
   textB: {fileID: 0}
   go: {fileID: 0}
+  fvrObject: {fileID: 0}
+  genericButton: {fileID: 0}
 --- !u!114 &114235777429677490
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1322,6 +1324,8 @@ MonoBehaviour:
   text: {fileID: 114746236520547894}
   textB: {fileID: 0}
   go: {fileID: 0}
+  fvrObject: {fileID: 0}
+  genericButton: {fileID: 0}
 --- !u!114 &114651999154071376
 MonoBehaviour:
   m_ObjectHideFlags: 1

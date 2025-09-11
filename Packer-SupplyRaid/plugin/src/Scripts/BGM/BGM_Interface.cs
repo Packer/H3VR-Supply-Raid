@@ -1,6 +1,6 @@
 ﻿
-using TNHBGLoader;
-using TNHBGLoader.Soundtrack;
+//using TNHBGLoader;
+//using TNHBGLoader.Soundtrack;
 using TNH_BGLoader;
 using UnityEngine;
 using FistVR;
@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace BGM
 {
-
+    /*
     public class BGM_Interface : SoundtrackPlayer
     {
         public static TrackSet Tracks;
@@ -131,5 +131,5 @@ namespace BGM
 
         }
 
-    }
+    }*/
 }

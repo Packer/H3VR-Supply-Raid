@@ -22,7 +22,7 @@ namespace SupplyRaid
         }
 
 
-        public static IEnumerator LoadSupplyRaidAssets()
+        public static IEnumerator LoadSupplyRaidAssets(bool setupManager = true)
         {
             if (assetsLoading || timeout > Time.time)
                 yield break;
@@ -75,11 +75,15 @@ namespace SupplyRaid
 
             //--------------------------------------------------------------------------------------------------------
 
-            SR_Manager.instance.LoadInAssets();
-            assetsLoading = false;
+            //Only setup Managers in SR Levels
+            if (setupManager)
+            {
+                SR_Manager.instance.LoadInAssets();
+                yield return null;
+                SR_Manager.instance.SetupGameData();
+            }
 
-            yield return null;
-            SR_Manager.instance.SetupGameData();
+            assetsLoading = false;
             timeout = Time.time + 10f;
         }
 

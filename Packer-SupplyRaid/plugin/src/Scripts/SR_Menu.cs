@@ -1,6 +1,4 @@
-﻿using H3MP;
-using H3MP.Networking;
-using System.Collections;
+﻿using H3MP.Networking;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;

@@ -208,7 +208,7 @@ namespace SupplyRaid
         void Awake()
         {
             //Load External Assets
-            StartCoroutine(SR_ModLoader.LoadSupplyRaidAssets());
+            StartCoroutine(SR_ModLoader.LoadSupplyRaidAssets(true));
 
             //JSONExample();
             instance = this;
@@ -406,8 +406,8 @@ namespace SupplyRaid
         void LoadBGM()
         {
             Quaternion lookAt = Quaternion.Euler(-spawnMenu.forward);
-            BGM.BGM_Interface.SpawnPanel(spawnMenu.position + -spawnMenu.forward + Vector3.up, lookAt);
-            print("FOUND BGM!!!");
+            //BGM.BGM_Interface.SpawnPanel(spawnMenu.position + -spawnMenu.forward + Vector3.up, lookAt);
+            //print("FOUND BGM!!!");
 
         }
 
@@ -530,7 +530,7 @@ namespace SupplyRaid
 
             if (SupplyRaidPlugin.bgmEnabled)
             {
-                BGM.BGM_Interface.InitializeSoundtrackInterface();
+                //BGM.BGM_Interface.InitializeSoundtrackInterface();
             }
         }
 

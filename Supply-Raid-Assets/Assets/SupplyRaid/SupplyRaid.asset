@@ -34,3 +34,5 @@ MonoBehaviour:
     type: 2}
   srSpawnStation: {fileID: 114856699304369986, guid: 4a9ec7ac8e10011499be16f854ad364e,
     type: 2}
+  srMapSelector: {fileID: 114436493985002930, guid: 3164f1af5475aa94e8d743614eabea63,
+    type: 2}
