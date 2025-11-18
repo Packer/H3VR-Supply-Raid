@@ -307,8 +307,8 @@ GameObject:
   - component: {fileID: 222152017798569630}
   - component: {fileID: 114929366877698736}
   - component: {fileID: 114008642466569276}
-  - component: {fileID: 114798025853584912}
   - component: {fileID: 65267400685670792}
+  - component: {fileID: 114848874426975994}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -1410,7 +1410,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   selectedBox: {fileID: 4104236116331536}
---- !u!114 &114798025853584912
+--- !u!114 &114848874426975994
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -1418,10 +1418,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1716693506131698}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -132877509, guid: 61df6207064b6df9f1154d3f48a90696, type: 3}
+  m_Script: {fileID: -1880903520, guid: bcc605c3eca03cb9d2e7221f1969bc76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxPointingRange: 7
+  MaxPointingRange: 5
   PointingHands: []
   m_isBeingPointedAt: 0
   ColorUnselected: {r: 0, g: 0, b: 0, a: 0}

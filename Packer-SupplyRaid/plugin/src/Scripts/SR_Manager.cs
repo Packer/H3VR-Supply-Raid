@@ -733,6 +733,10 @@ namespace SupplyRaid
                 return;
             }
 
+            //Attempt to disable Sosig Weapons as a client
+            if(isClient)
+                DisableSosigWeaponPickup(s);
+
             // Make sure the sosig is managed by us
             var sosig = sosigs.FirstOrDefault(x => x == s);
             if (!sosig) return;
@@ -1471,11 +1475,14 @@ namespace SupplyRaid
                 //Sniper Setup
                 if (sniperCount > 0 && currentLevel.sniperPool.Count() > 0)
                 {
-                    Transform spot = AttackSupplyPoint().GetRandomSniperSpawn();
-                    SpawnSniperSosig(spot, spot.position, spot.rotation, currentLevel, teamID);
-                    maxEnemies--;
                     sniperCount--;
-                    yield return new WaitForSeconds(sosigSpawnTick);
+                    Transform spot = AttackSupplyPoint().GetRandomSniperSpawn();
+                    if (spot != null)
+                    {
+                        SpawnSniperSosig(spot, spot.position, spot.rotation, currentLevel, teamID);
+                        maxEnemies--;
+                        yield return new WaitForSeconds(sosigSpawnTick);
+                    }
                 }
 
                 //Guard Setup

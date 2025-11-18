@@ -13078,6 +13078,46 @@ Prefab:
       propertyPath: supplyPoints.Array.data[7]
       value: 
       objectReference: {fileID: 1516412450}
+    - target: {fileID: 114295333824589702, guid: a434bad14f667da499326ecc7174a68c,
+        type: 2}
+      propertyPath: sosigSquad.maxHearingRange
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114295333824589702, guid: a434bad14f667da499326ecc7174a68c,
+        type: 2}
+      propertyPath: sosigSquad.maxFOV
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114295333824589702, guid: a434bad14f667da499326ecc7174a68c,
+        type: 2}
+      propertyPath: sosigPatrol.maxFOV
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114295333824589702, guid: a434bad14f667da499326ecc7174a68c,
+        type: 2}
+      propertyPath: sosigPatrol.maxHearingRange
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114295333824589702, guid: a434bad14f667da499326ecc7174a68c,
+        type: 2}
+      propertyPath: sosigSniper.maxHearingRange
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114295333824589702, guid: a434bad14f667da499326ecc7174a68c,
+        type: 2}
+      propertyPath: sosigSniper.maxFOV
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114295333824589702, guid: a434bad14f667da499326ecc7174a68c,
+        type: 2}
+      propertyPath: sosigGuard.maxHearingRange
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114295333824589702, guid: a434bad14f667da499326ecc7174a68c,
+        type: 2}
+      propertyPath: sosigGuard.maxFOV
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a434bad14f667da499326ecc7174a68c, type: 2}
   m_IsPrefabParent: 0

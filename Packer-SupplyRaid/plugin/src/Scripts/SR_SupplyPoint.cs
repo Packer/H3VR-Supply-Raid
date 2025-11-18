@@ -114,7 +114,10 @@ namespace SupplyRaid
         */
         public Transform GetRandomSniperSpawn()
         {
-            return sniperPoints[Random.Range(0, sniperPoints.Count - 1)];
+            if(sniperPoints == null || sniperPoints.Count <= 0)
+                return null;
+
+            return sniperPoints[Random.Range(0, sniperPoints.Count)];
         }
 
         public Transform GetBossSpawn()

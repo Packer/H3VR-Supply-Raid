@@ -3652,7 +3652,7 @@ MonoBehaviour:
   endlessLevel: 0
   gameCompleted: 0
   inEndless: 0
-  avoidanceQuailty: 2
+  avoidanceQuailty: 1
   attackSupplyID: 0
   playerSupplyID: 0
   supplyOrderIndex: 0
@@ -3687,6 +3687,7 @@ MonoBehaviour:
     stateHearingRangeMults: {x: 0.6, y: 1, z: 1}
     stateFOVMults: {x: 0.5, y: 0.6, z: 1}
     stateSightRangeMults: {x: 0.1, y: 0.35, z: 1}
+  guardDistance: 10
   sosigSniper:
     maxHearingRange: 300
     maxFOV: 105
@@ -3709,6 +3710,7 @@ MonoBehaviour:
     stateFOVMults: {x: 0.5, y: 0.6, z: 1}
     stateSightRangeMults: {x: 0.1, y: 0.35, z: 1}
   squadSpawnTimerMultiplier: 1
+  sosigExplodeTime: 5
   shakeReloading: 1
   gameServerRunning: 0
   isClient: 0
@@ -3769,6 +3771,7 @@ MonoBehaviour:
   healthMode: {fileID: 114125962876571660}
   respawn: {fileID: 114125962876571660}
   itemsDrop: {fileID: 114125962876571660}
+  sosigWeapons: {fileID: 114125962876571660}
   itemSpawner: {fileID: 114125962876571660}
   captureMode: {fileID: 114125962876571660}
   playerHand: {fileID: 114125962876571660}
@@ -3808,34 +3811,34 @@ MonoBehaviour:
   profileButtons: []
   profileSelected: {fileID: 0}
   clientObjects:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
+  - {fileID: 1276896114455322}
   audioExtractionTick: {fileID: 8300000, guid: d58fe269dc31d8e48a86c3d47481bcd3, type: 3}
 --- !u!114 &114340638996478850
 MonoBehaviour:
@@ -4266,6 +4269,7 @@ MonoBehaviour:
   textB: {fileID: 0}
   go: {fileID: 0}
   fvrObject: {fileID: 0}
+  genericButton: {fileID: 0}
 --- !u!114 &114752550829877500
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4465,6 +4469,9 @@ MonoBehaviour:
   upgradeCostText: {fileID: 114044141784719528}
   duplicateCostText: {fileID: 114044141784719528}
   magazineCostText: {fileID: 114044141784719528}
+  upgradeCapacityText: {fileID: 114044141784719528}
+  duplicateCapacityText: {fileID: 114044141784719528}
+  magazineCapacityText: {fileID: 114044141784719528}
   duplicateBtn: {fileID: 114432242136144614}
   upgradeBtn: {fileID: 114432242136144614}
   magazineBtn: {fileID: 114432242136144614}

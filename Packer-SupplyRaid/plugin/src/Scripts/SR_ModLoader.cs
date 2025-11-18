@@ -84,7 +84,7 @@ namespace SupplyRaid
             }
 
             assetsLoading = false;
-            timeout = Time.time + 10f;
+            timeout = Time.time + 2f;
         }
 
         public static List<FistVR.SosigConfigTemplate> LoadCustomSosigs()

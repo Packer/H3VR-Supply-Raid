@@ -1,6 +1,8 @@
 ﻿using Atlas;
 using FistVR;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,6 +27,10 @@ namespace SupplyRaid
         public Text mapDescription;
         public RawImage mapThumbnail;
         private CustomSceneInfo selectedScene;
+
+        [Header("Take and Hold")]
+        public Texture2D tnhTexture;
+        public GameObject tnhButton;
 
         private void Awake()
         {
@@ -100,15 +106,36 @@ namespace SupplyRaid
             SM.PlayGlobalUISound(SM.GlobalUISound.Boop, GM.CurrentPlayerBody.transform.position);
         }
 
+        public void SelectTnH()
+        {
+            selectedScene = null;
+            mapTitle.text = "Take And Hold";
+            mapDescription.text = "Game \n" +
+                "- Get Loot!\n" +
+                "- Take Capture Points!\n" +
+                "- Defend Them!\n" +
+                "- Go As Long As You Can!";
+            mapThumbnail.texture = tnhTexture;
+            SM.PlayGlobalUISound(SM.GlobalUISound.Boop, GM.CurrentPlayerBody.transform.position);
+        }
+
         public void LaunchMap()
         {
             if (selectedScene == null)
             {
-                SM.PlayGlobalUISound(SM.GlobalUISound.Beep, GM.CurrentPlayerBody.transform.position);
-                return;
+                if (mapTitle.text == "Take And Hold")
+                {
+                    SteamVR_LoadLevel.Begin("TakeAndHold_Lobby_2", false, 0.5f, 0f, 0f, 0f, 1f);
+                }
+                else
+                {
+                    SM.PlayGlobalUISound(SM.GlobalUISound.Boop, GM.CurrentPlayerBody.transform.position);
+                    return;
+                }
             }
+            else
+                AtlasPlugin.LoadCustomScene(selectedScene);
 
-            AtlasPlugin.LoadCustomScene(selectedScene);
             SM.PlayGlobalUISound(SM.GlobalUISound.Beep, GM.CurrentPlayerBody.transform.position);
         }
     }
