@@ -130,15 +130,15 @@ namespace SupplyRaid
 
         [HideInInspector]
         public TNH_SosiggunShakeReloading shakeReloading = TNH_SosiggunShakeReloading.Off;
-        private readonly List<Sosig> sosigs = new List<Sosig>();
+        public readonly List<Sosig> sosigs = new List<Sosig>();
         public readonly List<Sosig> defenderSosigs = new List<Sosig>();
-        private readonly List<Sosig> squadSosigs = new List<Sosig>();
+        public readonly List<Sosig> squadSosigs = new List<Sosig>();
 
-        //For ease of modifacation
-        private readonly List<Sosig> sosigGuards = new List<Sosig>();
-        private readonly List<Sosig> sosigSnipers = new List<Sosig>();
-        private readonly List<Sosig> sosigPatrols = new List<Sosig>();
-        private readonly List<Sosig> sosigSquads = new List<Sosig>();
+        //For ease of Modifying
+        public readonly List<Sosig> sosigGuards = new List<Sosig>();
+        public readonly List<Sosig> sosigSnipers = new List<Sosig>();
+        public readonly List<Sosig> sosigPatrols = new List<Sosig>();
+        public readonly List<Sosig> sosigSquads = new List<Sosig>();
 
         public readonly SosigAPI.SpawnOptions _spawnOptions = new SosigAPI.SpawnOptions
         {
@@ -171,6 +171,9 @@ namespace SupplyRaid
 
         public delegate void EndlessDelegate();
         public static event EndlessDelegate EndlessEvent;
+
+        public delegate void SosigSpawnDelegate(Sosig s);
+        public static event SosigSpawnDelegate OnSosigSpawn;
 
         [Header("Audio")]
         public AudioSource globalAudio;
@@ -788,51 +791,60 @@ namespace SupplyRaid
                     //Hand Items
                     FVRPhysicalObject[] hands = GM.CurrentPlayerBody.transform.GetComponentsInChildren<FVRPhysicalObject>();
 
-                    for (int i = 0; i < hands.Length; i++)
+                    if (hands != null)
                     {
-                        if (hands[i] != null && !character.dropProtectionObjectIDs.Contains(hands[i].ObjectWrapper.ItemID))
+                        for (int i = 0; i < hands.Length; i++)
                         {
-                            if (hands[i].ObjectWrapper
-                                && character.dropProtectionObjectIDs.Contains(hands[i].ObjectWrapper.ItemID))
-                                continue;
-
-                            int random = Random.Range(0, 101);
-                            if (random <= profile.itemsDrop)
+                            if (hands[i] != null && !character.dropProtectionObjectIDs.Contains(hands[i].ObjectWrapper.ItemID))
                             {
-                                hands[i].ForceBreakInteraction();
-                                hands[i].ClearQuickbeltState();
-                                //hands[i].transform.parent = null;
+                                if (hands[i].ObjectWrapper
+                                    && character.dropProtectionObjectIDs.Contains(hands[i].ObjectWrapper.ItemID))
+                                    continue;
+
+                                int random = Random.Range(0, 101);
+                                if (random <= profile.itemsDrop)
+                                {
+                                    hands[i].ForceBreakInteraction();
+                                    hands[i].ClearQuickbeltState();
+                                    //hands[i].transform.parent = null;
+                                }
                             }
                         }
                     }
 
-                    //All Quick belt slots into backpacks
-                    for (int i = 0; i < GM.CurrentPlayerBody.QBSlots_Internal.Count; i++)
+                    if (GM.CurrentPlayerBody != null && GM.CurrentPlayerBody.QBSlots_Internal != null)
                     {
-                        //Debug.Log("QB: " + i);
-                        FVRPhysicalObject phy = GM.CurrentPlayerBody.QBSlots_Internal[i].CurObject;
-
-                        if (phy == null)
-                            continue;
-
-                        if (phy.ObjectWrapper
-                            && character.dropProtectionObjectIDs.Contains(phy.ObjectWrapper.ItemID))
-                            continue;
-
-                        int random = Random.Range(0, 101);
-                        //Debug.Log("Rand: " + random);
-                        if (random <= profile.itemsDrop)
+                        //All Quick belt slots into backpacks
+                        for (int i = 0; i < GM.CurrentPlayerBody.QBSlots_Internal.Count; i++)
                         {
-                            phy.ClearQuickbeltState();
-                        }
-                        else if (phy.Slots != null && phy.Slots.Length > 0)
-                        {
-                            for (int x = 0; x < phy.Slots.Length; x++)
+                            if (GM.CurrentPlayerBody.QBSlots_Internal[i] == null)
+                                continue;
+
+                            //Debug.Log("QB: " + i);
+                            FVRPhysicalObject phy = GM.CurrentPlayerBody.QBSlots_Internal[i].CurObject;
+
+                            if (phy == null)
+                                continue;
+
+                            if (phy.ObjectWrapper != null
+                                && character.dropProtectionObjectIDs.Contains(phy.ObjectWrapper.ItemID))
+                                continue;
+
+                            int random = Random.Range(0, 101);
+                            //Debug.Log("Rand: " + random);
+                            if (random <= profile.itemsDrop)
                             {
-                                if (phy.Slots[x].CurObject != null)
+                                phy.ClearQuickbeltState();
+                            }
+                            else if (phy.Slots != null && phy.Slots.Length > 0)
+                            {
+                                for (int x = 0; x < phy.Slots.Length; x++)
                                 {
-                                    if(Random.Range(0, 101) <= profile.itemsDrop)
-                                        phy.Slots[x].CurObject.ClearQuickbeltState();
+                                    if (phy.Slots[x] != null && phy.Slots[x].CurObject != null)
+                                    {
+                                        if (Random.Range(0, 101) <= profile.itemsDrop)
+                                            phy.Slots[x].CurObject.ClearQuickbeltState();
+                                    }
                                 }
                             }
                         }
@@ -846,9 +858,8 @@ namespace SupplyRaid
                     if(ObjectiveEvent != null)
                         ObjectiveEvent.Invoke();
 
-                    if (!isClient)
-                        CompleteGame();
-
+                    //Allow clients to end their game, see if this breaks anything
+                    CompleteGame();
                 }
             }
         }
@@ -941,7 +952,6 @@ namespace SupplyRaid
 
             //Game Complete
             resultsMenu.gameObject.SetActive(true);
-
 
             DisableGamePanels();
             if (SR_ResultsMenu.instance != null)
@@ -2103,6 +2113,9 @@ namespace SupplyRaid
                     position,
                     rotation);
 
+            if (OnSosigSpawn != null)
+                OnSosigSpawn.Invoke(sosig);
+
             DisableSosigWeaponPickup(sosig);
 
             //Set Agents to quailty level
@@ -2141,7 +2154,7 @@ namespace SupplyRaid
             }
         }
 
-        void ClearSosigs()
+        public void ClearSosigs()
         {
             ignoreKillStat = true;
             reserveDefenders = 0;

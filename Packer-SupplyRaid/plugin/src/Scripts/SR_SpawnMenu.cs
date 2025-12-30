@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 namespace SupplyRaid
 {
-
 	public class SR_SpawnMenu : MonoBehaviour
     {
         [SerializeField] Text respawnTimer;
@@ -19,12 +18,9 @@ namespace SupplyRaid
         [SerializeField] GameObject playerPrefab;
         [SerializeField] Transform playerContent;
 
-
-
         //Internal
         List<GameObject> playerButtons = new List<GameObject>();
         private int playerCount = 0;
-
 
         void Start()
         {
