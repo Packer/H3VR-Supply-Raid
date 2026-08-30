@@ -108,7 +108,63 @@ namespace SupplyRaid
 			menu.transform.localScale = Vector3.one * 0.001f;
 			menu.transform.position += Vector3.up * 1.5f;
 			Transform newCanvas = menu.transform.GetChild(0);
-			Button toggleButton = null;
+            //Debug.Log(newCanvas.name + " Childs: " + newCanvas.childCount);
+            Transform layout = newCanvas.transform.GetChild(0);
+            //Debug.Log(layout.name + " Childs: " + layout.childCount);
+
+            Transform backing = null;
+			Transform infomation = null;
+
+            for (int i = 0; i < layout.childCount; i++)
+            {
+				Debug.Log(layout.GetChild(i).name);
+                if (layout.GetChild(i).name == "Backing")
+				{
+					backing = layout.GetChild(i);
+				}
+				else if (layout.GetChild(i).name == "Information")
+				{
+					infomation = layout.GetChild(i);
+				}
+				else
+					layout.GetChild(i).gameObject.SetActive(false);
+            }
+
+            Button toggleButton = null;
+
+            for (int i = infomation.childCount - 1; i >= 0; i--)
+            {
+                //Debug.Log(infomation.GetChild(i).name);
+                //TITLE SUPPLY RAID
+                if (infomation.GetChild(i).name == "Level Name Label")
+                {
+					Text titleText = infomation.GetChild(i).GetComponent<Text>();
+					titleText.text = "Supply Raid";
+					titleText.fontSize = 128;
+                }
+				/*
+				else if (infomation.GetChild(i).name == "Spacer")
+				{
+					infomation.GetChild(i).SetSiblingIndex(1);
+
+                }
+				*/
+				else if (infomation.GetChild(i).name == "Level Authors Label")
+				{
+					//Setup Button and Text
+					tnhButtonText = infomation.GetChild(i).GetComponent<Text>();
+					tnhButtonText.fontSize = 96;
+					tnhButtonText.text = "Disabled";
+					toggleButton = tnhButtonText.gameObject.AddComponent<Button>();
+					tnhButtonText.gameObject.AddComponent<BoxCollider>();
+					FVRPointableButton point = tnhButtonText.gameObject.AddComponent<FVRPointableButton>();
+					point.Button = toggleButton;
+				}
+				else
+					infomation.GetChild(i).gameObject.SetActive(false);
+            }
+
+            /*
 			for (int i = newCanvas.childCount - 1; i >= 2; i--)
 			{
 				if (newCanvas.GetChild(i).name != "LvlSelect_Next")
@@ -116,26 +172,31 @@ namespace SupplyRaid
 				else
 					toggleButton = newCanvas.GetChild(i).gameObject.GetComponent<Button>();
             }
+			*/
 
-			//Title and Text
-			Text title = newCanvas.GetChild(1).gameObject.GetComponent<Text>();
+			/*
+            //Title and Text
+            Text title = newCanvas.GetChild(1).gameObject.GetComponent<Text>();
 			title.text = "\r\nSupply Raid";
 			title.horizontalOverflow = HorizontalWrapMode.Overflow;
 			title.verticalOverflow = VerticalWrapMode.Overflow;
 			title.fontSize = 128;
+			*/
 
-			//Button
+            //Button
+            /*
 			toggleButton.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
 			tnhButtonText = toggleButton.GetComponent<Text>();
             tnhButtonText.horizontalOverflow = HorizontalWrapMode.Overflow;
             tnhButtonText.verticalOverflow = VerticalWrapMode.Overflow;
             tnhButtonText.fontSize = 96;
             tnhButtonText.text = "Disabled";
+			*/
 
-			toggleButton.name = "SupplyRaidToggle";
+            toggleButton.name = "SupplyRaidToggle";
             toggleButton.onClick.RemoveAllListeners();
             toggleButton.onClick.AddListener(ToggleSupplyRaidTnH);
-			toggleButton.GetComponent<FistVR.FVRPointableButton>().MaxPointingRange = 8;
+			toggleButton.GetComponent<FistVR.FVRPointable>().MaxPointingRange = 8;
 			toggleButton.GetComponent<BoxCollider>().size = new Vector3(256, 96, 2.5f);
         }
 
