@@ -145,7 +145,7 @@ namespace SupplyRaid
 
             Debug.Log("Supply Raid: Found Supply Points - " + tnhManager.SupplyPoints.Count);
 
-            Random.InitState(tnhManager.m_seed);
+            Random.InitState(tnhManager.m_holdSequenceSeed);
 
             //Collection of valid positions for everything
             List<Transform> validPanels = new List<Transform>();

@@ -148,7 +148,7 @@ namespace SupplyRaid
         {
             FVRObject ammo = null;
             if (item)
-                ammo = item.GetRandomAmmoObject(item, null, minCapacity, maxCapacity, null);
+                ammo = FVRObject.GetRandomAmmoObject(item, null, minCapacity, maxCapacity, null, null);
 
             if (ammo == null)
                 return;
