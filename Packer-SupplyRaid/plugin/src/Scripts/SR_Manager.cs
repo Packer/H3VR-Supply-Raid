@@ -795,19 +795,16 @@ namespace SupplyRaid
                     {
                         for (int i = 0; i < hands.Length; i++)
                         {
-                            if (hands[i] != null && !character.dropProtectionObjectIDs.Contains(hands[i].ObjectWrapper.ItemID))
-                            {
-                                if (hands[i].ObjectWrapper
-                                    && character.dropProtectionObjectIDs.Contains(hands[i].ObjectWrapper.ItemID))
-                                    continue;
+                            if (hands[i] == null 
+                                || hands[i].ObjectWrapper == null 
+                                || character.dropProtectionObjectIDs.Contains(hands[i].ObjectWrapper.ItemID))
+                                continue;
 
-                                int random = Random.Range(0, 101);
-                                if (random <= profile.itemsDrop)
-                                {
-                                    hands[i].ForceBreakInteraction();
-                                    hands[i].ClearQuickbeltState();
-                                    //hands[i].transform.parent = null;
-                                }
+                            int random = Random.Range(0, 101);
+                            if (random <= profile.itemsDrop)
+                            {
+                                hands[i].ForceBreakInteraction();
+                                hands[i].ClearQuickbeltState();
                             }
                         }
                     }
