@@ -605,7 +605,7 @@ namespace SupplyRaid
             SR_Manager.PlayRearmSFX();
         }
 
-        private FireArmRoundClass GetFirearmRoundClassFromType(string itemID, FireArmRoundType t)
+        public static FireArmRoundClass GetFirearmRoundClassFromType(string itemID, FireArmRoundType t)
         {
             for (int i = 0; i < AM.SRoundDisplayDataDic[t].Classes.Length; i++)
             {

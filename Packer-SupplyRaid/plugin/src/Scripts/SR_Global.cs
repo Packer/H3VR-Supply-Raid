@@ -238,11 +238,63 @@ namespace SupplyRaid
             return table;
         }
 
+        public static void SpawnLootBox(string itemID, Vector3 position, Quaternion rotation, string secondaryItemID = "")
+        {
+
+            FVRObject mainObject;
+
+            //Try to find the weapon ID
+            if (!IM.OD.TryGetValue("CardboardBoxGun1Pistol", out mainObject))
+            {
+                Debug.Log("Supply Raid: Cannot find object with id: " + "CardboardBox_Gun1_Pistol");
+                return;
+            }
+
+            GameObject spawnedMain = null;
+
+            spawnedMain = Instantiate(mainObject.GetGameObject(), position, rotation);
+
+            if (spawnedMain != null)
+            {
+                CGrillerItemBox itemBox = spawnedMain.GetComponent<CGrillerItemBox>();
+                if (itemBox != null)
+                {
+                    //Set to Blank
+                    bool hasText = itemBox.TXTs_SideDetails.Count > 0 && itemBox.TXTs_SideDetails[0] != null;
+                    if(hasText)
+                        itemBox.TXTs_SideDetails[0].text = "";
+
+                    //Use built in Configure
+                    itemBox.ConfigureFromID(itemID, 0, true, secondaryItemID, false);
+
+                    //Check if configure worked
+                    if (hasText)
+                    {
+                        string displayText = itemID.Replace("_", " ");
+
+                        //Force display a name if no item ID found
+                        for (int n = 0; n < itemBox.TXTs_SideDetails.Count; n++)
+                        {
+                            itemBox.TXTs_SideDetails[n].text = displayText;
+                        }
+                        for (int l = 0; l < itemBox.TXTs_Name.Count; l++)
+                        {
+                            itemBox.TXTs_Name[l].text = displayText;
+                        }
+                        for (int m = 0; m < itemBox.TXTs_Price.Count; m++)
+                        {
+                            itemBox.TXTs_Price[m].text = "LOOT";
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Attempts to spawn input gear, otherwise returns false
         /// </summary>
         /// <returns></returns>
-        public static bool SpawnLoot(LootTable table, SR_ItemCategory itemCategory, Transform[] spawns, bool forceSecondary = false)
+        public static bool SpawnLoot(LootTable table, SR_ItemCategory itemCategory, Transform[] spawns, bool forceSecondary = false, bool useBox = false)
         {
             if (table == null || table.Loot.Count == 0 && itemCategory.objectGroups.Count == 0)
                 return false;
@@ -438,19 +490,46 @@ namespace SupplyRaid
                 {
                     for (int i = 0; i < mainSpawn; i++)
                     {
-                        spawnedMain = Instantiate(mainObject.GetGameObject(), spawns[0].position + ((Vector3.up * 0.25f) * i) + ((Vector3.up * 0.2f) * z), spawns[0].rotation);
+                        string mainID = mainObject.ItemID;
+                        string secondaryID = "";
+
+                        Vector3 pos = spawns[0].position + ((Vector3.up * 0.25f) * i) + ((Vector3.up * 0.2f) * z);
+                        Quaternion rot = spawns[0].rotation;
 
                         //Iron Sights or other things
                         if (forceSecondary && mainObject.RequiredSecondaryPieces != null && mainObject.RequiredSecondaryPieces.Count > 0)
                         {
                             for (int s = 0; s < mainObject.RequiredSecondaryPieces.Count; s++)
                             {
-                                if(mainObject.RequiredSecondaryPieces[s] != null)
-                                    Instantiate(mainObject.RequiredSecondaryPieces[s].GetGameObject(), spawns[0].position + ((Vector3.up * 0.26f) * s) + ((Vector3.up * 0.2f) * z), spawns[0].rotation);
+                                if (mainObject.RequiredSecondaryPieces[s] != null)
+                                {
+                                    secondaryID = mainObject.RequiredSecondaryPieces[s].ItemID;
+
+                                    //Spawn anything left over
+                                    if(!useBox || secondaryID != "")
+                                        Instantiate(mainObject.RequiredSecondaryPieces[s].GetGameObject(), spawns[0].position + ((Vector3.up * 0.26f) * s) + ((Vector3.up * 0.2f) * z), spawns[0].rotation);
+                                }
                             }
                         }
 
-                        if (spawnedMain.name == "CharcoalBriquette(Clone)")
+                        //Special Charcoal spawning
+                        if (mainObject.ItemID == "Charcoal")
+                        {
+                            spawnedMain = Instantiate(mainObject.GetGameObject(), pos, rot);
+                        }
+                        else
+                        {
+                            if (useBox)
+                            {
+                                SpawnLootBox(mainObject.ItemID, pos, rot);
+                            }
+                            else
+                            {
+                                spawnedMain = Instantiate(mainObject.GetGameObject(), pos, rot);
+                            }
+                        }
+
+                        if (spawnedMain != null && spawnedMain.name == "CharcoalBriquette(Clone)")
                         {
                             Material gold = SetToGoldMaterial(spawnedMain.transform.GetChild(0).GetComponent<Renderer>().material);
 
@@ -462,83 +541,30 @@ namespace SupplyRaid
                     }
                 }
 
-                //Default 4 - Limited Ammo Magazines in mind
                 int ammoCount = GetCategoryAmmoTypeCount(mainObject, itemCategory);
-
-                /*
-                //Rounds
-                if (UsesRounds(mainObject))
-                {
-                    FVRFireArm firearm = spawnedMain.GetComponent<FVRFireArm>();
-                    if(firearm != null)
-                        ammoCount = firearm.GetChamberRoundList().Count * 2;
-                }
-                */
-
-
-
-                /*
-                int lockedDefaultCount = 3; //Spawn Locked Ammo, 1 mag in, 1 mag lock, 1 for loading extra round in
-                int limitedAmmoDefault = 4; //Limited Ammo, 1 in, 3 Reserve
-
-                //Item Category ammo that will spawn, -1 = default
-
-                if (SR_Manager.instance.optionSpawnLocking)
-                {
-                    if (itemCategory != null)
-                    {
-                        ammoCount = (itemCategory.ammoSpawnLockedCount <= -1) ? lockedDefaultCount : itemCategory.ammoSpawnLockedCount;
-
-                        if (ammoCount > 0)
-                        {
-                            if(itemCategory.ammoSpawnLockedCountMin >= 0)
-                            {
-                                ammoCount
-                                    = Random.Range(
-                                        itemCategory.ammoSpawnLockedCountMin,
-                                        itemCategory.ammoSpawnLockedCount);
-                            }
-                        }
-                    }
-                    else
-                        ammoCount = lockedDefaultCount; 
-                }
-                else
-                {
-                    if (itemCategory != null)
-                    {
-                        ammoCount = itemCategory.ammoLimitedCount <= -1 ? limitedAmmoDefault : itemCategory.ammoLimitedCount;
-
-                        if (mainObject != null)
-                        {
-                            ammoCount = GetCategoryAmmoTypeCount(mainObject, itemCategory);
-                        }
-                        else if (ammoCount > 0)
-                        {
-                            //Default Limited
-                            if (itemCategory.ammoLimitedCountMin >= 0)
-                            {
-                                ammoCount = GetAmmoCount(
-                                    ammoCount,
-                                    itemCategory.ammoLimitedCountMin,
-                                    itemCategory.ammoLimitedCount);
-                            }
-                        }
-                    }
-                    else
-                        ammoCount = limitedAmmoDefault;  //No item Category, give em 4
-                }
-                */
 
                 //Ammo
                 if (ammoObject != null && ammoObject.GetGameObject() != null)
                 {
-                    //Multiply by Spawn Count
-                    ammoCount *= spawnCount;
-
-                    for (int x = 0; x < ammoCount; x++)
+                    if (ammoObject.MagazineCapacity <= 0)
                     {
-                        spawnedAmmo = Instantiate(ammoObject.GetGameObject(), spawns[1].position + ((Vector3.up * 0.25f) * x), spawns[1].rotation);
+
+                        //Working ammo box spawning, whoops
+                        GameObject ammoBox = AM.GetAmmoBox(ammoObject.RoundType);
+                        GameObject gameObject4 = Instantiate<GameObject>(ammoBox, spawns[1].position, spawns[1].rotation);
+                        CartridgeBox component = gameObject4.GetComponent<CartridgeBox>();
+                        component.ConfigureShapeForRoundType(ammoObject.RoundType, SR_AmmoSpawner.GetFirearmRoundClassFromType(ammoObject.ItemID, ammoObject.RoundType));
+                        component.m_numRounds = ammoCount;
+                    }
+                    else
+                    {
+                        //Multiply by Spawn Count
+                        ammoCount *= spawnCount;
+
+                        for (int x = 0; x < ammoCount; x++)
+                        {
+                            spawnedAmmo = Instantiate(ammoObject.GetGameObject(), spawns[1].position + ((Vector3.up * 0.25f) * x), spawns[1].rotation);
+                        }
                     }
                 }
 

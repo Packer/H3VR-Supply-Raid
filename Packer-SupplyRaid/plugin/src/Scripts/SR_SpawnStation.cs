@@ -68,7 +68,7 @@ namespace SupplyRaid
                 SR_Global.SpawnLoot(
                     SR_Manager.instance.character.StartGear(i).InitializeLootTable(),
                     SR_Manager.instance.character.StartGear(i),
-                    spawnPoints);
+                    spawnPoints, false, false);
 
                 spawnPoints[0].position += Vector3.up * 0.25f;
             }

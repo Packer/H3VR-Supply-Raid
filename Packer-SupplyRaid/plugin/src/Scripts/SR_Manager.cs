@@ -774,7 +774,7 @@ namespace SupplyRaid
                     //Spawn Loot
                     SR_ItemCategory item = itemCategories[character.lootCategories[i].GetIndex()];
                     Transform[] spawns = new Transform[] { s.transform, s.transform, s.transform, s.transform, s.transform };
-                    SR_Global.SpawnLoot(item.InitializeLootTable(), item, spawns);
+                    SR_Global.SpawnLoot(item.InitializeLootTable(), item, spawns, false, true);
                 }
             }
         }

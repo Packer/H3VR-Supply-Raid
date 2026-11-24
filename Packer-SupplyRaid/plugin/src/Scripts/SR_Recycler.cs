@@ -1,13 +1,15 @@
-﻿using System.Collections;
+﻿using FistVR;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using FistVR;
 
 namespace SupplyRaid
 {
     public class SR_Recycler : MonoBehaviour
     {
         private List<FVRFireArm> weapons = new List<FVRFireArm>();
+        private List<FVRFireArmMagazine> mags = new List<FVRFireArmMagazine>();
 
         public Transform ScanningVolume;
         private float m_scanTick = 0.8f;
@@ -28,15 +30,26 @@ namespace SupplyRaid
             if(cashList.Count > 0)
                 SR_Manager.PlayPointsGainSFX();
 
+            int points = 0;
+
             for (int i = 0; i < cashList.Count; i++)
             {
                 if (cashList[i] == null)
                     continue;
 
-                int cash = GetCashValue(cashList[i].name);
-                SR_Manager.instance.Points += cash;
+                points = GetCashValue(cashList[i].name);
+                SR_Manager.instance.Points += points;
                 Destroy(cashList[i]);
                 ignoreFail = true;
+            }
+
+            for (int i = 0; i < mags.Count; i++)
+            {
+                if (mags[i] != null)
+                {
+                    Destroy(mags[i].gameObject);
+                    ignoreFail = true;
+                }
             }
 
             if (weapons.Count <= 0)
@@ -50,13 +63,22 @@ namespace SupplyRaid
             {
                 if(weapons[0].gameObject)
                     Destroy(weapons[0].gameObject);
+                points++;
                 ignoreFail = true;
             }
 
             weapons.Clear();
+            mags.Clear();
             if (ignoreFail)
-                SR_Manager.PlayPointsGainSFX();
-            SR_Manager.instance.Points += SR_Manager.instance.character.recyclerPoints;
+            {
+                if (points > 0)
+                {
+                    SR_Manager.PlayPointsGainSFX();
+                    SR_Manager.instance.Points += SR_Manager.instance.character.recyclerPoints;
+                }
+                else
+                    SR_Manager.PlayConfirmSFX();
+            }
         }
 
         private void Update()
@@ -115,6 +137,7 @@ namespace SupplyRaid
                 ScanningLM, QueryTriggerInteraction.Collide);
             weapons.Clear();
             cashList.Clear();
+            mags.Clear();
 
 
             for (int i = 0; i < num; i++)
@@ -136,7 +159,6 @@ namespace SupplyRaid
 
                 if (colbuffer[i].attachedRigidbody != null)
                 {
-
                     FVRFireArm component = colbuffer[i].attachedRigidbody.gameObject.GetComponent<FVRFireArm>();
                     if (component != null)
                     {
@@ -145,6 +167,18 @@ namespace SupplyRaid
                             if (!component.IsHeld && component.QuickbeltSlot == null && !weapons.Contains(component))
                             {
                                 weapons.Add(component);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        FVRFireArmMagazine mag = colbuffer[i].transform.root.GetComponent<FVRFireArmMagazine>();
+                        
+                        if (mag != null)
+                        {
+                            if (!mag.IsHeld && mag.QuickbeltSlot == null && !mags.Contains(mag))
+                            {
+                                mags.Add(mag);
                             }
                         }
                     }
